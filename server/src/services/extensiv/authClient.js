@@ -9,15 +9,22 @@ const TOKEN_EXPIRY = parseInt(process.env.EXTENSIV_TOKEN_EXPIRY || '3600', 10);
 class ExtensivAuthClient {
   constructor() {
     this.baseURL = process.env.EXTENSIV_BASE_URL || 'https://api.extensiv.com';
-    this.clientId = process.env.EXTENSIV_CLIENT_ID;
-    this.clientSecret = process.env.EXTENSIV_CLIENT_SECRET;
     this.customerId = process.env.EXTENSIV_CUSTOMER_ID || null;
+    this.tokenExpiresAt = null;
+  }
 
-    if (!this.clientId || !this.clientSecret) {
+  /**
+   * Validate credentials (called lazily when first needed)
+   */
+  validateCredentials() {
+    const clientId = process.env.EXTENSIV_CLIENT_ID;
+    const clientSecret = process.env.EXTENSIV_CLIENT_SECRET;
+
+    if (!clientId || !clientSecret) {
       throw new Error('Extensiv credentials not configured. Please set EXTENSIV_CLIENT_ID and EXTENSIV_CLIENT_SECRET');
     }
 
-    this.tokenExpiresAt = null;
+    return { clientId, clientSecret };
   }
 
   /**
@@ -48,12 +55,14 @@ class ExtensivAuthClient {
    */
   async fetchNewToken() {
     try {
+      const { clientId, clientSecret } = this.validateCredentials();
+
       const response = await axios.post(
         `${this.baseURL}/oauth/token`,
         {
           grant_type: 'client_credentials',
-          client_id: this.clientId,
-          client_secret: this.clientSecret
+          client_id: clientId,
+          client_secret: clientSecret
         },
         {
           headers: {
