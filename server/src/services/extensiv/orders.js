@@ -2,7 +2,10 @@ import apiClient from './apiClient.js';
 import logger from '../../utils/logger.js';
 import { mockOrders } from './mockData.js';
 
-const MOCK_MODE = process.env.EXTENSIV_MOCK_MODE === 'true';
+/**
+ * Check if mock mode is enabled (runtime check)
+ */
+const isMockMode = () => process.env.EXTENSIV_MOCK_MODE === 'true';
 
 /**
  * Create order in Extensiv
@@ -13,7 +16,7 @@ export const createOrderInExtensiv = async (orderData) => {
     const extensivOrder = transformToExtensivOrder(orderData);
 
     // Mock mode: simulate order creation
-    if (MOCK_MODE) {
+    if (isMockMode()) {
       logger.info('🔧 MOCK MODE: Simulating order creation in Extensiv');
       const mockOrderId = `EXT-ORD-${Date.now()}`;
 
@@ -52,7 +55,7 @@ export const createOrderInExtensiv = async (orderData) => {
 export const getOrdersFromExtensiv = async (filters = {}) => {
   try {
     // Mock mode: return mock orders
-    if (MOCK_MODE) {
+    if (isMockMode()) {
       logger.info('🔧 MOCK MODE: Returning mock orders data');
       let orders = [...mockOrders];
 
@@ -107,7 +110,7 @@ export const getOrdersFromExtensiv = async (filters = {}) => {
 export const getOrderByIdFromExtensiv = async (orderId) => {
   try {
     // Mock mode: find in mock data
-    if (MOCK_MODE) {
+    if (isMockMode()) {
       logger.info(`🔧 MOCK MODE: Fetching mock order ${orderId}`);
       const mockOrder = mockOrders.find(o => o.order_id === orderId || o.order_number === orderId);
 

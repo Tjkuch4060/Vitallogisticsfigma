@@ -2,7 +2,10 @@ import apiClient from './apiClient.js';
 import logger from '../../utils/logger.js';
 import { mockProducts } from './mockData.js';
 
-const MOCK_MODE = process.env.EXTENSIV_MOCK_MODE === 'true';
+/**
+ * Check if mock mode is enabled (runtime check)
+ */
+const isMockMode = () => process.env.EXTENSIV_MOCK_MODE === 'true';
 
 /**
  * Get all products from Extensiv with optional filters
@@ -10,7 +13,7 @@ const MOCK_MODE = process.env.EXTENSIV_MOCK_MODE === 'true';
 export const getProductsFromExtensiv = async (filters = {}) => {
   try {
     // Mock mode: return mock data
-    if (MOCK_MODE) {
+    if (isMockMode()) {
       logger.info('🔧 MOCK MODE: Returning mock products data');
       let products = mockProducts.map(transformProduct);
 
@@ -64,7 +67,7 @@ export const getProductsFromExtensiv = async (filters = {}) => {
 export const getProductByIdFromExtensiv = async (productId) => {
   try {
     // Mock mode: return mock data
-    if (MOCK_MODE) {
+    if (isMockMode()) {
       logger.info(`🔧 MOCK MODE: Fetching mock product ${productId}`);
       const mockProduct = mockProducts.find(p => p.product_id === productId || p.sku === productId);
 
