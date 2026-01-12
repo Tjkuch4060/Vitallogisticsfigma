@@ -1,11 +1,41 @@
 import apiClient from './apiClient.js';
 import logger from '../../utils/logger.js';
+import { mockProducts } from './mockData.js';
+
+const MOCK_MODE = process.env.EXTENSIV_MOCK_MODE === 'true';
 
 /**
  * Get all products from Extensiv with optional filters
  */
 export const getProductsFromExtensiv = async (filters = {}) => {
   try {
+    // Mock mode: return mock data
+    if (MOCK_MODE) {
+      logger.info('🔧 MOCK MODE: Returning mock products data');
+      let products = mockProducts.map(transformProduct);
+
+      // Apply filters to mock data
+      if (filters.category) {
+        products = products.filter(p => p.category === filters.category);
+      }
+      if (filters.brand) {
+        products = products.filter(p => p.brand === filters.brand);
+      }
+      if (filters.inStock) {
+        products = products.filter(p => p.stock > 0);
+      }
+      if (filters.minPrice) {
+        products = products.filter(p => p.price >= parseFloat(filters.minPrice));
+      }
+      if (filters.maxPrice) {
+        products = products.filter(p => p.price <= parseFloat(filters.maxPrice));
+      }
+
+      logger.info(`Returning ${products.length} filtered mock products`);
+      return products;
+    }
+
+    // Real API mode
     const params = {};
 
     if (filters.category) params.category = filters.category;
@@ -33,6 +63,20 @@ export const getProductsFromExtensiv = async (filters = {}) => {
  */
 export const getProductByIdFromExtensiv = async (productId) => {
   try {
+    // Mock mode: return mock data
+    if (MOCK_MODE) {
+      logger.info(`🔧 MOCK MODE: Fetching mock product ${productId}`);
+      const mockProduct = mockProducts.find(p => p.product_id === productId || p.sku === productId);
+
+      if (!mockProduct) {
+        logger.warn(`Mock product ${productId} not found`);
+        return null;
+      }
+
+      return transformProduct(mockProduct);
+    }
+
+    // Real API mode
     const response = await apiClient.get(`/api/v1/products/${productId}`);
 
     if (!response.data) {

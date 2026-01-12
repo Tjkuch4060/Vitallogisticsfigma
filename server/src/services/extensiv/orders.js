@@ -1,5 +1,8 @@
 import apiClient from './apiClient.js';
 import logger from '../../utils/logger.js';
+import { mockOrders } from './mockData.js';
+
+const MOCK_MODE = process.env.EXTENSIV_MOCK_MODE === 'true';
 
 /**
  * Create order in Extensiv
@@ -9,6 +12,24 @@ export const createOrderInExtensiv = async (orderData) => {
     // Transform our order format to Extensiv format
     const extensivOrder = transformToExtensivOrder(orderData);
 
+    // Mock mode: simulate order creation
+    if (MOCK_MODE) {
+      logger.info('🔧 MOCK MODE: Simulating order creation in Extensiv');
+      const mockOrderId = `EXT-ORD-${Date.now()}`;
+
+      return {
+        extensivOrderId: mockOrderId,
+        status: 'paid',
+        createdAt: new Date().toISOString(),
+        rawResponse: {
+          order_id: mockOrderId,
+          status: 'paid',
+          ...extensivOrder
+        }
+      };
+    }
+
+    // Real API mode
     const response = await apiClient.post('/api/v1/orders', extensivOrder);
 
     logger.info(`Order created in Extensiv: ${response.data?.order_id}`);
@@ -30,6 +51,34 @@ export const createOrderInExtensiv = async (orderData) => {
  */
 export const getOrdersFromExtensiv = async (filters = {}) => {
   try {
+    // Mock mode: return mock orders
+    if (MOCK_MODE) {
+      logger.info('🔧 MOCK MODE: Returning mock orders data');
+      let orders = [...mockOrders];
+
+      // Apply filters to mock data
+      if (filters.status) {
+        orders = orders.filter(o => o.status === filters.status);
+      }
+      if (filters.customer) {
+        orders = orders.filter(o => o.customer_name === filters.customer);
+      }
+      if (filters.startDate) {
+        orders = orders.filter(o => new Date(o.order_date) >= new Date(filters.startDate));
+      }
+      if (filters.endDate) {
+        orders = orders.filter(o => new Date(o.order_date) <= new Date(filters.endDate));
+      }
+      if (filters.limit) {
+        orders = orders.slice(0, filters.limit);
+      }
+
+      const transformedOrders = orders.map(transformFromExtensivOrder);
+      logger.info(`Returning ${transformedOrders.length} filtered mock orders`);
+      return transformedOrders;
+    }
+
+    // Real API mode
     const params = {};
 
     if (filters.status) params.status = filters.status;
@@ -57,6 +106,20 @@ export const getOrdersFromExtensiv = async (filters = {}) => {
  */
 export const getOrderByIdFromExtensiv = async (orderId) => {
   try {
+    // Mock mode: find in mock data
+    if (MOCK_MODE) {
+      logger.info(`🔧 MOCK MODE: Fetching mock order ${orderId}`);
+      const mockOrder = mockOrders.find(o => o.order_id === orderId || o.order_number === orderId);
+
+      if (!mockOrder) {
+        logger.warn(`Mock order ${orderId} not found`);
+        return null;
+      }
+
+      return transformFromExtensivOrder(mockOrder);
+    }
+
+    // Real API mode
     const response = await apiClient.get(`/api/v1/orders/${orderId}`);
 
     if (!response.data) {

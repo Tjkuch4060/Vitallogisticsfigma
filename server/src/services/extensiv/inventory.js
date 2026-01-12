@@ -1,8 +1,10 @@
 import apiClient from './apiClient.js';
 import { cacheSet } from '../../config/redis.js';
 import logger from '../../utils/logger.js';
+import { mockInventory } from './mockData.js';
 
 const CACHE_TTL = parseInt(process.env.CACHE_TTL || '900', 10); // 15 minutes default
+const MOCK_MODE = process.env.EXTENSIV_MOCK_MODE === 'true';
 
 /**
  * Sync inventory from Extensiv
@@ -12,15 +14,25 @@ export const syncInventoryFromExtensiv = async () => {
   try {
     logger.info('Starting inventory sync from Extensiv...');
 
-    // Fetch all products with inventory data
-    const response = await apiClient.get('/api/v1/inventory');
+    let inventoryData;
 
-    if (!response.data || !Array.isArray(response.data)) {
-      throw new Error('Invalid inventory response from Extensiv');
+    // Mock mode: use mock data
+    if (MOCK_MODE) {
+      logger.info('🔧 MOCK MODE: Using mock inventory data');
+      inventoryData = mockInventory;
+    } else {
+      // Real API mode: fetch from Extensiv
+      const response = await apiClient.get('/api/v1/inventory');
+
+      if (!response.data || !Array.isArray(response.data)) {
+        throw new Error('Invalid inventory response from Extensiv');
+      }
+
+      inventoryData = response.data;
     }
 
     // Transform inventory data
-    const inventory = response.data.map(item => transformInventoryItem(item));
+    const inventory = inventoryData.map(item => transformInventoryItem(item));
 
     const syncedAt = new Date().toISOString();
 
@@ -28,7 +40,8 @@ export const syncInventoryFromExtensiv = async () => {
     await cacheSet('inventory:all', {
       items: inventory,
       lastSync: syncedAt,
-      count: inventory.length
+      count: inventory.length,
+      source: MOCK_MODE ? 'mock' : 'extensiv'
     }, CACHE_TTL);
 
     // Also cache individual items by SKU for quick lookups
@@ -36,11 +49,12 @@ export const syncInventoryFromExtensiv = async () => {
       await cacheSet(`inventory:sku:${item.sku}`, item, CACHE_TTL);
     }
 
-    logger.info(`Inventory sync completed: ${inventory.length} items synced`);
+    logger.info(`Inventory sync completed: ${inventory.length} items synced ${MOCK_MODE ? '(MOCK)' : ''}`);
 
     return {
       count: inventory.length,
-      syncedAt
+      syncedAt,
+      source: MOCK_MODE ? 'mock' : 'extensiv'
     };
   } catch (error) {
     logger.error('Error syncing inventory from Extensiv:', error);
@@ -53,13 +67,29 @@ export const syncInventoryFromExtensiv = async () => {
  */
 export const getInventoryBySku = async (sku) => {
   try {
-    const response = await apiClient.get(`/api/v1/inventory/${sku}`);
+    let inventoryData;
 
-    if (!response.data) {
-      return null;
+    // Mock mode: find in mock data
+    if (MOCK_MODE) {
+      logger.info(`🔧 MOCK MODE: Fetching mock inventory for SKU ${sku}`);
+      inventoryData = mockInventory.find(item => item.sku === sku);
+
+      if (!inventoryData) {
+        logger.warn(`Mock inventory for SKU ${sku} not found`);
+        return null;
+      }
+    } else {
+      // Real API mode
+      const response = await apiClient.get(`/api/v1/inventory/${sku}`);
+
+      if (!response.data) {
+        return null;
+      }
+
+      inventoryData = response.data;
     }
 
-    const inventory = transformInventoryItem(response.data);
+    const inventory = transformInventoryItem(inventoryData);
 
     // Cache it
     await cacheSet(`inventory:sku:${sku}`, inventory, CACHE_TTL);
