@@ -16,7 +16,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { toast } from 'sonner';
 
 export function QuickActions() {
@@ -50,26 +50,26 @@ export function QuickActions() {
           <DropdownMenuSeparator />
           
           <DropdownMenuItem asChild>
-            <Link to="/catalog" className="cursor-pointer flex items-center gap-2">
-              <PackagePlus className="h-4 w-4 text-emerald-600" />
+            <Link to="/catalog" className="cursor-pointer flex items-center gap-2 group">
+              <PackagePlus size={16} className="text-emerald-600 group-hover:text-emerald-700 group-hover:rotate-6 transition-all" />
               <span>Create New Order</span>
             </Link>
           </DropdownMenuItem>
           
           <DropdownMenuItem asChild>
-            <Link to="/catalog" className="cursor-pointer flex items-center gap-2">
-              <ShoppingCart className="h-4 w-4 text-emerald-600" />
+            <Link to="/catalog" className="cursor-pointer flex items-center gap-2 group">
+              <ShoppingCart size={16} className="text-emerald-600 group-hover:text-emerald-700 group-hover:rotate-6 transition-all" />
               <span>View Cart</span>
             </Link>
           </DropdownMenuItem>
           
-          <DropdownMenuItem onClick={handleContactSupport} className="cursor-pointer flex items-center gap-2">
-            <Headphones className="h-4 w-4 text-emerald-600" />
+          <DropdownMenuItem onClick={handleContactSupport} className="cursor-pointer flex items-center gap-2 group">
+            <Headphones size={16} className="text-emerald-600 group-hover:text-emerald-700 group-hover:rotate-6 transition-all" />
             <span>Contact Support</span>
           </DropdownMenuItem>
           
-          <DropdownMenuItem onClick={handleDownloadInvoice} className="cursor-pointer flex items-center gap-2">
-            <FileText className="h-4 w-4 text-emerald-600" />
+          <DropdownMenuItem onClick={handleDownloadInvoice} className="cursor-pointer flex items-center gap-2 group">
+            <FileText size={16} className="text-emerald-600 group-hover:text-emerald-700 group-hover:rotate-6 transition-all" />
             <span>Download Invoice</span>
           </DropdownMenuItem>
         </DropdownMenuContent>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
-import { Check, X, MoreHorizontal, FileText, AlertCircle } from 'lucide-react';
+import { Check, X, MoreHorizontal, FileText, AlertCircle, Clock } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { toast } from 'sonner';
 import {
@@ -73,30 +73,30 @@ export function LicenseApprovalQueue() {
     return (
         <Card className="h-full">
             <CardHeader className="pb-3">
-                <CardTitle className="flex items-center justify-between">
+                <CardTitle className="flex items-center justify-between text-lg font-bold text-slate-800">
                     <span>License Approvals</span>
-                    <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200 border-amber-200">
+                    <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200 border-amber-200 rounded-lg">
                         {applications.length} Pending
                     </Badge>
                 </CardTitle>
             </CardHeader>
-            <CardContent className="p-0">
+            <CardContent className="px-0 pb-0">
                 <div className="divide-y divide-slate-100">
                     {applications.map((app) => (
-                        <div key={app.id} className="p-4 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
+                        <div key={app.id} className="px-8 py-5 flex items-center justify-between hover:bg-slate-50/80 transition-colors">
                             <div className="min-w-0 flex-1 mr-4">
                                 <div className="flex items-center gap-2 mb-1">
-                                    <h4 className="font-semibold text-slate-900 truncate">{app.businessName}</h4>
-                                    <Badge variant="outline" className="text-[10px] h-5 px-1.5 bg-slate-50 text-slate-500">
+                                    <h4 className="font-bold text-slate-900 truncate">{app.businessName}</h4>
+                                    <Badge variant="outline" className="text-[10px] h-5 px-1.5 bg-slate-50 text-slate-500 rounded-md border-slate-200">
                                         {app.state}
                                     </Badge>
                                 </div>
-                                <div className="text-xs text-slate-500 space-y-0.5">
-                                    <div className="font-mono bg-slate-100 w-fit px-1.5 rounded text-slate-600">
+                                <div className="text-xs text-slate-500 space-y-1">
+                                    <div className="font-mono bg-slate-100 w-fit px-2 py-0.5 rounded text-slate-600 border border-slate-200/50">
                                         {app.licenseNumber}
                                     </div>
-                                    <div className="text-slate-400">
-                                        Submitted: {new Date(app.submittedDate).toLocaleDateString()}
+                                    <div className="text-slate-400 flex items-center gap-1">
+                                        <Clock className="w-3 h-3" /> Submitted: {new Date(app.submittedDate).toLocaleDateString()}
                                     </div>
                                 </div>
                             </div>
@@ -104,7 +104,7 @@ export function LicenseApprovalQueue() {
                             <div className="flex items-center gap-2">
                                 <Button 
                                     size="sm" 
-                                    className="h-8 w-8 p-0 bg-emerald-600 hover:bg-emerald-700 rounded-full"
+                                    className="h-9 w-9 p-0 bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-sm hover:shadow transition-all"
                                     onClick={() => handleApprove(app.id, app.businessName)}
                                     title="Approve"
                                 >
@@ -114,24 +114,24 @@ export function LicenseApprovalQueue() {
                                 
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-slate-400 hover:text-slate-600 rounded-full">
+                                        <Button size="sm" variant="ghost" className="h-9 w-9 p-0 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl">
                                             <MoreHorizontal className="w-4 h-4" />
                                             <span className="sr-only">Actions</span>
                                         </Button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                        <DropdownMenuItem onClick={() => handleApprove(app.id, app.businessName)}>
+                                    <DropdownMenuContent align="end" className="rounded-xl border-slate-200 shadow-xl">
+                                        <DropdownMenuLabel className="font-bold text-xs uppercase tracking-widest text-slate-400">Actions</DropdownMenuLabel>
+                                        <DropdownMenuItem onClick={() => handleApprove(app.id, app.businessName)} className="rounded-lg cursor-pointer">
                                             <Check className="w-4 h-4 mr-2 text-emerald-600" /> Approve Application
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => handleRequestInfo(app.businessName)}>
+                                        <DropdownMenuItem onClick={() => handleRequestInfo(app.businessName)} className="rounded-lg cursor-pointer">
                                             <AlertCircle className="w-4 h-4 mr-2 text-amber-600" /> Request More Info
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem>
+                                        <DropdownMenuItem className="rounded-lg cursor-pointer">
                                             <FileText className="w-4 h-4 mr-2 text-blue-600" /> View Documents
                                         </DropdownMenuItem>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem onClick={() => handleReject(app.id, app.businessName)} className="text-red-600 focus:text-red-600">
+                                        <DropdownMenuSeparator className="bg-slate-100" />
+                                        <DropdownMenuItem onClick={() => handleReject(app.id, app.businessName)} className="text-red-600 focus:text-red-600 rounded-lg cursor-pointer">
                                             <X className="w-4 h-4 mr-2" /> Reject Application
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
@@ -141,8 +141,8 @@ export function LicenseApprovalQueue() {
                     ))}
                 </div>
             </CardContent>
-            <div className="p-4 border-t border-slate-100 bg-slate-50/50">
-                <Button variant="outline" size="sm" className="w-full text-xs h-8 text-slate-500">
+            <div className="px-8 py-4 border-t border-slate-100 bg-slate-50/30 mt-auto">
+                <Button variant="outline" size="sm" className="w-full text-xs h-9 text-slate-600 font-bold border-slate-200 hover:bg-white rounded-xl">
                     View All Applications
                 </Button>
             </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import { AlertTriangle, ArrowRight } from 'lucide-react';
 import { useUser } from '../context/UserContext';
 import { Button } from './ui/button';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 export function LicenseAlert() {
     const { daysRemaining, status } = useUser();

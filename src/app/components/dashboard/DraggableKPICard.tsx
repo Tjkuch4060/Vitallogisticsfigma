@@ -103,21 +103,22 @@ export const DraggableKPICard = ({ id, index, item, moveCard }: DraggableKPICard
   const isPositive = item.change.includes('+');
 
   return (
-    <div ref={ref} style={{ opacity }} data-handler-id={handlerId} className="cursor-move h-full">
-        <Card className="h-full hover:shadow-md transition-shadow overflow-hidden flex flex-col justify-between">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-600">{item.title}</CardTitle>
-            <div className="p-2 bg-emerald-50 rounded-lg">
-                <Icon className="h-4 w-4 text-emerald-600" />
+    <div ref={ref} style={{ opacity }} data-handler-id={handlerId} className="cursor-move h-full group/kpi">
+        <Card className="h-full group-hover/kpi:scale-[1.02] transition-all duration-300">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <CardTitle className="text-sm font-bold text-slate-500 uppercase tracking-[0.1em]">{item.title}</CardTitle>
+            <div className="p-3 bg-emerald-100 rounded-full group-hover/kpi:bg-emerald-200 transition-colors">
+                <Icon size={20} className="text-emerald-600 group-hover/kpi:text-emerald-700 group-hover/kpi:rotate-6 transition-all" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-900">
+            <div className="text-3xl font-extrabold text-slate-900 tracking-tight">
                 <AnimatedNumber value={item.value} prefix={item.prefix} />
             </div>
             
-            <div className="flex items-center justify-between mt-1">
-                <p className={cn("text-xs flex items-center gap-1", isPositive ? "text-emerald-600" : "text-red-600")}>
+            <div className="flex items-center justify-between mt-2">
+                <p className={cn("text-xs font-bold flex items-center gap-1 px-2 py-0.5 rounded-full", 
+                    isPositive ? "text-emerald-700 bg-emerald-50" : "text-red-700 bg-red-50")}>
                     {item.change}
                 </p>
             </div>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Command as CommandPrimitive } from 'cmdk';
 import { Search } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { products } from '../data/mockData';
 import { cn } from './ui/utils';
 import {
@@ -33,18 +33,18 @@ export function GlobalSearch() {
     <div className="relative w-full max-w-sm lg:max-w-xl z-50">
       <Command 
         className={cn(
-            "rounded-lg border border-emerald-100/50 bg-emerald-50/30 overflow-visible",
+            "rounded-xl border border-emerald-100/50 bg-emerald-50/30 overflow-visible",
             "focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-500/50 transition-all shadow-sm"
         )}
         shouldFilter={true}
       >
         <div 
-            className="flex items-center px-3" 
+            className="flex items-center px-4" 
             onClick={() => setOpen(true)}
         >
-          <Search className="w-4 h-4 text-emerald-700/50 shrink-0 mr-2" />
+          <Search className="w-5 h-5 text-emerald-500 shrink-0 mr-3" />
           <CommandPrimitive.Input
-            className="flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-emerald-900/40 text-emerald-950"
+            className="flex h-12 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-slate-400 text-slate-700 font-medium"
             placeholder="Search products by Name, SKU, or Brand..."
             onFocus={() => setOpen(true)}
             onBlur={() => {

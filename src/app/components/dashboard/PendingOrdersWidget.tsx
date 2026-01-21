@@ -22,48 +22,52 @@ export function PendingOrdersWidget() {
   };
 
   return (
-    <Card className="h-full border-emerald-100/50 shadow-sm">
-      <CardHeader className="pb-3">
+    <Card className="h-full">
+      <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                <Clock className="w-5 h-5 text-emerald-600" />
+            <CardTitle className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                <div className="p-2 bg-emerald-50 rounded-lg">
+                    <Clock className="w-5 h-5 text-emerald-600" />
+                </div>
                 Pending Fulfillment
             </CardTitle>
-            <Badge variant="secondary" className="bg-emerald-50 text-emerald-700">
+            <Badge className="bg-emerald-50 text-emerald-700 border-emerald-100 rounded-lg px-2.5 py-1 text-xs font-bold">
                 {pendingFulfillmentOrders.length} Orders
             </Badge>
         </div>
       </CardHeader>
-      <CardContent className="p-0">
-        <Table>
-          <TableHeader className="bg-slate-50">
-            <TableRow>
-              <TableHead className="w-[100px]">Order ID</TableHead>
-              <TableHead>Customer</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Est. Delivery</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {pendingFulfillmentOrders.map((order) => (
-              <TableRow key={order.id} className="hover:bg-slate-50/50 transition-colors">
-                <TableCell className="font-mono text-xs font-medium text-slate-600">
-                    {order.id}
-                </TableCell>
-                <TableCell className="font-medium text-slate-900 text-sm">
-                    {order.customer}
-                    <div className="text-[10px] text-slate-400">Zone {order.zone}</div>
-                </TableCell>
-                <TableCell>
-                    <OrderStatusBadge status={order.status} />
-                </TableCell>
-                <TableCell className="text-right text-sm text-slate-600">
-                    {getDeliveryEstimate(order.date, order.zone)}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+      <CardContent className="px-0 pb-0">
+        <div className="overflow-x-auto">
+            <Table>
+              <TableHeader className="bg-slate-50/50 border-y border-slate-100">
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="w-[120px] px-8 py-4 font-bold text-slate-500 uppercase text-[10px] tracking-widest">Order ID</TableHead>
+                  <TableHead className="px-4 py-4 font-bold text-slate-500 uppercase text-[10px] tracking-widest">Customer</TableHead>
+                  <TableHead className="px-4 py-4 font-bold text-slate-500 uppercase text-[10px] tracking-widest">Status</TableHead>
+                  <TableHead className="text-right px-8 py-4 font-bold text-slate-500 uppercase text-[10px] tracking-widest">Est. Delivery</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pendingFulfillmentOrders.map((order) => (
+                  <TableRow key={order.id} className="hover:bg-slate-50/80 transition-colors border-slate-50">
+                    <TableCell className="font-mono text-xs font-bold text-slate-500 px-8 py-4">
+                        {order.id}
+                    </TableCell>
+                    <TableCell className="font-bold text-slate-900 text-sm px-4 py-4">
+                        {order.customer}
+                        <div className="text-[10px] text-slate-400 font-medium mt-0.5">Delivery Zone {order.zone}</div>
+                    </TableCell>
+                    <TableCell className="px-4 py-4">
+                        <OrderStatusBadge status={order.status} />
+                    </TableCell>
+                    <TableCell className="text-right text-sm text-slate-600 font-bold px-8 py-4">
+                        {getDeliveryEstimate(order.date, order.zone)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+        </div>
       </CardContent>
     </Card>
   );

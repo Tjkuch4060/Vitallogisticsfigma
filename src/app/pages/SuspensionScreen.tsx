@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from '../components/ui/button';
 import { AlertTriangle, FileText, ArrowLeft, RefreshCw } from 'lucide-react';
 import { useUser } from '../context/UserContext';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 export function SuspensionScreen() {
     const { licenseExpirationDate, renewLicense } = useUser();

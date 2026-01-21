@@ -1,6 +1,7 @@
 import React from 'react';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
+import { motion } from 'motion/react';
 import {
   Dialog,
   DialogContent,
@@ -35,16 +36,27 @@ export function LicenseStatus() {
             </div>
             
             <Badge className={`
-                text-white border-transparent shadow-sm px-2.5 py-1 flex items-center gap-1.5 transition-all group-hover:shadow-md group-hover:ring-2 group-hover:ring-offset-1
+                text-white border-transparent shadow-md rounded-full px-4 py-2 flex items-center gap-1.5 transition-all group-hover:shadow-lg group-hover:scale-105 relative overflow-hidden
                 ${isExpired 
-                    ? 'bg-red-600 hover:bg-red-700 group-hover:ring-red-100' 
+                    ? 'bg-red-600 hover:bg-red-700 animate-pulse' 
                     : daysRemaining < 30 
-                        ? 'bg-amber-500 hover:bg-amber-600 group-hover:ring-amber-100' 
-                        : 'bg-emerald-600 hover:bg-emerald-700 group-hover:ring-emerald-100'
+                        ? 'bg-amber-500 hover:bg-amber-600 animate-pulse' 
+                        : 'bg-emerald-600 hover:bg-emerald-700 ring-2 ring-emerald-500/20'
                 }
             `}>
-                <span className="font-medium">{isExpired ? 'Suspended' : 'Approved'}</span>
-                {isExpired ? <AlertTriangle className="w-3.5 h-3.5 fill-white text-red-600" /> : <CheckCircle className="w-3.5 h-3.5 fill-white text-emerald-600" />}
+                {!isExpired && daysRemaining >= 30 && (
+                    <motion.span 
+                        className="absolute inset-0 bg-white/10"
+                        animate={{ x: ['-100%', '100%'] }}
+                        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                    />
+                )}
+                <span className="font-bold relative z-10 uppercase tracking-wider text-[11px]">{isExpired ? 'Suspended' : 'Approved'}</span>
+                {isExpired ? (
+                    <AlertTriangle className="w-3.5 h-3.5 fill-white text-red-600 relative z-10" />
+                ) : (
+                    <CheckCircle className="w-3.5 h-3.5 fill-white text-emerald-600 relative z-10" />
+                )}
             </Badge>
         </div>
       </DialogTrigger>

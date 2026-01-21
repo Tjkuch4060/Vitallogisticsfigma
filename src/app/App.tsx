@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { QuickActions } from './components/QuickActions';
@@ -36,7 +36,7 @@ function Layout({ children }: { children: React.ReactNode }) {
 
   if (status === 'Suspended' && isBlockedPath) {
       return (
-        <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-emerald-100 selection:text-emerald-900">
+        <div className="min-h-screen font-sans text-slate-700 selection:bg-emerald-100 selection:text-emerald-900">
             <Navbar />
             <LicenseAlert />
             <main className="min-h-[calc(100vh-200px)]">
@@ -49,7 +49,7 @@ function Layout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-emerald-100 selection:text-emerald-900">
+    <div className="min-h-screen font-sans text-slate-700 selection:bg-emerald-100 selection:text-emerald-900">
       <Navbar />
       <LicenseAlert />
       <main className="min-h-[calc(100vh-200px)]">

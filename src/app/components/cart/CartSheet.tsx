@@ -6,7 +6,7 @@ import { ScrollArea } from '../ui/scroll-area';
 import { Lock, Trash2, Plus, Minus, ShoppingCart, ArrowRight, PackageOpen } from 'lucide-react';
 import { Separator } from '../ui/separator';
 import { DeliveryCalculator } from './DeliveryCalculator';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 export function CartSheet() {
   const { items, removeItem, updateQuantity, total, isOpen, setIsOpen } = useCart();

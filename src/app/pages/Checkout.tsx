@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Separator } from '../components/ui/separator';
 import { RadioGroup, RadioGroupItem } from '../components/ui/radio-group';
 import { Check, Truck, CreditCard, ShieldCheck, ArrowLeft, ArrowRight, MapPin, Package, Store, FileText } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import { motion } from 'motion/react';
 import { deliveryZones } from '../data/mockData';
 import { toast } from 'sonner';
