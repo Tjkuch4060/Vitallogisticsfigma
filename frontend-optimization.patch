@@ -1,0 +1,2375 @@
+diff --git a/.eslintrc.cjs b/.eslintrc.cjs
+new file mode 100644
+index 0000000..c220ec0
+--- /dev/null
++++ b/.eslintrc.cjs
+@@ -0,0 +1,24 @@
++module.exports = {
++  root: true,
++  env: { browser: true, es2020: true },
++  extends: [
++    'eslint:recommended',
++    'plugin:@typescript-eslint/recommended',
++    'plugin:react-hooks/recommended',
++  ],
++  ignorePatterns: ['dist', '.eslintrc.cjs'],
++  parser: '@typescript-eslint/parser',
++  plugins: ['react-refresh'],
++  rules: {
++    'react-refresh/only-export-components': [
++      'warn',
++      { allowConstantExport: true },
++    ],
++    '@typescript-eslint/no-explicit-any': 'error',
++    '@typescript-eslint/no-unused-vars': [
++      'warn',
++      { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
++    ],
++    'no-console': ['warn', { allow: ['warn', 'error'] }],
++  },
++};
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..759d4ef
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,43 @@
++# Logs
++logs
++*.log
++npm-debug.log*
++yarn-debug.log*
++yarn-error.log*
++pnpm-debug.log*
++lerna-debug.log*
++
++# Dependencies
++node_modules
++dist
++dist-ssr
++*.local
++
++# Editor directories and files
++.vscode/*
++!.vscode/extensions.json
++.idea
++.DS_Store
++*.suo
++*.ntvs*
++*.njsproj
++*.sln
++*.sw?
++
++# TypeScript
++*.tsbuildinfo
++
++# Environment variables
++.env
++.env.local
++.env.production.local
++.env.development.local
++.env.test.local
++
++# Testing
++coverage
++.nyc_output
++
++# Build
++build
++.cache
+diff --git a/package.json b/package.json
+index d2cca7c..7e66fcd 100644
+--- a/package.json
++++ b/package.json
+@@ -4,15 +4,13 @@
+   "version": "0.0.1",
+   "type": "module",
+   "scripts": {
+-    "build": "vite build",
+-    "dev": "vite"
++    "dev": "vite",
++    "build": "tsc && vite build",
++    "preview": "vite preview",
++    "type-check": "tsc --noEmit",
++    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+   },
+   "dependencies": {
+-    "@emotion/react": "11.14.0",
+-    "@emotion/styled": "11.14.1",
+-    "@mui/icons-material": "7.3.5",
+-    "@mui/material": "7.3.5",
+-    "@popperjs/core": "2.11.8",
+     "@radix-ui/react-accordion": "1.2.3",
+     "@radix-ui/react-alert-dialog": "1.1.6",
+     "@radix-ui/react-aspect-ratio": "1.1.2",
+@@ -52,22 +50,27 @@
+     "react-dnd": "16.0.1",
+     "react-dnd-html5-backend": "16.0.1",
+     "react-hook-form": "7.55.0",
+-    "react-popper": "2.3.0",
+     "react-resizable-panels": "2.1.7",
+     "react-responsive-masonry": "2.7.1",
+     "react-router": "7.11.0",
+-    "react-router-dom": "^7.11.0",
+-    "react-slick": "0.31.0",
++    "react-router-dom": "7.11.0",
+     "recharts": "2.15.2",
+     "sonner": "2.0.3",
+     "tailwind-merge": "3.2.0",
+-    "tw-animate-css": "1.3.8",
+     "vaul": "1.1.2"
+   },
+   "devDependencies": {
+     "@tailwindcss/vite": "4.1.12",
++    "@types/react": "^18.3.1",
++    "@types/react-dom": "^18.3.1",
++    "@typescript-eslint/eslint-plugin": "^8.18.2",
++    "@typescript-eslint/parser": "^8.18.2",
+     "@vitejs/plugin-react": "4.7.0",
++    "eslint": "^9.18.0",
++    "eslint-plugin-react-hooks": "^5.1.0",
++    "eslint-plugin-react-refresh": "^0.4.16",
+     "tailwindcss": "4.1.12",
++    "typescript": "^5.7.3",
+     "vite": "6.3.5"
+   },
+   "peerDependencies": {
+@@ -87,4 +90,4 @@
+       "vite": "6.3.5"
+     }
+   }
+-}
+\ No newline at end of file
++}
+diff --git a/src/app/App.tsx b/src/app/App.tsx
+index c11a0ef..c19768e 100644
+--- a/src/app/App.tsx
++++ b/src/app/App.tsx
+@@ -1,24 +1,32 @@
+-import React, { useState } from 'react';
++import React, { useState, lazy, Suspense } from 'react';
+ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router';
++import { X, Monitor } from 'lucide-react';
++import { DndProvider } from 'react-dnd';
++import { HTML5Backend } from 'react-dnd-html5-backend';
++
++// Eager-loaded components (needed immediately)
+ import { Navbar } from './components/Navbar';
+ import { Footer } from './components/Footer';
+ import { QuickActions } from './components/QuickActions';
+ import { Toaster } from './components/ui/sonner';
+-import { X, Monitor } from 'lucide-react';
+-import { DndProvider } from 'react-dnd';
+-import { HTML5Backend } from 'react-dnd-html5-backend';
+-import { LandingPage } from './pages/LandingPage';
+-import { Catalog } from './pages/Catalog';
+-import { Dashboard } from './pages/Dashboard';
+-import { Orders } from './pages/Orders';
+-import { OrderDetail } from './pages/OrderDetail';
+ import { CartProvider } from './context/CartContext';
+ import { CartSheet } from './components/cart/CartSheet';
+-import { Checkout } from './pages/Checkout';
+-import { DeliveryZones } from './pages/DeliveryZones';
+ import { UserProvider, useUser } from './context/UserContext';
+ import { LicenseAlert } from './components/LicenseAlert';
+-import { SuspensionScreen } from './pages/SuspensionScreen';
++import { LicenseStatus } from './types';
++
++// Loading component
++import { PageLoadingSpinner } from './components/ui/PageLoadingSpinner';
++
++// Lazy-loaded pages (loaded on demand)
++const LandingPage = lazy(() => import('./pages/LandingPage').then(m => ({ default: m.LandingPage })));
++const Catalog = lazy(() => import('./pages/Catalog').then(m => ({ default: m.Catalog })));
++const Dashboard = lazy(() => import('./pages/Dashboard').then(m => ({ default: m.Dashboard })));
++const Orders = lazy(() => import('./pages/Orders').then(m => ({ default: m.Orders })));
++const OrderDetail = lazy(() => import('./pages/OrderDetail').then(m => ({ default: m.OrderDetail })));
++const Checkout = lazy(() => import('./pages/Checkout').then(m => ({ default: m.Checkout })));
++const DeliveryZones = lazy(() => import('./pages/DeliveryZones').then(m => ({ default: m.DeliveryZones })));
++const SuspensionScreen = lazy(() => import('./pages/SuspensionScreen').then(m => ({ default: m.SuspensionScreen })));
+
+ function Layout({ children }: { children: React.ReactNode }) {
+   const [showBanner, setShowBanner] = useState(true);
+@@ -30,22 +38,22 @@ function Layout({ children }: { children: React.ReactNode }) {
+
+   // Suspension Guard
+   // Block critical ordering paths: Checkout
+-  // Note: Catalog is allowed but "Add to Cart" should be disabled (handled in component or just let them add but block checkout)
+-  // Let's block Checkout explicitly.
+   const isBlockedPath = location.pathname === '/checkout';
+
+-  if (status === 'Suspended' && isBlockedPath) {
+-      return (
+-        <div className="min-h-screen font-sans text-slate-700 selection:bg-emerald-100 selection:text-emerald-900">
+-            <Navbar />
+-            <LicenseAlert />
+-            <main className="min-h-[calc(100vh-200px)]">
+-                <SuspensionScreen />
+-            </main>
+-            <Toaster />
+-            {showFooter && <Footer />}
+-        </div>
+-      )
++  if (status === LicenseStatus.Suspended && isBlockedPath) {
++    return (
++      <div className="min-h-screen font-sans text-slate-700 selection:bg-emerald-100 selection:text-emerald-900">
++        <Navbar />
++        <LicenseAlert />
++        <main className="min-h-[calc(100vh-200px)]">
++          <Suspense fallback={<PageLoadingSpinner />}>
++            <SuspensionScreen />
++          </Suspense>
++        </main>
++        <Toaster />
++        {showFooter && <Footer />}
++      </div>
++    );
+   }
+
+   return (
+@@ -63,20 +71,23 @@ function Layout({ children }: { children: React.ReactNode }) {
+       {/* Preview Mode Banner */}
+       {showBanner && (
+         <div className="fixed bottom-0 left-0 w-full bg-orange-50 border-t border-orange-100 p-3 z-50 flex items-center justify-center gap-4 shadow-lg-up">
+-           <div className="flex items-center gap-2 text-sm text-orange-900/80">
+-              <span className="bg-orange-200/50 px-2 py-0.5 rounded text-orange-800 font-semibold flex items-center gap-1.5 border border-orange-200">
+-                <Monitor className="w-3.5 h-3.5" />
+-                Preview mode
+-              </span>
+-              <span className="hidden sm:inline">This page is not live and cannot be shared directly. Please publish to get a public link.</span>
+-              <span className="sm:hidden">Preview Mode Only</span>
+-           </div>
+-           <button
+-             onClick={() => setShowBanner(false)}
+-             className="text-orange-800/60 hover:text-orange-900 transition-colors"
+-           >
+-             <X className="w-4 h-4" />
+-           </button>
++          <div className="flex items-center gap-2 text-sm text-orange-900/80">
++            <span className="bg-orange-200/50 px-2 py-0.5 rounded text-orange-800 font-semibold flex items-center gap-1.5 border border-orange-200">
++              <Monitor className="w-3.5 h-3.5" />
++              Preview mode
++            </span>
++            <span className="hidden sm:inline">
++              This page is not live and cannot be shared directly. Please publish to get a public link.
++            </span>
++            <span className="sm:hidden">Preview Mode Only</span>
++          </div>
++          <button
++            onClick={() => setShowBanner(false)}
++            className="text-orange-800/60 hover:text-orange-900 transition-colors"
++            aria-label="Close preview banner"
++          >
++            <X className="w-4 h-4" />
++          </button>
+         </div>
+       )}
+     </div>
+@@ -88,25 +99,27 @@ export default function App() {
+     <DndProvider backend={HTML5Backend}>
+       <UserProvider>
+         <CartProvider>
+-            <Router>
++          <Router>
+             <Layout>
++              <Suspense fallback={<PageLoadingSpinner />}>
+                 <Routes>
+-                <Route path="/" element={<LandingPage />} />
+-                <Route path="/catalog" element={<Catalog />} />
+-                <Route path="/dashboard" element={<Dashboard />} />
+-                <Route path="/orders" element={<Orders />} />
+-                <Route path="/orders/:orderId" element={<OrderDetail />} />
+-                <Route path="/checkout" element={<Checkout />} />
+-                <Route path="/delivery-zones" element={<DeliveryZones />} />
+-                {/* Fallback routes for demo purposes */}
+-                <Route path="/retailers" element={<Dashboard />} />
+-                <Route path="/brands" element={<Dashboard />} />
+-                <Route path="/payouts" element={<Dashboard />} />
++                  <Route path="/" element={<LandingPage />} />
++                  <Route path="/catalog" element={<Catalog />} />
++                  <Route path="/dashboard" element={<Dashboard />} />
++                  <Route path="/orders" element={<Orders />} />
++                  <Route path="/orders/:orderId" element={<OrderDetail />} />
++                  <Route path="/checkout" element={<Checkout />} />
++                  <Route path="/delivery-zones" element={<DeliveryZones />} />
++                  {/* Fallback routes for demo purposes */}
++                  <Route path="/retailers" element={<Dashboard />} />
++                  <Route path="/brands" element={<Dashboard />} />
++                  <Route path="/payouts" element={<Dashboard />} />
+                 </Routes>
++              </Suspense>
+             </Layout>
+-            </Router>
++          </Router>
+         </CartProvider>
+       </UserProvider>
+     </DndProvider>
+   );
+-}
+\ No newline at end of file
++}
+diff --git a/src/app/components/LazyChart.tsx b/src/app/components/LazyChart.tsx
+new file mode 100644
+index 0000000..6f36070
+--- /dev/null
++++ b/src/app/components/LazyChart.tsx
+@@ -0,0 +1,68 @@
++import React, { lazy, Suspense } from 'react';
++import { LoadingSpinner } from './ui/PageLoadingSpinner';
++
++/**
++ * Lazy-loaded Recharts wrapper
++ * Charts are heavy, so we lazy load them to reduce initial bundle size
++ */
++
++// Lazy load Recharts components
++const RechartsComponents = lazy(() => import('recharts'));
++
++interface LazyBarChartProps {
++  data: any[];
++  dataKey: string;
++  xAxisKey: string;
++  height?: number;
++}
++
++export function LazyBarChart({ data, dataKey, xAxisKey, height = 350 }: LazyBarChartProps) {
++  return (
++    <Suspense fallback={<LoadingSpinner size="lg" />}>
++      <LazyBarChartInner
++        data={data}
++        dataKey={dataKey}
++        xAxisKey={xAxisKey}
++        height={height}
++      />
++    </Suspense>
++  );
++}
++
++// Inner component that actually uses Recharts
++function LazyBarChartInner({ data, dataKey, xAxisKey, height }: LazyBarChartProps) {
++  // Dynamic import handled by lazy() above
++  const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } =
++    require('recharts');
++
++  return (
++    <ResponsiveContainer width="100%" height={height}>
++      <BarChart data={data}>
++        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
++        <XAxis
++          dataKey={xAxisKey}
++          tick={{ fill: '#64748b', fontSize: 12 }}
++          stroke="#cbd5e1"
++        />
++        <YAxis
++          tick={{ fill: '#64748b', fontSize: 12 }}
++          stroke="#cbd5e1"
++        />
++        <Tooltip
++          contentStyle={{
++            backgroundColor: '#ffffff',
++            border: '1px solid #e2e8f0',
++            borderRadius: '8px',
++            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
++          }}
++          cursor={{ fill: '#f1f5f9' }}
++        />
++        <Bar
++          dataKey={dataKey}
++          fill="#10b981"
++          radius={[8, 8, 0, 0]}
++        />
++      </BarChart>
++    </ResponsiveContainer>
++  );
++}
+diff --git a/src/app/components/ui/PageLoadingSpinner.tsx b/src/app/components/ui/PageLoadingSpinner.tsx
+new file mode 100644
+index 0000000..5a4dd9c
+--- /dev/null
++++ b/src/app/components/ui/PageLoadingSpinner.tsx
+@@ -0,0 +1,50 @@
++import React from 'react';
++import { Loader2 } from 'lucide-react';
++
++/**
++ * Page Loading Spinner
++ * Shown while lazy-loaded routes are loading
++ */
++export function PageLoadingSpinner() {
++  return (
++    <div className="min-h-[calc(100vh-200px)] flex items-center justify-center">
++      <div className="text-center">
++        <Loader2 className="w-12 h-12 text-emerald-600 animate-spin mx-auto mb-4" />
++        <p className="text-slate-600 text-sm font-medium">Loading...</p>
++      </div>
++    </div>
++  );
++}
++
++/**
++ * Compact Loading Spinner
++ * For smaller loading states (modals, sections)
++ */
++export function LoadingSpinner({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
++  const sizeClasses = {
++    sm: 'w-4 h-4',
++    md: 'w-8 h-8',
++    lg: 'w-12 h-12',
++  };
++
++  return (
++    <div className="flex items-center justify-center p-4">
++      <Loader2 className={`${sizeClasses[size]} text-emerald-600 animate-spin`} />
++    </div>
++  );
++}
++
++/**
++ * Full Screen Loading Overlay
++ * For blocking operations
++ */
++export function LoadingOverlay({ message }: { message?: string }) {
++  return (
++    <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
++      <div className="text-center">
++        <Loader2 className="w-12 h-12 text-emerald-600 animate-spin mx-auto mb-4" />
++        {message && <p className="text-slate-700 font-medium">{message}</p>}
++      </div>
++    </div>
++  );
++}
+diff --git a/src/app/context/CartContext.tsx b/src/app/context/CartContext.tsx
+index c5fe0fb..3626af5 100644
+--- a/src/app/context/CartContext.tsx
++++ b/src/app/context/CartContext.tsx
+@@ -1,33 +1,14 @@
+-import React, { createContext, useContext, useState, useEffect } from 'react';
+-import { Product } from '../data/mockData';
++import React, { createContext, useContext, useState } from 'react';
++import type { Product, CartItem, CartContextValue } from '../types';
+ import { toast } from 'sonner';
+
+-export interface CartItem {
+-  product: Product;
+-  quantity: number;
+-  addedAt: number; // Timestamp for Price Lock
+-  lockedPrice: number; // The price at the time of adding
+-}
+-
+-interface CartContextType {
+-  items: CartItem[];
+-  addItem: (product: Product) => void;
+-  addItems: (items: { product: Product; quantity: number }[]) => void;
+-  removeItem: (productId: string) => void;
+-  updateQuantity: (productId: string, quantity: number) => void;
+-  clearCart: () => void;
+-  isOpen: boolean;
+-  setIsOpen: (isOpen: boolean) => void;
+-  total: number;
+-}
+-
+-const CartContext = createContext<CartContextType | undefined>(undefined);
++const CartContext = createContext<CartContextValue | undefined>(undefined);
+
+ export function CartProvider({ children }: { children: React.ReactNode }) {
+   const [items, setItems] = useState<CartItem[]>([]);
+   const [isOpen, setIsOpen] = useState(false);
+
+-  const addItem = (product: Product) => {
++  const addItem = (product: Product, quantity: number = 1): void => {
+     if (product.stock === 0) {
+       toast.error(`Sorry, ${product.name} is out of stock.`);
+       return;
+@@ -36,30 +17,34 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
+     setItems((prev) => {
+       const existing = prev.find((item) => item.product.id === product.id);
+       if (existing) {
+-        if (existing.quantity >= product.stock) {
++        if (existing.quantity + quantity > product.stock) {
+           toast.error(`Only ${product.stock} units available for ${product.name}`);
+-          return prev;
++          return prev.map((item) =>
++            item.product.id === product.id
++              ? { ...item, quantity: product.stock }
++              : item
++          );
+         }
+
+         toast.success(`Updated quantity for ${product.name}`);
+         return prev.map((item) =>
+           item.product.id === product.id
+-            ? { ...item, quantity: item.quantity + 1 }
++            ? { ...item, quantity: item.quantity + quantity }
+             : item
+         );
+       }
+       toast.success(`Added ${product.name} to cart`);
+-      return [...prev, {
+-        product,
+-        quantity: 1,
++      return [...prev, {
++        product,
++        quantity,
+         addedAt: Date.now(),
+-        lockedPrice: product.price
++        lockedPrice: product.price
+       }];
+     });
+     setIsOpen(true);
+   };
+
+-  const addItems = (newItems: { product: Product; quantity: number }[]) => {
++  const bulkAdd = (newItems: Array<{ product: Product; quantity: number }>): void => {
+     let addedCount = 0;
+     let outOfStockCount = 0;
+     let partialStockCount = 0;
+@@ -73,48 +58,48 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
+
+         // Check availability
+         if (product.stock === 0) {
+-            outOfStockCount++;
+-            return;
++          outOfStockCount++;
++          return;
+         }
+
+         const existingIndex = currentItems.findIndex((item) => item.product.id === product.id);
+-
++
+         if (existingIndex >= 0) {
+-            // Update existing
+-            const currentQty = currentItems[existingIndex].quantity;
+-            const availableStock = product.stock - currentQty;
+-
+-            if (availableStock <= 0) {
+-                outOfStockCount++; // Already at max in cart
+-                return;
+-            }
+-
+-            const quantityToAdd = Math.min(quantity, availableStock);
+-            if (quantityToAdd < quantity) {
+-                partialStockCount++;
+-            } else {
+-                addedCount++;
+-            }
+-
+-            currentItems[existingIndex] = {
+-                ...currentItems[existingIndex],
+-                quantity: currentQty + quantityToAdd
+-            };
++          // Update existing
++          const currentQty = currentItems[existingIndex]!.quantity;
++          const availableStock = product.stock - currentQty;
++
++          if (availableStock <= 0) {
++            outOfStockCount++; // Already at max in cart
++            return;
++          }
++
++          const quantityToAdd = Math.min(quantity, availableStock);
++          if (quantityToAdd < quantity) {
++            partialStockCount++;
++          } else {
++            addedCount++;
++          }
++
++          currentItems[existingIndex] = {
++            ...currentItems[existingIndex]!,
++            quantity: currentQty + quantityToAdd
++          };
+         } else {
+-            // Add new
+-            const quantityToAdd = Math.min(quantity, product.stock);
+-            if (quantityToAdd < quantity) {
+-                partialStockCount++;
+-            } else {
+-                addedCount++;
+-            }
+-
+-            currentItems.push({
+-                product,
+-                quantity: quantityToAdd,
+-                addedAt: Date.now(),
+-                lockedPrice: product.price
+-            });
++          // Add new
++          const quantityToAdd = Math.min(quantity, product.stock);
++          if (quantityToAdd < quantity) {
++            partialStockCount++;
++          } else {
++            addedCount++;
++          }
++
++          currentItems.push({
++            product,
++            quantity: quantityToAdd,
++            addedAt: Date.now(),
++            lockedPrice: product.price
++          });
+         }
+       });
+
+@@ -122,23 +107,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
+     });
+
+     if (addedCount > 0 || partialStockCount > 0) {
+-        const msg = partialStockCount > 0
+-            ? `Added items to cart (some quantities adjusted due to stock)`
+-            : `Successfully added ${addedCount} items to cart`;
+-        toast.success(msg);
+-        setIsOpen(true);
++      const msg = partialStockCount > 0
++        ? `Added items to cart (some quantities adjusted due to stock)`
++        : `Successfully added ${addedCount} items to cart`;
++      toast.success(msg);
++      setIsOpen(true);
+     }
+
+     if (outOfStockCount > 0) {
+-        toast.error(`${outOfStockCount} items were out of stock or at limit`);
++      toast.error(`${outOfStockCount} items were out of stock or at limit`);
+     }
+   };
+
+-  const removeItem = (productId: string) => {
++  const removeItem = (productId: string): void => {
+     setItems((prev) => prev.filter((item) => item.product.id !== productId));
+   };
+
+-  const updateQuantity = (productId: string, quantity: number) => {
++  const updateQuantity = (productId: string, quantity: number): void => {
+     if (quantity <= 0) {
+       removeItem(productId);
+       return;
+@@ -160,21 +145,66 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
+     });
+   };
+
+-  const clearCart = () => setItems([]);
++  const clearCart = (): void => {
++    setItems([]);
++  };
++
++  const hasItem = (productId: string): boolean => {
++    return items.some(item => item.product.id === productId);
++  };
+
+   const total = items.reduce((sum, item) => sum + (item.lockedPrice * item.quantity), 0);
++  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
++
++  const value: CartContextValue = {
++    items,
++    addItem,
++    removeItem,
++    updateQuantity,
++    bulkAdd,
++    clearCart,
++    total,
++    itemCount,
++    hasItem
++  };
+
+   return (
+-    <CartContext.Provider value={{ items, addItem, addItems, removeItem, updateQuantity, clearCart, isOpen, setIsOpen, total }}>
++    <CartContext.Provider value={value}>
+       {children}
+     </CartContext.Provider>
+   );
+ }
+
+-export function useCart() {
++export function useCart(): CartContextValue {
+   const context = useContext(CartContext);
+   if (context === undefined) {
+     throw new Error('useCart must be used within a CartProvider');
+   }
+   return context;
+ }
++
++// Separate hook for cart sheet state (UI concern)
++interface CartSheetContextValue {
++  isOpen: boolean;
++  setIsOpen: (isOpen: boolean) => void;
++}
++
++const CartSheetContext = createContext<CartSheetContextValue | undefined>(undefined);
++
++export function CartSheetProvider({ children }: { children: React.ReactNode }) {
++  const [isOpen, setIsOpen] = useState(false);
++
++  return (
++    <CartSheetContext.Provider value={{ isOpen, setIsOpen }}>
++      {children}
++    </CartSheetContext.Provider>
++  );
++}
++
++export function useCartSheet(): CartSheetContextValue {
++  const context = useContext(CartSheetContext);
++  if (context === undefined) {
++    throw new Error('useCartSheet must be used within a CartSheetProvider');
++  }
++  return context;
++}
+diff --git a/src/app/context/UserContext.tsx b/src/app/context/UserContext.tsx
+index 303488f..f4889f7 100644
+--- a/src/app/context/UserContext.tsx
++++ b/src/app/context/UserContext.tsx
+@@ -1,6 +1,5 @@
+ import React, { createContext, useContext, useState, useEffect } from 'react';
+-
+-type LicenseStatus = 'Active' | 'Suspended' | 'Expired';
++import { LicenseStatus } from '../types';
+
+ interface UserContextType {
+     licenseExpirationDate: Date;
+@@ -16,32 +15,32 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
+     // Default to a date > 30 days in the future for "Happy Path"
+     // Mock: January 7, 2026 -> Set to April 1, 2026 (~84 days)
+     const [expirationDate, setExpirationDate] = useState<Date>(new Date('2026-04-01'));
+-    const [status, setStatus] = useState<LicenseStatus>('Active');
++    const [status, setStatus] = useState<LicenseStatus>(LicenseStatus.Active);
+
+-    const calculateDays = (date: Date) => {
++    const calculateDays = (date: Date): number => {
+         const today = new Date();
+         const diffTime = date.getTime() - today.getTime();
+-        return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
++        return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+     };
+
+     const daysRemaining = calculateDays(expirationDate);
+
+     useEffect(() => {
+         if (daysRemaining <= 0) {
+-            setStatus('Expired');
+-        } else if (status === 'Expired' && daysRemaining > 0) {
+-            setStatus('Active');
++            setStatus(LicenseStatus.Expired);
++        } else if (status === LicenseStatus.Expired && daysRemaining > 0) {
++            setStatus(LicenseStatus.Active);
+         }
+     }, [daysRemaining, status]);
+
+-    const renewLicense = () => {
++    const renewLicense = (): void => {
+         const newDate = new Date();
+         newDate.setFullYear(newDate.getFullYear() + 1);
+         setExpirationDate(newDate);
+-        setStatus('Active');
++        setStatus(LicenseStatus.Active);
+     };
+
+-    const simulateExpiration = () => {
++    const simulateExpiration = (): void => {
+         // Set to yesterday
+         const yesterday = new Date();
+         yesterday.setDate(yesterday.getDate() - 1);
+@@ -49,9 +48,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
+     };
+
+     return (
+-        <UserContext.Provider value={{
+-            licenseExpirationDate: expirationDate,
+-            status: daysRemaining <= 0 ? 'Suspended' : status, // Auto-suspend if expired
++        <UserContext.Provider value={{
++            licenseExpirationDate: expirationDate,
++            status: daysRemaining <= 0 ? LicenseStatus.Suspended : status, // Auto-suspend if expired
+             daysRemaining,
+             renewLicense,
+             simulateExpiration
+@@ -61,7 +60,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
+     );
+ }
+
+-export function useUser() {
++export function useUser(): UserContextType {
+     const context = useContext(UserContext);
+     if (context === undefined) {
+         throw new Error('useUser must be used within a UserProvider');
+diff --git a/src/app/data/mockData.ts b/src/app/data/mockData.ts
+index e6cf26b..fccd829 100644
+--- a/src/app/data/mockData.ts
++++ b/src/app/data/mockData.ts
+@@ -1,41 +1,6 @@
+ // Mock Data for VitalLogistics Portal
+-
+-export type Product = {
+-  id: string;
+-  sku: string;
+-  name: string;
+-  brand: string;
+-  price: number;
+-  category: string;
+-  image: string;
+-  stock: number;
+-  rating: number;
+-  thc: number; // in mg
+-  description?: string;
+-  batchNumber?: string;
+-  coaLink?: string;
+-};
+-
+-export type Order = {
+-  id: string;
+-  customer: string;
+-  date: string;
+-  status: 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Paid' | 'Picking' | 'Packed';
+-  total: number;
+-  items: number;
+-  zone?: number;
+-};
+-
+-export interface DeliveryZone {
+-    id: string;
+-    name: string;
+-    zoneId: number; // For mapping to Order.zone
+-    color: string;
+-    baseFee: number;
+-    freeThreshold: number;
+-    days: string[]; // ['Mon', 'Tue', etc.]
+-    description: string;
+-}
++import type { Product, Order, DeliveryZone, OrderStatus } from '../types';
++import { OrderStatus as OrderStatusEnum } from '../types';
+
+ export const deliveryZones: DeliveryZone[] = [
+     {
+@@ -194,19 +159,19 @@ export const products: Product[] = [
+ ];
+
+ export const recentOrders: Order[] = [
+-  { id: 'ORD-7829', customer: 'Wellness Corner', date: '2023-10-25', status: 'Delivered', total: 1250.00, items: 45, zone: 1 },
+-  { id: 'ORD-7830', customer: 'Green Haven Dispensary', date: '2023-10-26', status: 'Processing', total: 840.50, items: 28, zone: 2 },
+-  { id: 'ORD-7831', customer: 'Natural Vibes', date: '2023-10-26', status: 'Pending', total: 2100.00, items: 112, zone: 3 },
+-  { id: 'ORD-7832', customer: 'Hemp City', date: '2023-10-27', status: 'Shipped', total: 560.00, items: 15, zone: 1 },
+-  { id: 'ORD-7833', customer: 'Urban Leaf', date: '2023-10-27', status: 'Pending', total: 920.00, items: 32, zone: 2 },
++  { id: 'ORD-7829', customer: 'Wellness Corner', date: '2023-10-25', status: OrderStatusEnum.Delivered, total: 1250.00, items: 45, zone: 1 },
++  { id: 'ORD-7830', customer: 'Green Haven Dispensary', date: '2023-10-26', status: OrderStatusEnum.Processing, total: 840.50, items: 28, zone: 2 },
++  { id: 'ORD-7831', customer: 'Natural Vibes', date: '2023-10-26', status: OrderStatusEnum.Pending, total: 2100.00, items: 112, zone: 3 },
++  { id: 'ORD-7832', customer: 'Hemp City', date: '2023-10-27', status: OrderStatusEnum.Shipped, total: 560.00, items: 15, zone: 1 },
++  { id: 'ORD-7833', customer: 'Urban Leaf', date: '2023-10-27', status: OrderStatusEnum.Pending, total: 920.00, items: 32, zone: 2 },
+ ];
+
+ export const pendingFulfillmentOrders: Order[] = [
+-    { id: 'ORD-7834', customer: 'CannaLife', date: '2023-10-28', status: 'Paid', total: 1500.00, items: 60, zone: 1 },
+-    { id: 'ORD-7835', customer: 'Herbal Essence', date: '2023-10-28', status: 'Picking', total: 2300.00, items: 85, zone: 3 },
+-    { id: 'ORD-7836', customer: 'Green Giant', date: '2023-10-28', status: 'Packed', total: 800.00, items: 25, zone: 2 },
+-    { id: 'ORD-7837', customer: 'Nature\'s Best', date: '2023-10-29', status: 'Paid', total: 3200.00, items: 150, zone: 1 },
+-    { id: 'ORD-7838', customer: 'Hemp Works', date: '2023-10-29', status: 'Picking', total: 1100.00, items: 40, zone: 2 },
++    { id: 'ORD-7834', customer: 'CannaLife', date: '2023-10-28', status: OrderStatusEnum.Paid, total: 1500.00, items: 60, zone: 1 },
++    { id: 'ORD-7835', customer: 'Herbal Essence', date: '2023-10-28', status: OrderStatusEnum.Picking, total: 2300.00, items: 85, zone: 3 },
++    { id: 'ORD-7836', customer: 'Green Giant', date: '2023-10-28', status: OrderStatusEnum.Packed, total: 800.00, items: 25, zone: 2 },
++    { id: 'ORD-7837', customer: 'Nature\'s Best', date: '2023-10-29', status: OrderStatusEnum.Paid, total: 3200.00, items: 150, zone: 1 },
++    { id: 'ORD-7838', customer: 'Hemp Works', date: '2023-10-29', status: OrderStatusEnum.Picking, total: 1100.00, items: 40, zone: 2 },
+ ];
+
+ export const salesData = [
+diff --git a/src/app/hooks/useOptimized.ts b/src/app/hooks/useOptimized.ts
+new file mode 100644
+index 0000000..c632e4c
+--- /dev/null
++++ b/src/app/hooks/useOptimized.ts
+@@ -0,0 +1,81 @@
++import { useCallback, useMemo, useRef, useEffect } from 'react';
++
++/**
++ * Performance optimization hooks
++ */
++
++/**
++ * Stable callback that doesn't change between renders
++ * Use this for event handlers passed to child components
++ */
++export function useStableCallback<T extends (...args: any[]) => any>(
++  callback: T
++): T {
++  const callbackRef = useRef(callback);
++
++  useEffect(() => {
++    callbackRef.current = callback;
++  });
++
++  return useCallback(((...args) => {
++    return callbackRef.current(...args);
++  }) as T, []);
++}
++
++/**
++ * Debounced value
++ * Updates the value only after the specified delay
++ */
++export function useDebounce<T>(value: T, delay: number = 300): T {
++  const [debouncedValue, setDebouncedValue] = useState(value);
++
++  useEffect(() => {
++    const handler = setTimeout(() => {
++      setDebouncedValue(value);
++    }, delay);
++
++    return () => clearTimeout(handler);
++  }, [value, delay]);
++
++  return debouncedValue;
++}
++
++/**
++ * Previous value hook
++ * Returns the value from the previous render
++ */
++export function usePrevious<T>(value: T): T | undefined {
++  const ref = useRef<T>();
++
++  useEffect(() => {
++    ref.current = value;
++  }, [value]);
++
++  return ref.current;
++}
++
++/**
++ * Mount detection
++ * Returns true only on first render
++ */
++export function useIsFirstRender(): boolean {
++  const isFirst = useRef(true);
++
++  if (isFirst.current) {
++    isFirst.current = false;
++    return true;
++  }
++
++  return false;
++}
++
++/**
++ * Lazy initialization
++ * Only computes value once on first render
++ */
++export function useLazyMemo<T>(factory: () => T): T {
++  return useMemo(factory, []); // eslint-disable-line react-hooks/exhaustive-deps
++}
++
++// Fix import
++import { useState } from 'react';
+diff --git a/src/app/hooks/usePrefetch.ts b/src/app/hooks/usePrefetch.ts
+new file mode 100644
+index 0000000..b7bb6b9
+--- /dev/null
++++ b/src/app/hooks/usePrefetch.ts
+@@ -0,0 +1,62 @@
++import { useEffect } from 'react';
++
++/**
++ * Prefetch routes on link hover
++ * Improves perceived performance by loading routes before navigation
++ */
++
++type RouteModule = () => Promise<any>;
++
++const routeModules: Record<string, RouteModule> = {
++  '/catalog': () => import('../pages/Catalog'),
++  '/dashboard': () => import('../pages/Dashboard'),
++  '/orders': () => import('../pages/Orders'),
++  '/checkout': () => import('../pages/Checkout'),
++  '/delivery-zones': () => import('../pages/DeliveryZones'),
++};
++
++/**
++ * Prefetch a route when user hovers over a link
++ * Usage: Add onMouseEnter={prefetchRoute('/catalog')} to links
++ */
++export function prefetchRoute(path: string) {
++  return () => {
++    const moduleLoader = routeModules[path];
++    if (moduleLoader) {
++      moduleLoader();
++    }
++  };
++}
++
++/**
++ * Hook to automatically prefetch high-priority routes on idle
++ * Prefetches catalog and dashboard after initial page load
++ */
++export function usePrefetchCriticalRoutes() {
++  useEffect(() => {
++    // Wait for page to be idle before prefetching
++    if ('requestIdleCallback' in window) {
++      requestIdleCallback(() => {
++        // Prefetch high-traffic routes
++        import('../pages/Catalog');
++        import('../pages/Dashboard');
++      }, { timeout: 2000 });
++    } else {
++      // Fallback for browsers without requestIdleCallback
++      setTimeout(() => {
++        import('../pages/Catalog');
++        import('../pages/Dashboard');
++      }, 2000);
++    }
++  }, []);
++}
++
++/**
++ * Preload images on hover
++ */
++export function preloadImage(src: string) {
++  return () => {
++    const img = new Image();
++    img.src = src;
++  };
++}
+diff --git a/src/app/types/index.ts b/src/app/types/index.ts
+new file mode 100644
+index 0000000..ab34b23
+--- /dev/null
++++ b/src/app/types/index.ts
+@@ -0,0 +1,393 @@
++/**
++ * Core Type Definitions for VitalLogistics B2B Portal
++ * Centralized type system for better type safety and maintainability
++ */
++
++// ============================================================================
++// ENUMS
++// ============================================================================
++
++export enum LicenseStatus {
++  Active = 'Active',
++  Suspended = 'Suspended',
++  Expired = 'Expired',
++  PendingApproval = 'PendingApproval'
++}
++
++export enum OrderStatus {
++  Pending = 'Pending',
++  Processing = 'Processing',
++  Shipped = 'Shipped',
++  Delivered = 'Delivered',
++  Paid = 'Paid',
++  Picking = 'Picking',
++  Packed = 'Packed'
++}
++
++export enum DeliveryMethod {
++  Delivery = 'delivery',
++  Pickup = 'pickup'
++}
++
++export enum PaymentMethod {
++  Card = 'card',
++  Invoice = 'invoice',
++  Net30 = 'net30'
++}
++
++// ============================================================================
++// PRODUCT TYPES
++// ============================================================================
++
++export interface Product {
++  id: string;
++  sku: string;
++  name: string;
++  brand: string;
++  price: number;
++  category: string;
++  image: string;
++  stock: number;
++  rating: number;
++  thc: number; // THC content in mg
++  description?: string;
++  batchNumber?: string;
++  coaLink?: string; // Certificate of Analysis link
++}
++
++export type ProductCategory =
++  | 'Tinctures'
++  | 'Edibles'
++  | 'Topicals'
++  | 'Vapes'
++  | 'Capsules'
++  | 'Flower'
++  | 'Beverages';
++
++// ============================================================================
++// CART TYPES
++// ============================================================================
++
++export interface CartItem {
++  product: Product;
++  quantity: number;
++  addedAt: number; // timestamp
++  lockedPrice: number; // Price at time of adding to cart
++}
++
++export interface CartContextValue {
++  items: CartItem[];
++  addItem: (product: Product, quantity?: number) => void;
++  removeItem: (productId: string) => void;
++  updateQuantity: (productId: string, quantity: number) => void;
++  bulkAdd: (items: Array<{ product: Product; quantity: number }>) => void;
++  clearCart: () => void;
++  total: number;
++  itemCount: number;
++  hasItem: (productId: string) => boolean;
++}
++
++// ============================================================================
++// ORDER TYPES
++// ============================================================================
++
++export interface Order {
++  id: string;
++  customer: string;
++  date: string;
++  status: OrderStatus;
++  total: number;
++  items: number;
++  zone?: number;
++}
++
++export interface OrderItem {
++  product: Product;
++  quantity: number;
++  priceAtPurchase: number;
++}
++
++export interface OrderDetail extends Order {
++  items: OrderItem[];
++  shippingAddress: Address;
++  billingAddress?: Address;
++  deliveryMethod: DeliveryMethod;
++  paymentMethod: PaymentMethod;
++  subtotal: number;
++  deliveryFee: number;
++  tax: number;
++  trackingNumber?: string;
++  estimatedDelivery?: string;
++  notes?: string;
++}
++
++// ============================================================================
++// ADDRESS TYPES
++// ============================================================================
++
++export interface Address {
++  name: string;
++  company: string;
++  email: string;
++  phone: string;
++  address: string;
++  addressLine2?: string;
++  city: string;
++  state: string;
++  zip: string;
++}
++
++// ============================================================================
++// DELIVERY TYPES
++// ============================================================================
++
++export interface DeliveryZone {
++  id: string;
++  name: string;
++  zoneId: number;
++  color: string;
++  baseFee: number;
++  freeThreshold: number; // Free shipping threshold
++  days: string[]; // Delivery days e.g., ['Mon', 'Wed', 'Fri']
++  description: string;
++}
++
++export interface DeliveryCalculation {
++  name: string;
++  fee: number;
++  date: string;
++  isFree: boolean;
++  threshold: number;
++}
++
++// ============================================================================
++// USER TYPES
++// ============================================================================
++
++export interface User {
++  id: string;
++  email: string;
++  name: string;
++  company: string;
++  role: UserRole;
++  licenseStatus: LicenseStatus;
++  licenseExpiration: Date;
++  createdAt: Date;
++  permissions: Permission[];
++}
++
++export enum UserRole {
++  Admin = 'admin',
++  Customer = 'customer',
++  Viewer = 'viewer'
++}
++
++export enum Permission {
++  ViewCatalog = 'view:catalog',
++  PlaceOrders = 'place:orders',
++  ViewOrders = 'view:orders',
++  ViewDashboard = 'view:dashboard',
++  ManageUsers = 'manage:users',
++  ApproveLicenses = 'approve:licenses'
++}
++
++export interface UserContextValue {
++  user: User | null;
++  status: LicenseStatus;
++  expirationDate: Date;
++  daysRemaining: number;
++  setExpirationDate: (date: Date) => void;
++  setStatus: (status: LicenseStatus) => void;
++}
++
++// ============================================================================
++// FILTER TYPES
++// ============================================================================
++
++export interface FilterState {
++  categories: string[];
++  brands: string[];
++  priceRange: [number, number];
++  thcRange: [number, number];
++  inStockOnly: boolean;
++  searchQuery?: string;
++}
++
++export type SortOption =
++  | 'name-asc'
++  | 'name-desc'
++  | 'price-asc'
++  | 'price-desc'
++  | 'rating-desc'
++  | 'stock-asc';
++
++// ============================================================================
++// DASHBOARD TYPES
++// ============================================================================
++
++export interface KPIData {
++  id: string;
++  title: string;
++  value: string;
++  change: number;
++  trend: 'up' | 'down';
++  icon: string;
++}
++
++export interface ChartDataPoint {
++  name: string;
++  sales: number;
++  date?: string;
++}
++
++export interface DashboardFilters {
++  startDate: Date;
++  endDate: Date;
++  compareMode?: boolean;
++}
++
++// ============================================================================
++// LICENSE TYPES
++// ============================================================================
++
++export interface LicenseApprovalRequest {
++  id: string;
++  retailerName: string;
++  licenseNumber: string;
++  state: string;
++  submittedDate: string;
++  documentUrl: string;
++  status: 'pending' | 'approved' | 'rejected';
++}
++
++// ============================================================================
++// FORM TYPES
++// ============================================================================
++
++export interface CheckoutFormData {
++  // Contact Information
++  name: string;
++  company: string;
++  email: string;
++  phone: string;
++
++  // Shipping Address
++  address: string;
++  addressLine2?: string;
++  city: string;
++  state: string;
++  zip: string;
++
++  // Delivery Options
++  deliveryMethod: DeliveryMethod;
++  deliveryInstructions?: string;
++
++  // Payment
++  paymentMethod: PaymentMethod;
++
++  // Terms
++  acceptedTerms: boolean;
++}
++
++export interface ProductFiltersFormData {
++  categories: string[];
++  brands: string[];
++  priceMin: number;
++  priceMax: number;
++  thcMin: number;
++  thcMax: number;
++  inStockOnly: boolean;
++}
++
++// ============================================================================
++// API TYPES (for future backend integration)
++// ============================================================================
++
++export interface APIResponse<T> {
++  data: T;
++  message?: string;
++  error?: string;
++}
++
++export interface PaginatedResponse<T> {
++  data: T[];
++  page: number;
++  pageSize: number;
++  total: number;
++  totalPages: number;
++}
++
++export interface APIError {
++  message: string;
++  code: string;
++  details?: Record<string, unknown>;
++}
++
++// ============================================================================
++// UTILITY TYPES
++// ============================================================================
++
++export type Nullable<T> = T | null;
++export type Optional<T> = T | undefined;
++export type ID = string;
++export type Timestamp = number;
++
++// Make all properties optional
++export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
++
++// Make specific properties required
++export type RequireBy<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
++
++// ============================================================================
++// COMPONENT PROP TYPES
++// ============================================================================
++
++export interface BaseComponentProps {
++  className?: string;
++  children?: React.ReactNode;
++}
++
++export interface ProductCardProps extends BaseComponentProps {
++  product: Product;
++  onAddToCart?: (product: Product) => void;
++  onQuickView?: (product: Product) => void;
++  variant?: 'grid' | 'list';
++}
++
++export interface OrderRowProps {
++  order: Order;
++  onClick?: (order: Order) => void;
++}
++
++export interface KPICardProps {
++  title: string;
++  value: string | number;
++  change?: number;
++  trend?: 'up' | 'down';
++  icon?: React.ComponentType<{ className?: string }>;
++  loading?: boolean;
++}
++
++// ============================================================================
++// CONSTANTS TYPE EXPORTS
++// ============================================================================
++
++export const PRODUCT_CATEGORIES = [
++  'Tinctures',
++  'Edibles',
++  'Topicals',
++  'Vapes',
++  'Capsules',
++  'Flower',
++  'Beverages'
++] as const;
++
++export const US_STATES = [
++  'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
++  'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
++  'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
++  'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
++  'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
++] as const;
++
++export type USState = typeof US_STATES[number];
+diff --git a/src/app/utils/constants.ts b/src/app/utils/constants.ts
+new file mode 100644
+index 0000000..6141fe6
+--- /dev/null
++++ b/src/app/utils/constants.ts
+@@ -0,0 +1,195 @@
++/**
++ * Application Constants
++ * Centralized configuration values to avoid magic numbers and strings
++ */
++
++// ============================================================================
++// DELIVERY ZONES
++// ============================================================================
++
++export const ZIP_TO_ZONE_MAPPINGS = [
++  { minZip: 55400, maxZip: 55499, zoneId: 1, name: 'Metro Core' },
++  { minZip: 55300, maxZip: 55399, zoneId: 2, name: 'Greater Metro' },
++  // Default to regional zone for all other ZIP codes
++  { minZip: 0, maxZip: 99999, zoneId: 3, name: 'Regional' },
++] as const;
++
++export const DELIVERY_PROCESSING_DAYS = 1;
++
++// ============================================================================
++// STOCK THRESHOLDS
++// ============================================================================
++
++export const STOCK_LEVELS = {
++  OUT_OF_STOCK: 0,
++  LOW_STOCK_THRESHOLD: 20,
++} as const;
++
++// ============================================================================
++// LICENSE STATUS
++// ============================================================================
++
++export const LICENSE_WARNING_THRESHOLDS = {
++  CRITICAL: 7, // Days remaining for critical warning
++  WARNING: 30, // Days remaining for warning
++} as const;
++
++// ============================================================================
++// PRICE FORMATTING
++// ============================================================================
++
++export const CURRENCY_CONFIG = {
++  locale: 'en-US',
++  currency: 'USD',
++  minimumFractionDigits: 2,
++  maximumFractionDigits: 2,
++} as const;
++
++// ============================================================================
++// PAGINATION
++// ============================================================================
++
++export const PAGINATION_DEFAULTS = {
++  PRODUCTS_PER_PAGE: 12,
++  ORDERS_PER_PAGE: 10,
++  ITEMS_PER_PAGE: 20,
++} as const;
++
++// ============================================================================
++// VALIDATION
++// ============================================================================
++
++export const VALIDATION_RULES = {
++  MIN_NAME_LENGTH: 2,
++  MAX_NAME_LENGTH: 100,
++  MIN_COMPANY_LENGTH: 2,
++  MAX_COMPANY_LENGTH: 200,
++  PHONE_REGEX: /^\d{10}$/,
++  ZIP_REGEX: /^\d{5}$/,
++  STATE_LENGTH: 2,
++  MAX_DESCRIPTION_LENGTH: 500,
++} as const;
++
++// ============================================================================
++// TIMEOUTS & DEBOUNCING
++// ============================================================================
++
++export const TIMING = {
++  SEARCH_DEBOUNCE_MS: 300,
++  TOAST_DURATION_MS: 3000,
++  LOADING_SIMULATION_MS: 800,
++  ANIMATION_DURATION_MS: 200,
++} as const;
++
++// ============================================================================
++// ROUTES
++// ============================================================================
++
++export const ROUTES = {
++  HOME: '/',
++  CATALOG: '/catalog',
++  DASHBOARD: '/dashboard',
++  ORDERS: '/orders',
++  ORDER_DETAIL: (id: string) => `/orders/${id}`,
++  CHECKOUT: '/checkout',
++  DELIVERY_ZONES: '/delivery-zones',
++  RETAILERS: '/retailers',
++  BRANDS: '/brands',
++  PAYOUTS: '/payouts',
++} as const;
++
++// ============================================================================
++// LOCAL STORAGE KEYS
++// ============================================================================
++
++export const STORAGE_KEYS = {
++  CART: 'vital-cart',
++  USER_PREFERENCES: 'vital-user-prefs',
++  DASHBOARD_LAYOUT: 'vital-dashboard-layout',
++  THEME: 'vital-theme',
++  TOUR_COMPLETED: 'vital-tour-completed',
++} as const;
++
++// ============================================================================
++// API ENDPOINTS (for future backend integration)
++// ============================================================================
++
++export const API_ENDPOINTS = {
++  // Products
++  PRODUCTS: '/api/products',
++  PRODUCT_DETAIL: (id: string) => `/api/products/${id}`,
++  PRODUCT_COA: (id: string) => `/api/products/${id}/coa`,
++
++  // Cart
++  CART: '/api/cart',
++  CART_ITEMS: '/api/cart/items',
++  CART_ITEM: (id: string) => `/api/cart/items/${id}`,
++
++  // Orders
++  ORDERS: '/api/orders',
++  ORDER_DETAIL: (id: string) => `/api/orders/${id}`,
++  ORDER_STATUS: (id: string) => `/api/orders/${id}/status`,
++
++  // Delivery
++  DELIVERY_CALCULATE: '/api/delivery/calculate',
++  DELIVERY_ZONES: '/api/delivery/zones',
++
++  // Dashboard
++  DASHBOARD_KPIS: '/api/dashboard/kpis',
++  DASHBOARD_RECENT_ORDERS: '/api/dashboard/recent-orders',
++  DASHBOARD_PENDING_FULFILLMENT: '/api/dashboard/pending-fulfillment',
++
++  // License
++  LICENSES_PENDING: '/api/licenses/pending-approvals',
++  LICENSE_APPROVE: (id: string) => `/api/licenses/${id}/approve`,
++  LICENSE_DETAIL: (customerId: string) => `/api/licenses/${customerId}`,
++
++  // Auth
++  AUTH_LOGIN: '/api/auth/login',
++  AUTH_LOGOUT: '/api/auth/logout',
++  AUTH_REFRESH: '/api/auth/refresh',
++  AUTH_ME: '/api/auth/me',
++} as const;
++
++// ============================================================================
++// ERROR MESSAGES
++// ============================================================================
++
++export const ERROR_MESSAGES = {
++  // General
++  UNKNOWN_ERROR: 'An unexpected error occurred. Please try again.',
++  NETWORK_ERROR: 'Network error. Please check your connection.',
++
++  // Products
++  PRODUCT_NOT_FOUND: 'Product not found.',
++  PRODUCT_OUT_OF_STOCK: 'This product is currently out of stock.',
++
++  // Cart
++  CART_EMPTY: 'Your cart is empty.',
++  CART_STOCK_LIMIT: 'Not enough stock available.',
++
++  // Orders
++  ORDER_NOT_FOUND: 'Order not found.',
++  ORDER_PLACEMENT_FAILED: 'Failed to place order. Please try again.',
++
++  // Forms
++  INVALID_EMAIL: 'Please enter a valid email address.',
++  INVALID_PHONE: 'Phone number must be 10 digits.',
++  INVALID_ZIP: 'ZIP code must be 5 digits.',
++  REQUIRED_FIELD: 'This field is required.',
++
++  // License
++  LICENSE_SUSPENDED: 'Your license is suspended. Please contact support.',
++  LICENSE_EXPIRED: 'Your license has expired. Please renew to continue.',
++} as const;
++
++// ============================================================================
++// SUCCESS MESSAGES
++// ============================================================================
++
++export const SUCCESS_MESSAGES = {
++  PRODUCT_ADDED: 'Product added to cart!',
++  CART_UPDATED: 'Cart updated successfully.',
++  ORDER_PLACED: 'Order placed successfully!',
++  CHANGES_SAVED: 'Changes saved.',
++} as const;
+diff --git a/src/app/utils/errorHandler.ts b/src/app/utils/errorHandler.ts
+new file mode 100644
+index 0000000..95124b5
+--- /dev/null
++++ b/src/app/utils/errorHandler.ts
+@@ -0,0 +1,159 @@
++/**
++ * Centralized Error Handling
++ * Consistent error handling across the application
++ */
++
++import { toast } from 'sonner';
++import type { APIError } from '../types';
++
++/**
++ * Extract error message from various error types
++ */
++export function getErrorMessage(error: unknown): string {
++  if (error instanceof Error) {
++    return error.message;
++  }
++
++  if (typeof error === 'string') {
++    return error;
++  }
++
++  if (isAPIError(error)) {
++    return error.message;
++  }
++
++  return 'An unexpected error occurred';
++}
++
++/**
++ * Check if error is an API error
++ */
++export function isAPIError(error: unknown): error is APIError {
++  return (
++    typeof error === 'object' &&
++    error !== null &&
++    'message' in error &&
++    'code' in error
++  );
++}
++
++/**
++ * Handle error with toast notification
++ */
++export function handleError(error: unknown, context?: string): void {
++  const message = getErrorMessage(error);
++  const title = context ? `Error in ${context}` : 'An error occurred';
++
++  console.error(`[Error${context ? ` - ${context}` : ''}]:`, error);
++
++  toast.error(title, {
++    description: message,
++    duration: 5000,
++  });
++}
++
++/**
++ * Handle success with toast notification
++ */
++export function handleSuccess(message: string, description?: string): void {
++  toast.success(message, {
++    description,
++    duration: 3000,
++  });
++}
++
++/**
++ * Handle warning with toast notification
++ */
++export function handleWarning(message: string, description?: string): void {
++  toast.warning(message, {
++    description,
++    duration: 4000,
++  });
++}
++
++/**
++ * Handle info with toast notification
++ */
++export function handleInfo(message: string, description?: string): void {
++  toast.info(message, {
++    description,
++    duration: 3000,
++  });
++}
++
++/**
++ * Log error to external service (placeholder for Sentry, etc.)
++ */
++export function logError(error: unknown, context?: Record<string, unknown>): void {
++  // In production, send to error tracking service (Sentry, LogRocket, etc.)
++  console.error('Error logged:', {
++    error,
++    context,
++    timestamp: new Date().toISOString(),
++    userAgent: navigator.userAgent,
++  });
++
++  // Example Sentry integration:
++  // if (window.Sentry) {
++  //   window.Sentry.captureException(error, { extra: context });
++  // }
++}
++
++/**
++ * Create a typed error with code
++ */
++export class AppError extends Error {
++  constructor(
++    message: string,
++    public code: string,
++    public details?: Record<string, unknown>
++  ) {
++    super(message);
++    this.name = 'AppError';
++  }
++}
++
++/**
++ * Network error handling
++ */
++export function handleNetworkError(error: unknown): void {
++  if (error instanceof TypeError && error.message.includes('fetch')) {
++    handleError('Network error. Please check your internet connection.', 'Network');
++  } else {
++    handleError(error, 'Network');
++  }
++}
++
++/**
++ * Async error wrapper for try-catch blocks
++ */
++export async function tryAsync<T>(
++  promise: Promise<T>,
++  context?: string
++): Promise<[T | null, Error | null]> {
++  try {
++    const data = await promise;
++    return [data, null];
++  } catch (error) {
++    if (context) {
++      handleError(error, context);
++    }
++    return [null, error instanceof Error ? error : new Error(String(error))];
++  }
++}
++
++/**
++ * Validation error handler
++ */
++export function handleValidationErrors(
++  errors: Record<string, string[]>
++): void {
++  const firstError = Object.values(errors)[0]?.[0];
++  if (firstError) {
++    toast.error('Validation Error', {
++      description: firstError,
++      duration: 4000,
++    });
++  }
++}
+diff --git a/src/app/utils/helpers.ts b/src/app/utils/helpers.ts
+new file mode 100644
+index 0000000..e077a9f
+--- /dev/null
++++ b/src/app/utils/helpers.ts
+@@ -0,0 +1,419 @@
++/**
++ * Utility Helper Functions
++ * Reusable functions for common operations
++ */
++
++import { CURRENCY_CONFIG, ZIP_TO_ZONE_MAPPINGS } from './constants';
++import type { DeliveryZone } from '../types';
++
++// ============================================================================
++// FORMATTING
++// ============================================================================
++
++/**
++ * Format a number as currency
++ */
++export function formatCurrency(amount: number): string {
++  return new Intl.NumberFormat(CURRENCY_CONFIG.locale, {
++    style: 'currency',
++    currency: CURRENCY_CONFIG.currency,
++    minimumFractionDigits: CURRENCY_CONFIG.minimumFractionDigits,
++    maximumFractionDigits: CURRENCY_CONFIG.maximumFractionDigits,
++  }).format(amount);
++}
++
++/**
++ * Format a date string
++ */
++export function formatDate(
++  date: Date | string,
++  options: Intl.DateTimeFormatOptions = {
++    year: 'numeric',
++    month: 'long',
++    day: 'numeric',
++  }
++): string {
++  const dateObj = typeof date === 'string' ? new Date(date) : date;
++  return dateObj.toLocaleDateString('en-US', options);
++}
++
++/**
++ * Format a number with commas
++ */
++export function formatNumber(num: number): string {
++  return new Intl.NumberFormat('en-US').format(num);
++}
++
++/**
++ * Format phone number (10 digits to (xxx) xxx-xxxx)
++ */
++export function formatPhoneNumber(phone: string): string {
++  const cleaned = phone.replace(/\D/g, '');
++  if (cleaned.length !== 10) return phone;
++
++  return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
++}
++
++// ============================================================================
++// DELIVERY CALCULATIONS
++// ============================================================================
++
++/**
++ * Get delivery zone ID from ZIP code
++ */
++export function getZoneIdFromZip(zip: string): number {
++  const zipNum = parseInt(zip, 10);
++
++  if (isNaN(zipNum)) {
++    return 3; // Default to regional
++  }
++
++  const mapping = ZIP_TO_ZONE_MAPPINGS.find(
++    zone => zipNum >= zone.minZip && zipNum <= zone.maxZip
++  );
++
++  return mapping?.zoneId ?? 3;
++}
++
++/**
++ * Calculate next delivery date based on allowed delivery days
++ */
++export function getNextDeliveryDate(
++  processingDays: number,
++  allowedDays: string[]
++): Date {
++  const date = new Date();
++  date.setDate(date.getDate() + processingDays);
++
++  // Find next valid delivery day (with safety break at 14 days)
++  for (let i = 0; i < 14; i++) {
++    const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
++    if (allowedDays.includes(dayName)) {
++      return date;
++    }
++    date.setDate(date.getDate() + 1);
++  }
++
++  return date; // Fallback
++}
++
++/**
++ * Format delivery date with day of week
++ */
++export function formatDeliveryDate(date: Date): string {
++  const datePart = date.toLocaleDateString('en-US', {
++    month: 'long',
++    day: 'numeric',
++    year: 'numeric',
++  });
++  const dayPart = date.toLocaleDateString('en-US', { weekday: 'long' });
++  return `${datePart} (${dayPart})`;
++}
++
++/**
++ * Calculate delivery fee based on zone and subtotal
++ */
++export function calculateDeliveryFee(
++  zone: DeliveryZone,
++  subtotal: number
++): number {
++  return subtotal >= zone.freeThreshold ? 0 : zone.baseFee;
++}
++
++// ============================================================================
++// VALIDATION
++// ============================================================================
++
++/**
++ * Validate email address
++ */
++export function isValidEmail(email: string): boolean {
++  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
++  return emailRegex.test(email);
++}
++
++/**
++ * Validate phone number (10 digits)
++ */
++export function isValidPhone(phone: string): boolean {
++  const cleaned = phone.replace(/\D/g, '');
++  return cleaned.length === 10;
++}
++
++/**
++ * Validate ZIP code (5 digits)
++ */
++export function isValidZip(zip: string): boolean {
++  return /^\d{5}$/.test(zip);
++}
++
++/**
++ * Validate US state code (2 letters)
++ */
++export function isValidState(state: string): boolean {
++  return /^[A-Z]{2}$/.test(state.toUpperCase());
++}
++
++// ============================================================================
++// STRING MANIPULATION
++// ============================================================================
++
++/**
++ * Truncate text to specified length
++ */
++export function truncate(text: string, maxLength: number): string {
++  if (text.length <= maxLength) return text;
++  return text.slice(0, maxLength - 3) + '...';
++}
++
++/**
++ * Convert string to title case
++ */
++export function toTitleCase(str: string): string {
++  return str.replace(
++    /\w\S*/g,
++    txt => txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase()
++  );
++}
++
++/**
++ * Generate initials from name
++ */
++export function getInitials(name: string): string {
++  return name
++    .split(' ')
++    .map(word => word.charAt(0).toUpperCase())
++    .slice(0, 2)
++    .join('');
++}
++
++/**
++ * Slugify a string (for URLs)
++ */
++export function slugify(text: string): string {
++  return text
++    .toString()
++    .toLowerCase()
++    .trim()
++    .replace(/\s+/g, '-')
++    .replace(/[^\w\-]+/g, '')
++    .replace(/\-\-+/g, '-')
++    .replace(/^-+/, '')
++    .replace(/-+$/, '');
++}
++
++// ============================================================================
++// ARRAY UTILITIES
++// ============================================================================
++
++/**
++ * Group array items by a key
++ */
++export function groupBy<T>(
++  array: T[],
++  key: keyof T
++): Record<string, T[]> {
++  return array.reduce((result, item) => {
++    const groupKey = String(item[key]);
++    if (!result[groupKey]) {
++      result[groupKey] = [];
++    }
++    result[groupKey]!.push(item);
++    return result;
++  }, {} as Record<string, T[]>);
++}
++
++/**
++ * Remove duplicates from array
++ */
++export function unique<T>(array: T[]): T[] {
++  return Array.from(new Set(array));
++}
++
++/**
++ * Sort array of objects by a key
++ */
++export function sortBy<T>(
++  array: T[],
++  key: keyof T,
++  order: 'asc' | 'desc' = 'asc'
++): T[] {
++  return [...array].sort((a, b) => {
++    const aVal = a[key];
++    const bVal = b[key];
++
++    if (aVal < bVal) return order === 'asc' ? -1 : 1;
++    if (aVal > bVal) return order === 'asc' ? 1 : -1;
++    return 0;
++  });
++}
++
++// ============================================================================
++// NUMBER UTILITIES
++// ============================================================================
++
++/**
++ * Clamp a number between min and max
++ */
++export function clamp(value: number, min: number, max: number): number {
++  return Math.min(Math.max(value, min), max);
++}
++
++/**
++ * Calculate percentage
++ */
++export function percentage(value: number, total: number): number {
++  if (total === 0) return 0;
++  return (value / total) * 100;
++}
++
++/**
++ * Calculate percentage change
++ */
++export function percentageChange(oldValue: number, newValue: number): number {
++  if (oldValue === 0) return newValue > 0 ? 100 : 0;
++  return ((newValue - oldValue) / oldValue) * 100;
++}
++
++/**
++ * Round to specified decimal places
++ */
++export function roundTo(value: number, decimals: number): number {
++  const multiplier = Math.pow(10, decimals);
++  return Math.round(value * multiplier) / multiplier;
++}
++
++// ============================================================================
++// DATE UTILITIES
++// ============================================================================
++
++/**
++ * Calculate days between two dates
++ */
++export function daysBetween(date1: Date, date2: Date): number {
++  const oneDay = 1000 * 60 * 60 * 24;
++  const diffTime = Math.abs(date2.getTime() - date1.getTime());
++  return Math.ceil(diffTime / oneDay);
++}
++
++/**
++ * Check if date is in the past
++ */
++export function isPast(date: Date): boolean {
++  return date < new Date();
++}
++
++/**
++ * Check if date is in the future
++ */
++export function isFuture(date: Date): boolean {
++  return date > new Date();
++}
++
++/**
++ * Add days to a date
++ */
++export function addDays(date: Date, days: number): Date {
++  const result = new Date(date);
++  result.setDate(result.getDate() + days);
++  return result;
++}
++
++// ============================================================================
++// CLASS NAME UTILITIES
++// ============================================================================
++
++/**
++ * Conditionally join class names
++ */
++export function cn(...classes: (string | boolean | undefined | null)[]): string {
++  return classes.filter(Boolean).join(' ');
++}
++
++// ============================================================================
++// DEBOUNCING
++// ============================================================================
++
++/**
++ * Debounce function
++ */
++export function debounce<T extends (...args: any[]) => any>(
++  func: T,
++  wait: number
++): (...args: Parameters<T>) => void {
++  let timeout: NodeJS.Timeout | null = null;
++
++  return function executedFunction(...args: Parameters<T>) {
++    const later = () => {
++      timeout = null;
++      func(...args);
++    };
++
++    if (timeout) clearTimeout(timeout);
++    timeout = setTimeout(later, wait);
++  };
++}
++
++// ============================================================================
++// LOCAL STORAGE HELPERS
++// ============================================================================
++
++/**
++ * Safely get item from localStorage
++ */
++export function getFromStorage<T>(key: string, defaultValue: T): T {
++  try {
++    const item = localStorage.getItem(key);
++    return item ? JSON.parse(item) : defaultValue;
++  } catch (error) {
++    console.error(`Error reading from localStorage key "${key}":`, error);
++    return defaultValue;
++  }
++}
++
++/**
++ * Safely set item in localStorage
++ */
++export function setInStorage<T>(key: string, value: T): void {
++  try {
++    localStorage.setItem(key, JSON.stringify(value));
++  } catch (error) {
++    console.error(`Error writing to localStorage key "${key}":`, error);
++  }
++}
++
++/**
++ * Safely remove item from localStorage
++ */
++export function removeFromStorage(key: string): void {
++  try {
++    localStorage.removeItem(key);
++  } catch (error) {
++    console.error(`Error removing localStorage key "${key}":`, error);
++  }
++}
++
++// ============================================================================
++// RANDOM GENERATORS (for mock data)
++// ============================================================================
++
++/**
++ * Generate a random ID
++ */
++export function generateId(): string {
++  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
++}
++
++/**
++ * Generate random number between min and max
++ */
++export function randomBetween(min: number, max: number): number {
++  return Math.floor(Math.random() * (max - min + 1)) + min;
++}
++
++/**
++ * Pick random item from array
++ */
++export function randomItem<T>(array: T[]): T {
++  return array[Math.floor(Math.random() * array.length)]!;
++}
+diff --git a/tsconfig.json b/tsconfig.json
+new file mode 100644
+index 0000000..0e1d818
+--- /dev/null
++++ b/tsconfig.json
+@@ -0,0 +1,41 @@
++{
++  "compilerOptions": {
++    // Strict Type Checking
++    "strict": true,
++    "noUncheckedIndexedAccess": true,
++    "noImplicitReturns": true,
++    "noFallthroughCasesInSwitch": true,
++    "noUnusedLocals": true,
++    "noUnusedParameters": true,
++    "noImplicitOverride": true,
++    "allowUnusedLabels": false,
++    "allowUnreachableCode": false,
++
++    // Module Resolution
++    "target": "ES2020",
++    "useDefineForClassFields": true,
++    "lib": ["ES2020", "DOM", "DOM.Iterable"],
++    "module": "ESNext",
++    "skipLibCheck": true,
++
++    // Bundler mode
++    "moduleResolution": "bundler",
++    "allowImportingTsExtensions": true,
++    "resolveJsonModule": true,
++    "isolatedModules": true,
++    "noEmit": true,
++    "jsx": "react-jsx",
++
++    // Linting
++    "forceConsistentCasingInFileNames": true,
++    "esModuleInterop": true,
++
++    // Path mapping
++    "baseUrl": ".",
++    "paths": {
++      "@/*": ["./src/*"]
++    }
++  },
++  "include": ["src"],
++  "references": [{ "path": "./tsconfig.node.json" }]
++}
+diff --git a/tsconfig.node.json b/tsconfig.node.json
+new file mode 100644
+index 0000000..97ede7e
+--- /dev/null
++++ b/tsconfig.node.json
+@@ -0,0 +1,11 @@
++{
++  "compilerOptions": {
++    "composite": true,
++    "skipLibCheck": true,
++    "module": "ESNext",
++    "moduleResolution": "bundler",
++    "allowSyntheticDefaultImports": true,
++    "strict": true
++  },
++  "include": ["vite.config.ts"]
++}
+diff --git a/vite.config.ts b/vite.config.ts
+index ad4dbd5..612306c 100644
+--- a/vite.config.ts
++++ b/vite.config.ts
+@@ -1,7 +1,7 @@
+-import { defineConfig } from 'vite'
+-import path from 'path'
+-import tailwindcss from '@tailwindcss/vite'
+-import react from '@vitejs/plugin-react'
++import { defineConfig } from 'vite';
++import path from 'path';
++import tailwindcss from '@tailwindcss/vite';
++import react from '@vitejs/plugin-react';
+
+ export default defineConfig({
+   plugins: [
+@@ -16,4 +16,81 @@ export default defineConfig({
+       '@': path.resolve(__dirname, './src'),
+     },
+   },
+-})
++  build: {
++    // Enable code splitting
++    rollupOptions: {
++      output: {
++        // Manual chunking strategy for optimal bundle splitting
++        manualChunks: (id) => {
++          // Vendor chunk for node_modules
++          if (id.includes('node_modules')) {
++            // Separate chunk for large libraries
++            if (id.includes('recharts')) {
++              return 'recharts'; // Chart library separate chunk
++            }
++            if (id.includes('react-router')) {
++              return 'router'; // Router in separate chunk
++            }
++            if (id.includes('@radix-ui')) {
++              return 'radix'; // UI primitives together
++            }
++            if (id.includes('react-dnd')) {
++              return 'dnd'; // Drag and drop separate
++            }
++            if (id.includes('date-fns')) {
++              return 'date-utils'; // Date utilities
++            }
++            // Everything else in vendor chunk
++            return 'vendor';
++          }
++
++          // Pages in separate chunks
++          if (id.includes('/pages/')) {
++            const pageName = id.split('/pages/')[1]?.split('.')[0];
++            return `page-${pageName}`;
++          }
++
++          // Dashboard components together
++          if (id.includes('/components/dashboard/')) {
++            return 'dashboard-components';
++          }
++
++          // Cart components together
++          if (id.includes('/components/cart/')) {
++            return 'cart-components';
++          }
++        },
++      },
++    },
++    // Chunk size warnings
++    chunkSizeWarningLimit: 600, // Warn if chunk > 600KB
++    // Minification
++    minify: 'terser',
++    terserOptions: {
++      compress: {
++        drop_console: true, // Remove console.logs in production
++        drop_debugger: true,
++      },
++    },
++    // Source maps for debugging (disable in production for smaller builds)
++    sourcemap: false,
++  },
++  // Development server configuration
++  server: {
++    port: 3000,
++    strictPort: false,
++    open: true,
++  },
++  // Dependency pre-bundling optimization
++  optimizeDeps: {
++    include: [
++      'react',
++      'react-dom',
++      'react-router',
++      'lucide-react',
++    ],
++    exclude: [
++      'recharts', // Lazy loaded, don't pre-bundle
++    ],
++  },
++});
