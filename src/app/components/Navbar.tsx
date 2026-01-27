@@ -72,7 +72,7 @@ export function Navbar() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-56">
                 <DropdownMenuItem asChild>
-                  <Link to="/dashboard" className={`w-full ${isActive('/dashboard')}`}>Dashboard</Link>
+                  <Link to="/dashboard" id="dashboard-link" className={`w-full ${isActive('/dashboard')}`}>Dashboard</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/orders" className={`w-full ${isActive('/orders')}`}>Orders</Link>
@@ -84,7 +84,7 @@ export function Navbar() {
                   <Link to="/retailers" className={`w-full ${isActive('/retailers')}`}>Retailers</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/catalog" className={`w-full ${isActive('/catalog')}`}>Products</Link>
+                  <Link to="/catalog" id="catalog-link" className={`w-full ${isActive('/catalog')}`}>Products</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/brands" className={`w-full ${isActive('/brands')}`}>Brands</Link>
@@ -107,7 +107,7 @@ export function Navbar() {
           </div>
           
           {compareList.length > 0 && (
-            <Link to="/compare">
+            <Link to="/compare" id="compare-button">
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -124,6 +124,7 @@ export function Navbar() {
           )}
 
           <Button 
+            id="cart-button"
             variant="ghost" 
             size="icon" 
             className="relative text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 group" 

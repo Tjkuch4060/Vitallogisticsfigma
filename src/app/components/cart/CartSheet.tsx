@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, startTransition } from 'react';
 import { useCartStore } from '../../store/cartStore';
 import { useOrderTemplatesStore } from '../../store/orderTemplatesStore';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '../ui/sheet';
@@ -57,6 +57,28 @@ export function CartSheet() {
     }).format(new Date(timestamp));
   };
 
+  // Optimized handler for Sheet open/close - uses startTransition when closing
+  const handleSheetOpenChange = (open: boolean) => {
+    if (open) {
+      setIsOpen(true);
+    } else {
+      startTransition(() => {
+        setIsOpen(false);
+      });
+    }
+  };
+
+  // Optimized handler for Dialog open/close - uses startTransition when closing
+  const handleDialogOpenChange = (open: boolean) => {
+    if (open) {
+      setIsSaveDialogOpen(true);
+    } else {
+      startTransition(() => {
+        setIsSaveDialogOpen(false);
+      });
+    }
+  };
+
   const handleSaveTemplate = () => {
     if (!templateName.trim()) {
       toast.error('Please enter a template name');
@@ -72,22 +94,25 @@ export function CartSheet() {
     setIsSaveDialogOpen(false);
   };
 
+  // Optimized handler - defers heavy cart operations
   const handleLoadTemplate = (templateId: string) => {
     const template = getTemplate(templateId);
     if (!template) return;
     
-    clearCart();
-    const itemsToAdd = template.items.map(item => ({
-      product: item.product,
-      quantity: item.quantity
-    }));
-    addItems(itemsToAdd);
-    toast.success(`Template "${template.name}" loaded`);
-    setIsOpen(false);
+    startTransition(() => {
+      clearCart();
+      const itemsToAdd = template.items.map(item => ({
+        product: item.product,
+        quantity: item.quantity
+      }));
+      addItems(itemsToAdd);
+      toast.success(`Template "${template.name}" loaded`);
+      setIsOpen(false);
+    });
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+    <Sheet open={isOpen} onOpenChange={handleSheetOpenChange}>
       <SheetContent className="w-full sm:max-w-md flex flex-col" ref={cartRef}>
         <SheetHeader>
           <div className="flex items-center justify-between">
@@ -96,7 +121,7 @@ export function CartSheet() {
               Your Order ({items.length})
             </SheetTitle>
             {items.length > 0 && (
-              <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
+              <Dialog open={isSaveDialogOpen} onOpenChange={handleDialogOpenChange}>
                 <DialogTrigger asChild>
                   <Button variant="ghost" size="sm" className="gap-2 text-slate-600">
                     <Save className="w-4 h-4" />
@@ -123,7 +148,7 @@ export function CartSheet() {
                     />
                   </div>
                   <DialogFooter>
-                    <Button variant="outline" onClick={() => setIsSaveDialogOpen(false)}>
+                    <Button variant="outline" onClick={() => handleDialogOpenChange(false)}>
                       Cancel
                     </Button>
                     <Button onClick={handleSaveTemplate}>
@@ -150,7 +175,7 @@ export function CartSheet() {
                 variant="outline" 
                 className="gap-2 border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800"
                 onClick={() => {
-                  setIsOpen(false);
+                  handleSheetOpenChange(false);
                   navigate('/catalog');
                 }}
               >
@@ -267,7 +292,7 @@ export function CartSheet() {
                 className="w-full bg-emerald-700 hover:bg-emerald-800" 
                 disabled={items.length === 0}
                 onClick={() => {
-                setIsOpen(false);
+                handleSheetOpenChange(false);
                 navigate('/checkout');
                 }}
             >

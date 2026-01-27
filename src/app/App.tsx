@@ -21,6 +21,7 @@ import { UserProvider, useUser } from './context/UserContext';
 import { LicenseAlert } from './components/LicenseAlert';
 import { SuspensionScreen } from './pages/SuspensionScreen';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { OnboardingTour } from './components/OnboardingTour';
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const [showBanner, setShowBanner] = useState(true);
@@ -86,6 +87,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
       </main>
       <QuickActions />
       <CartSheet />
+      <OnboardingTour />
       <Toaster />
       {showFooter && <Footer />}
 
