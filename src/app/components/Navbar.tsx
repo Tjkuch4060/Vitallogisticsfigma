@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, User, ChevronDown, Phone, Leaf, ShoppingCart } from 'lucide-react';
+import { Menu, X, User, ChevronDown, Phone, Leaf, ShoppingCart, Scale } from 'lucide-react';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import {
@@ -12,14 +12,17 @@ import { Badge } from './ui/badge';
 import { Link, useLocation } from 'react-router';
 import { GlobalSearch } from './GlobalSearch';
 import { LicenseStatus } from './LicenseStatus';
-import { useCart } from '../context/CartContext';
+import { useCartStore } from '../store/cartStore';
+import { useCompareStore } from '../store/compareStore';
 import { useUser } from '../context/UserContext';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
-  const { setIsOpen: setIsCartOpen, items } = useCart();
+  const setIsCartOpen = useCartStore((state) => state.setIsOpen);
+  const items = useCartStore((state) => state.items);
+  const compareList = useCompareStore((state) => state.compareList);
   const { daysRemaining, status } = useUser();
 
   useEffect(() => {
@@ -35,9 +38,12 @@ export function Navbar() {
   const isExpired = status === 'Expired' || status === 'Suspended';
 
   return (
-    <div className={`w-full sticky top-0 z-50 transition-all duration-300 border-b border-emerald-100/50 ${
-      scrolled ? 'bg-white/80 backdrop-blur-lg shadow-sm' : 'bg-white'
-    }`}>
+    <nav 
+      aria-label="Main navigation"
+      className={`w-full sticky top-0 z-50 transition-all duration-300 border-b border-emerald-100/50 ${
+        scrolled ? 'bg-white/80 backdrop-blur-lg shadow-sm' : 'bg-white'
+      }`}
+    >
       {/* Top Bar */}
       <div className="bg-emerald-950 text-emerald-50 text-xs py-1.5 px-4 md:px-8 flex justify-between items-center h-8">
         <span className="font-medium tracking-wide">ADMIN PORTAL – VITALOGISTICS MANAGEMENT</span>
@@ -100,12 +106,38 @@ export function Navbar() {
             <LicenseStatus />
           </div>
           
-          <Button variant="ghost" size="icon" className="relative text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 group" onClick={() => setIsCartOpen(true)}>
-             <ShoppingCart size={20} className="group-hover:rotate-6 transition-transform" />
+          {compareList.length > 0 && (
+            <Link to="/compare">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="relative text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 group"
+                aria-label="Compare products"
+              >
+                <Scale size={20} className="group-hover:rotate-6 transition-transform" aria-hidden="true" />
+                <span className="absolute top-0 right-0 h-4 w-4 bg-blue-600 text-white text-[10px] flex items-center justify-center rounded-full font-bold shadow-sm ring-1 ring-white">
+                  {compareList.length}
+                </span>
+                <span className="sr-only">{compareList.length} products in comparison</span>
+              </Button>
+            </Link>
+          )}
+
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="relative text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 group" 
+            onClick={() => setIsCartOpen(true)}
+            aria-label="View shopping cart"
+          >
+             <ShoppingCart size={20} className="group-hover:rotate-6 transition-transform" aria-hidden="true" />
              {items.length > 0 && (
-                 <span className="absolute top-0 right-0 h-4 w-4 bg-emerald-600 text-white text-[10px] flex items-center justify-center rounded-full font-bold shadow-sm ring-1 ring-white">
+                 <>
+                   <span className="absolute top-0 right-0 h-4 w-4 bg-emerald-600 text-white text-[10px] flex items-center justify-center rounded-full font-bold shadow-sm ring-1 ring-white">
                      {items.length}
-                 </span>
+                   </span>
+                   <span className="sr-only">{items.length} items in cart</span>
+                 </>
              )}
           </Button>
 
@@ -129,15 +161,17 @@ export function Navbar() {
         <button
           className="xl:hidden p-2 ml-2 text-slate-600 hover:text-emerald-700 transition-colors"
           onClick={() => setIsOpen(!isOpen)}
+          aria-label={isOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={isOpen}
         >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
+          {isOpen ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
         </button>
       </div>
 
       {/* Mobile Nav */}
       {isOpen && (
         <div className="xl:hidden border-t border-slate-100 bg-white px-4 py-4 flex flex-col gap-4 shadow-lg absolute w-full left-0 top-[104px]">
-           <nav className="flex flex-col gap-4 text-sm font-medium">
+           <nav className="flex flex-col gap-4 text-sm font-medium" aria-label="Mobile navigation">
             <Link to="/dashboard" className="text-slate-600 hover:text-emerald-700">Dashboard</Link>
             <Link to="/orders" className="text-slate-600 hover:text-emerald-700">Orders</Link>
             <Link to="/delivery-zones" className="text-slate-600 hover:text-emerald-700">Zones</Link>
@@ -165,6 +199,6 @@ export function Navbar() {
           </div>
         </div>
       )}
-    </div>
+    </nav>
   );
 }

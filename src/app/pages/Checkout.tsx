@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useCart } from '../context/CartContext';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useCartStore } from '../store/cartStore';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -11,6 +13,8 @@ import { Link, useNavigate } from 'react-router';
 import { motion } from 'motion/react';
 import { deliveryZones } from '../data/mockData';
 import { toast } from 'sonner';
+import { checkoutSchema, CheckoutFormData } from '../schemas/checkout.schema';
+import { handleError } from '../utils/errorHandler';
 
 // Helper to calculate next delivery date based on processing time and allowed days
 const getNextDeliveryDate = (processingDays: number, allowedDays: string[]) => {
@@ -92,38 +96,69 @@ const steps = [
 ];
 
 export function Checkout() {
-  const { items, total, clearCart } = useCart();
+  const items = useCartStore((state) => state.items);
+  const total = useCartStore((state) => 
+    state.items.reduce((sum, item) => sum + (item.lockedPrice * item.quantity), 0)
+  );
+  const clearCart = useCartStore((state) => state.clearCart);
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [completed, setCompleted] = useState(false);
 
-  // Form State
-  const [address, setAddress] = useState({
-    firstName: '',
-    lastName: '',
-    street: '',
-    city: '',
-    state: 'MN',
-    zip: '',
-    email: ''
+  // Form with React Hook Form + Zod
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors, isSubmitting }
+  } = useForm<CheckoutFormData>({
+    resolver: zodResolver(checkoutSchema),
+    defaultValues: {
+      deliveryMethod: 'delivery',
+      paymentMethod: 'card',
+      state: 'MN',
+      phone: ''
+    },
+    mode: 'onBlur'
   });
 
+  const watchedZip = watch('zip');
+  const watchedDeliveryMethod = watch('deliveryMethod');
+  const formData = watch();
+
   const [deliveryInfo, setDeliveryInfo] = useState<{name: string, fee: number, date: string, isFree?: boolean, threshold?: number} | null>(null);
-  const [deliveryMethod, setDeliveryMethod] = useState<'delivery' | 'pickup'>('delivery');
 
   // Calculate delivery when moving to step 2 or changing zip
   useEffect(() => {
-    if (deliveryMethod === 'delivery') {
-        if (address.zip.length === 5) {
-            setDeliveryInfo(calculateZone(address.zip, total));
+    if (watchedDeliveryMethod === 'delivery') {
+        if (watchedZip && watchedZip.length === 5) {
+            setDeliveryInfo(calculateZone(watchedZip, total));
         }
     } else {
         setDeliveryInfo(getPickupInfo());
     }
-  }, [address.zip, deliveryMethod, total]);
+  }, [watchedZip, watchedDeliveryMethod, total]);
 
   const handleNext = () => {
+    // Validate current step before proceeding
+    if (currentStep === 1) {
+      handleSubmit(
+        () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          setCurrentStep((prev) => Math.min(prev + 1, 3));
+        },
+        (errors) => {
+          // Scroll to first error
+          const firstError = Object.keys(errors)[0];
+          const element = document.querySelector(`[name="${firstError}"]`);
+          element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      )();
+      return;
+    }
+    
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setCurrentStep((prev) => Math.min(prev + 1, 3));
   };
@@ -133,14 +168,21 @@ export function Checkout() {
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
-  const handlePlaceOrder = () => {
-    setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+  const onSubmit = async (data: CheckoutFormData) => {
+    try {
+      setLoading(true);
+      // Form is validated!
+      console.log('Valid data:', data);
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
       setLoading(false);
       setCompleted(true);
       clearCart();
-    }, 2000);
+      toast.success('Order placed successfully!');
+    } catch (error) {
+      setLoading(false);
+      handleError(error, 'Checkout');
+    }
   };
 
   const handleDownloadInvoice = () => {
@@ -175,7 +217,7 @@ export function Checkout() {
           <ShieldCheck className="w-10 h-10 text-emerald-600" />
         </div>
         <h2 className="text-3xl font-bold text-slate-900 mb-2">Order Confirmed!</h2>
-        <p className="text-slate-500 mb-8">Thank you for your order. We've sent a confirmation email to {address.email}. Your order ID is #ORD-{Math.floor(Math.random() * 100000)}.</p>
+        <p className="text-slate-500 mb-8">Thank you for your order. We've sent a confirmation email to {formData.email}. Your order ID is #ORD-{Math.floor(Math.random() * 100000)}.</p>
         
         <div className="bg-slate-50 p-6 rounded-lg w-full mb-8 border border-slate-200 text-left">
            <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
@@ -189,7 +231,7 @@ export function Checkout() {
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Address:</span>
-                <span className="font-medium text-right">{address.street}, {address.city}</span>
+                <span className="font-medium text-right">{formData.address}, {formData.city}</span>
               </div>
            </div>
         </div>
@@ -275,53 +317,127 @@ export function Checkout() {
                     <CardDescription>Enter the destination for your wholesale order.</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                       <div className="space-y-2">
-                          <Label htmlFor="firstName">First Name</Label>
-                          <Input id="firstName" placeholder="Jane" value={address.firstName} onChange={e => setAddress({...address, firstName: e.target.value})} />
-                       </div>
-                       <div className="space-y-2">
-                          <Label htmlFor="lastName">Last Name</Label>
-                          <Input id="lastName" placeholder="Doe" value={address.lastName} onChange={e => setAddress({...address, lastName: e.target.value})} />
-                       </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Full Name</Label>
+                      <Input 
+                        id="name" 
+                        placeholder="Jane Doe" 
+                        {...register('name')}
+                        aria-invalid={errors.name ? 'true' : 'false'}
+                      />
+                      {errors.name && (
+                        <p className="text-sm text-red-600 mt-1">{errors.name.message}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="company">Company Name</Label>
+                      <Input 
+                        id="company" 
+                        placeholder="ABC Dispensary" 
+                        {...register('company')}
+                        aria-invalid={errors.company ? 'true' : 'false'}
+                      />
+                      {errors.company && (
+                        <p className="text-sm text-red-600 mt-1">{errors.company.message}</p>
+                      )}
                     </div>
                     
                     <div className="space-y-2">
-                        <Label htmlFor="email">Email Address</Label>
-                        <Input id="email" type="email" placeholder="jane@dispensary.com" value={address.email} onChange={e => setAddress({...address, email: e.target.value})} />
+                      <Label htmlFor="email">Email Address</Label>
+                      <Input 
+                        id="email" 
+                        type="email" 
+                        placeholder="jane@dispensary.com" 
+                        {...register('email')}
+                        aria-invalid={errors.email ? 'true' : 'false'}
+                      />
+                      {errors.email && (
+                        <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="street">Street Address</Label>
-                        <Input id="street" placeholder="123 Hemp Way" value={address.street} onChange={e => setAddress({...address, street: e.target.value})} />
+                      <Label htmlFor="phone">Phone Number</Label>
+                      <Input 
+                        id="phone" 
+                        type="tel" 
+                        placeholder="6125551234" 
+                        {...register('phone')}
+                        aria-invalid={errors.phone ? 'true' : 'false'}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                          setValue('phone', value, { shouldValidate: true });
+                        }}
+                      />
+                      {errors.phone && (
+                        <p className="text-sm text-red-600 mt-1">{errors.phone.message}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="address">Street Address</Label>
+                      <Input 
+                        id="address" 
+                        placeholder="123 Hemp Way" 
+                        {...register('address')}
+                        aria-invalid={errors.address ? 'true' : 'false'}
+                      />
+                      {errors.address && (
+                        <p className="text-sm text-red-600 mt-1">{errors.address.message}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="addressLine2">Address Line 2 (Optional)</Label>
+                      <Input 
+                        id="addressLine2" 
+                        placeholder="Suite, Unit, etc." 
+                        {...register('addressLine2')}
+                      />
                     </div>
 
                     <div className="grid grid-cols-6 gap-4">
-                       <div className="col-span-3 space-y-2">
-                          <Label htmlFor="city">City</Label>
-                          <Input id="city" placeholder="Minneapolis" value={address.city} onChange={e => setAddress({...address, city: e.target.value})} />
-                       </div>
-                       <div className="col-span-1 space-y-2">
-                          <Label htmlFor="state">State</Label>
-                          <Input id="state" value="MN" disabled />
-                       </div>
-                       <div className="col-span-2 space-y-2">
-                          <Label htmlFor="zip">Zip Code</Label>
-                          <Input 
-                            id="zip" 
-                            placeholder="55401" 
-                            value={address.zip} 
-                            onChange={e => setAddress({...address, zip: e.target.value.replace(/\D/g, '').slice(0, 5)})} 
-                          />
-                          <p className="text-[10px] text-slate-400">Try 55401 (Zone 1) or 55305 (Zone 2)</p>
-                       </div>
+                      <div className="col-span-3 space-y-2">
+                        <Label htmlFor="city">City</Label>
+                        <Input 
+                          id="city" 
+                          placeholder="Minneapolis" 
+                          {...register('city')}
+                          aria-invalid={errors.city ? 'true' : 'false'}
+                        />
+                        {errors.city && (
+                          <p className="text-sm text-red-600 mt-1">{errors.city.message}</p>
+                        )}
+                      </div>
+                      <div className="col-span-1 space-y-2">
+                        <Label htmlFor="state">State</Label>
+                        <Input id="state" value="MN" disabled {...register('state')} />
+                      </div>
+                      <div className="col-span-2 space-y-2">
+                        <Label htmlFor="zip">Zip Code</Label>
+                        <Input 
+                          id="zip" 
+                          placeholder="55401" 
+                          {...register('zip')}
+                          aria-invalid={errors.zip ? 'true' : 'false'}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, '').slice(0, 5);
+                            setValue('zip', value, { shouldValidate: true });
+                          }}
+                        />
+                        {errors.zip && (
+                          <p className="text-sm text-red-600 mt-1">{errors.zip.message}</p>
+                        )}
+                        <p className="text-[10px] text-slate-400">Try 55401 (Zone 1) or 55305 (Zone 2)</p>
+                      </div>
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-end">
                     <Button 
                       className="bg-emerald-700 hover:bg-emerald-800"
                       onClick={handleNext}
-                      disabled={!address.firstName || !address.lastName || !address.street || !address.city || address.zip.length !== 5}
+                      disabled={isSubmitting}
                     >
                        Continue to Delivery Method <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
@@ -341,8 +457,8 @@ export function Checkout() {
                         <Label className="text-base font-semibold">Select Delivery Method</Label>
                         <RadioGroup 
                             defaultValue="delivery" 
-                            value={deliveryMethod} 
-                            onValueChange={(val) => setDeliveryMethod(val as 'delivery' | 'pickup')}
+                            value={watchedDeliveryMethod} 
+                            onValueChange={(val) => setValue('deliveryMethod', val as 'delivery' | 'pickup')}
                             className="grid grid-cols-1 gap-4"
                         >
                             <div>
@@ -352,12 +468,12 @@ export function Checkout() {
                                     className="flex items-start gap-4 rounded-lg border-2 border-slate-200 bg-white p-4 hover:bg-slate-50 peer-data-[state=checked]:border-emerald-600 peer-data-[state=checked]:bg-emerald-50 cursor-pointer transition-all"
                                 >
                                     <div className="p-2 bg-white rounded-md border border-slate-100 shadow-sm shrink-0">
-                                        <Truck className={`w-5 h-5 ${deliveryMethod === 'delivery' ? 'text-emerald-600' : 'text-slate-400'}`} />
+                                        <Truck className={`w-5 h-5 ${watchedDeliveryMethod === 'delivery' ? 'text-emerald-600' : 'text-slate-400'}`} />
                                     </div>
                                     <div className="flex-1">
                                         <div className="flex justify-between items-center mb-1">
                                             <span className="font-semibold text-slate-900">Delivery to my location</span>
-                                            {deliveryMethod === 'delivery' && deliveryInfo && (
+                                            {watchedDeliveryMethod === 'delivery' && deliveryInfo && (
                                                 <div className="flex flex-col items-end">
                                                     <span className={`font-bold ${deliveryInfo.fee === 0 ? 'text-emerald-600' : 'text-slate-900'}`}>
                                                         {deliveryInfo.fee === 0 ? 'Free' : `$${deliveryInfo.fee.toFixed(2)}`}
@@ -372,7 +488,7 @@ export function Checkout() {
                                         </div>
                                         <p className="text-sm text-slate-500 mb-2">Calculated based on your zone.</p>
                                         
-                                        {deliveryMethod === 'delivery' && deliveryInfo && (
+                                        {watchedDeliveryMethod === 'delivery' && deliveryInfo && (
                                             <div className="text-xs bg-emerald-100/50 text-emerald-800 p-2 rounded border border-emerald-100 inline-block font-medium">
                                                 Estimated delivery: {deliveryInfo.date}
                                             </div>
@@ -388,7 +504,7 @@ export function Checkout() {
                                     className="flex items-start gap-4 rounded-lg border-2 border-slate-200 bg-white p-4 hover:bg-slate-50 peer-data-[state=checked]:border-emerald-600 peer-data-[state=checked]:bg-emerald-50 cursor-pointer transition-all"
                                 >
                                     <div className="p-2 bg-white rounded-md border border-slate-100 shadow-sm shrink-0">
-                                        <Store className={`w-5 h-5 ${deliveryMethod === 'pickup' ? 'text-emerald-600' : 'text-slate-400'}`} />
+                                        <Store className={`w-5 h-5 ${watchedDeliveryMethod === 'pickup' ? 'text-emerald-600' : 'text-slate-400'}`} />
                                     </div>
                                     <div className="flex-1">
                                         <div className="flex justify-between items-center mb-1">
@@ -397,7 +513,7 @@ export function Checkout() {
                                         </div>
                                         <p className="text-sm text-slate-500 mb-2">Pick up your order directly from us.</p>
                                         
-                                        {deliveryMethod === 'pickup' && (
+                                        {watchedDeliveryMethod === 'pickup' && (
                                             <div className="text-xs bg-emerald-100/50 text-emerald-800 p-2 rounded border border-emerald-100 inline-block font-medium">
                                                 Location: Minneapolis, MN • Ready: Tomorrow
                                             </div>
@@ -461,39 +577,86 @@ export function Checkout() {
                       </div>
 
                       <div className="space-y-4">
-                         <div className="space-y-2">
-                            <Label>Cardholder Name</Label>
-                            <Input placeholder="Name on card" />
-                         </div>
-                         <div className="space-y-2">
-                            <Label>Card Number</Label>
-                            <div className="relative">
-                               <CreditCard className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-                               <Input className="pl-9" placeholder="0000 0000 0000 0000" />
+                        <div className="space-y-2">
+                          <Label>Payment Method</Label>
+                          <RadioGroup 
+                            defaultValue="card" 
+                            value={formData.paymentMethod} 
+                            onValueChange={(val) => setValue('paymentMethod', val as 'card' | 'invoice' | 'net30')}
+                            className="grid grid-cols-1 gap-2"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="card" id="card" />
+                              <Label htmlFor="card" className="font-normal cursor-pointer">Credit Card</Label>
                             </div>
-                         </div>
-                         <div className="grid grid-cols-2 gap-4">
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="invoice" id="invoice" />
+                              <Label htmlFor="invoice" className="font-normal cursor-pointer">Invoice</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="net30" id="net30" />
+                              <Label htmlFor="net30" className="font-normal cursor-pointer">Net 30</Label>
+                            </div>
+                          </RadioGroup>
+                        </div>
+
+                        {formData.paymentMethod === 'card' && (
+                          <>
                             <div className="space-y-2">
-                               <Label>Expiration</Label>
-                               <Input placeholder="MM/YY" />
+                              <Label>Cardholder Name</Label>
+                              <Input placeholder="Name on card" />
                             </div>
                             <div className="space-y-2">
-                               <Label>CVC</Label>
-                               <Input placeholder="123" />
+                              <Label>Card Number</Label>
+                              <div className="relative">
+                                <CreditCard className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                                <Input className="pl-9" placeholder="0000 0000 0000 0000" />
+                              </div>
                             </div>
-                         </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label>Expiration</Label>
+                                <Input placeholder="MM/YY" />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>CVC</Label>
+                                <Input placeholder="123" />
+                              </div>
+                            </div>
+                          </>
+                        )}
+
+                        {formData.paymentMethod !== 'card' && (
+                          <div className="p-4 border border-slate-200 bg-slate-50 rounded-lg">
+                            <p className="text-sm text-slate-600">
+                              {formData.paymentMethod === 'invoice' 
+                                ? 'An invoice will be sent to your email address for payment.'
+                                : 'Net 30 terms apply. Payment due within 30 days of delivery.'}
+                            </p>
+                          </div>
+                        )}
+
+                        <div className="space-y-2">
+                          <Label htmlFor="deliveryInstructions">Delivery Instructions (Optional)</Label>
+                          <textarea
+                            id="deliveryInstructions"
+                            className="w-full min-h-[80px] rounded-md border border-slate-200 px-3 py-2 text-sm resize-none"
+                            placeholder="Special delivery instructions, gate codes, etc."
+                            {...register('deliveryInstructions')}
+                          />
+                        </div>
                       </div>
                    </CardContent>
                    <CardFooter className="flex justify-between">
-                      <Button variant="outline" onClick={handleBack} disabled={loading}>
+                      <Button variant="outline" onClick={handleBack} disabled={loading || isSubmitting}>
                         <ArrowLeft className="w-4 h-4 mr-2" /> Back
                       </Button>
                       <Button 
                         className="bg-emerald-700 hover:bg-emerald-800 min-w-[150px]"
-                        onClick={handlePlaceOrder}
-                        disabled={loading}
+                        onClick={handleSubmit(onSubmit)}
+                        disabled={loading || isSubmitting}
                       >
-                         {loading ? 'Processing...' : `Pay $${orderTotal.toFixed(2)}`}
+                         {loading || isSubmitting ? 'Processing...' : `Pay $${orderTotal.toFixed(2)}`}
                       </Button>
                    </CardFooter>
                  </Card>
@@ -514,7 +677,7 @@ export function Checkout() {
                          <span className="font-medium">${subtotal.toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                         <span className="text-slate-500">Shipping {deliveryMethod === 'pickup' ? '(Handling)' : '(Zone based)'}</span>
+                         <span className="text-slate-500">Shipping {watchedDeliveryMethod === 'pickup' ? '(Handling)' : '(Zone based)'}</span>
                          <span className={`font-medium ${shipping === 0 ? 'text-emerald-600' : ''}`}>
                             {shipping > 0 ? `$${shipping.toFixed(2)}` : 'Free'}
                          </span>

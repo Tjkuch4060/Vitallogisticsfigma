@@ -1,17 +1,53 @@
-import React, { useState } from 'react';
-import { useCart } from '../../context/CartContext';
+import React, { useState, useEffect, useRef } from 'react';
+import { useCartStore } from '../../store/cartStore';
+import { useOrderTemplatesStore } from '../../store/orderTemplatesStore';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '../ui/sheet';
 import { Button } from '../ui/button';
 import { ScrollArea } from '../ui/scroll-area';
-import { Lock, Trash2, Plus, Minus, ShoppingCart, ArrowRight, PackageOpen } from 'lucide-react';
+import { Input } from '../ui/input';
+import { Lock, Trash2, Plus, Minus, ShoppingCart, ArrowRight, PackageOpen, Save, FileText, X } from 'lucide-react';
 import { Separator } from '../ui/separator';
 import { DeliveryCalculator } from './DeliveryCalculator';
 import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from '../ui/dialog';
 
 export function CartSheet() {
-  const { items, removeItem, updateQuantity, total, isOpen, setIsOpen } = useCart();
+  const items = useCartStore((state) => state.items);
+  const removeItem = useCartStore((state) => state.removeItem);
+  const updateQuantity = useCartStore((state) => state.updateQuantity);
+  const clearCart = useCartStore((state) => state.clearCart);
+  const addItems = useCartStore((state) => state.addItems);
+  const total = useCartStore((state) => 
+    state.items.reduce((sum, item) => sum + (item.lockedPrice * item.quantity), 0)
+  );
+  const isOpen = useCartStore((state) => state.isOpen);
+  const setIsOpen = useCartStore((state) => state.setIsOpen);
+  const { templates, saveTemplate, deleteTemplate, getTemplate } = useOrderTemplatesStore();
   const [shippingFee, setShippingFee] = useState<number>(0);
+  const [templateName, setTemplateName] = useState('');
+  const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
   const navigate = useNavigate();
+  const cartRef = useRef<HTMLDivElement>(null);
+
+  // Focus management: When cart opens, focus first interactive element
+  useEffect(() => {
+    if (isOpen && cartRef.current) {
+      // Small delay to ensure the sheet is fully rendered
+      setTimeout(() => {
+        const firstButton = cartRef.current?.querySelector('button');
+        firstButton?.focus();
+      }, 100);
+    }
+  }, [isOpen]);
 
   const formatTime = (timestamp: number) => {
     return new Intl.DateTimeFormat('en-US', {
@@ -21,14 +57,83 @@ export function CartSheet() {
     }).format(new Date(timestamp));
   };
 
+  const handleSaveTemplate = () => {
+    if (!templateName.trim()) {
+      toast.error('Please enter a template name');
+      return;
+    }
+    if (items.length === 0) {
+      toast.error('Cart is empty. Add items before saving as template.');
+      return;
+    }
+    saveTemplate(templateName.trim(), items);
+    toast.success(`Template "${templateName.trim()}" saved successfully`);
+    setTemplateName('');
+    setIsSaveDialogOpen(false);
+  };
+
+  const handleLoadTemplate = (templateId: string) => {
+    const template = getTemplate(templateId);
+    if (!template) return;
+    
+    clearCart();
+    const itemsToAdd = template.items.map(item => ({
+      product: item.product,
+      quantity: item.quantity
+    }));
+    addItems(itemsToAdd);
+    toast.success(`Template "${template.name}" loaded`);
+    setIsOpen(false);
+  };
+
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetContent className="w-full sm:max-w-md flex flex-col">
+      <SheetContent className="w-full sm:max-w-md flex flex-col" ref={cartRef}>
         <SheetHeader>
-          <SheetTitle className="flex items-center gap-2">
-            <ShoppingCart className="w-5 h-5" />
-            Your Order ({items.length})
-          </SheetTitle>
+          <div className="flex items-center justify-between">
+            <SheetTitle className="flex items-center gap-2">
+              <ShoppingCart className="w-5 h-5" />
+              Your Order ({items.length})
+            </SheetTitle>
+            {items.length > 0 && (
+              <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="ghost" size="sm" className="gap-2 text-slate-600">
+                    <Save className="w-4 h-4" />
+                    Save Template
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Save Order Template</DialogTitle>
+                    <DialogDescription>
+                      Save this cart as a reusable template for future orders.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="py-4">
+                    <Input
+                      placeholder="Template name (e.g., Weekly Order)"
+                      value={templateName}
+                      onChange={(e) => setTemplateName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          handleSaveTemplate();
+                        }
+                      }}
+                    />
+                  </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setIsSaveDialogOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleSaveTemplate}>
+                      Save Template
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
+          </div>
         </SheetHeader>
         
         <ScrollArea className="flex-1 -mx-6 px-6 my-4">
@@ -96,6 +201,49 @@ export function CartSheet() {
 
         {items.length > 0 && (
             <div className="pt-4 border-t border-slate-100">
+            {/* Order Templates Section */}
+            {templates.length > 0 && (
+              <div className="mb-4 pb-4 border-b border-slate-100">
+                <h4 className="text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  Order Templates
+                </h4>
+                <div className="space-y-2 max-h-32 overflow-y-auto">
+                  {templates.map((template) => (
+                    <div key={template.id} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-slate-900 truncate">{template.name}</p>
+                        <p className="text-xs text-slate-500">
+                          {template.items.length} item{template.items.length !== 1 ? 's' : ''} • {new Date(template.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleLoadTemplate(template.id)}
+                          className="h-7 px-2 text-emerald-600 hover:text-emerald-700"
+                        >
+                          Load
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            deleteTemplate(template.id);
+                            toast.success('Template deleted');
+                          }}
+                          className="h-7 w-7 text-slate-400 hover:text-red-500"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
             <DeliveryCalculator onCalculate={(info) => setShippingFee(info ? info.fee : 0)} />
             
             <div className="space-y-2 mb-4">

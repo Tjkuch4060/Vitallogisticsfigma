@@ -1,11 +1,13 @@
 import React, { useState, forwardRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Star, ShoppingCart, Eye, FileText, ShieldCheck, Heart } from 'lucide-react';
+import { Star, ShoppingCart, Eye, FileText, ShieldCheck, Heart, Scale } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
 import { Product } from '@/app/data/mockData';
-import { useCart } from '@/app/context/CartContext';
+import { useCartStore } from '@/app/store/cartStore';
+import { useCompareStore } from '@/app/store/compareStore';
+import { toast } from 'sonner';
 
 interface ProductCardProps {
   product: Product;
@@ -15,9 +17,14 @@ interface ProductCardProps {
 
 export const ProductCard = forwardRef<HTMLDivElement, ProductCardProps>(
   ({ product, onQuickView, viewMode }, ref) => {
-    const { addItem } = useCart();
-    const [isFavorite, setIsFavorite] = useState(false);
+    const addItem = useCartStore((state) => state.addItem);
+    const favorites = useCartStore((state) => state.favorites);
+    const toggleFavorite = useCartStore((state) => state.toggleFavorite);
+    const { compareList, addToCompare, removeFromCompare } = useCompareStore();
     const [isAdded, setIsAdded] = useState(false);
+    
+    const isFavorite = favorites.includes(product.id);
+    const isInCompare = compareList.some(p => p.id === product.id);
 
     const handleAddToCart = (e: React.MouseEvent) => {
       e.stopPropagation();
@@ -194,8 +201,12 @@ export const ProductCard = forwardRef<HTMLDivElement, ProductCardProps>(
 
             {/* Favorite Button */}
             <button 
-              onClick={(e) => { e.stopPropagation(); setIsFavorite(!isFavorite); }}
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                toggleFavorite(product.id);
+              }}
               className="absolute top-3 left-3 w-10 h-10 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center text-slate-400 hover:text-red-500 transition-all duration-300 shadow-md z-30 group/fav"
+              aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
             >
               <motion.div
                 animate={isFavorite ? { scale: [1, 1.4, 1] } : {}}
@@ -207,6 +218,21 @@ export const ProductCard = forwardRef<HTMLDivElement, ProductCardProps>(
                 />
               </motion.div>
             </button>
+
+            {/* Compare Button */}
+            {!isInCompare && compareList.length < 4 && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  addToCompare(product);
+                  toast.success(`Added ${product.name} to comparison`);
+                }}
+                className="absolute top-3 right-3 w-10 h-10 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center text-slate-400 hover:text-emerald-600 transition-all duration-300 shadow-md z-30 group/compare"
+                aria-label="Add to comparison"
+              >
+                <Scale size={18} className="group-hover/compare:scale-110 transition-transform" />
+              </button>
+            )}
             
             {/* Quick View Overlay */}
             <div className="absolute inset-0 bg-emerald-900/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center z-20">

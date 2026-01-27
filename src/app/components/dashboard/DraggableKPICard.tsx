@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon, TrendingUp, TrendingDown } from 'lucide-react';
 import { cn } from '../ui/utils';
 import { Area, AreaChart, ResponsiveContainer } from 'recharts';
 import { motion, useSpring, useTransform } from 'motion/react';
@@ -12,9 +12,11 @@ export interface KPIItem {
   value: number;
   prefix?: string;
   change: string;
+  changePercent?: number; // Period-over-period change percentage
+  trend?: 'up' | 'down'; // Trend direction
   icon: LucideIcon;
   visible: boolean;
-  trend?: number[];
+  trendData?: number[];
 }
 
 interface DraggableKPICardProps {
@@ -99,8 +101,9 @@ export const DraggableKPICard = ({ id, index, item, moveCard }: DraggableKPICard
   drag(drop(ref));
   
   const Icon = item.icon;
-  const trendData = item.trend ? item.trend.map((val, i) => ({ i, value: val })) : [];
-  const isPositive = item.change.includes('+');
+  const trendData = item.trendData ? item.trendData.map((val, i) => ({ i, value: val })) : [];
+  const isPositive = item.trend === 'up' || (item.changePercent !== undefined ? item.changePercent >= 0 : item.change.includes('+'));
+  const changePercent = item.changePercent;
 
   return (
     <div ref={ref} style={{ opacity }} data-handler-id={handlerId} className="cursor-move h-full group/kpi">
@@ -119,6 +122,13 @@ export const DraggableKPICard = ({ id, index, item, moveCard }: DraggableKPICard
             <div className="flex items-center justify-between mt-2">
                 <p className={cn("text-xs font-bold flex items-center gap-1 px-2 py-0.5 rounded-full", 
                     isPositive ? "text-emerald-700 bg-emerald-50" : "text-red-700 bg-red-50")}>
+                    {changePercent !== undefined && (
+                      isPositive ? (
+                        <TrendingUp className="w-3 h-3" />
+                      ) : (
+                        <TrendingDown className="w-3 h-3" />
+                      )
+                    )}
                     {item.change}
                 </p>
             </div>

@@ -13,9 +13,17 @@ import { subDays, format, eachDayOfInterval } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { Button } from '../components/ui/button';
 import { Link } from 'react-router';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Download, FileText } from 'lucide-react';
 import { Skeleton } from '../components/ui/skeleton';
 import { AppBreadcrumb } from '../components/AppBreadcrumb';
+import { exportToCSV, exportOrdersToPDF } from '../utils/exportHelpers';
+import { recentOrders } from '../data/mockData';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../components/ui/dropdown-menu';
 
 export function Dashboard() {
   const [loading, setLoading] = useState(true);
@@ -69,9 +77,38 @@ export function Dashboard() {
             <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">Admin Dashboard</h1>
         </div>
         <div className="flex items-center gap-4">
-            <Button variant="outline" size="sm" className="rounded-xl border-slate-200 font-bold text-slate-600 h-10 px-5">
-                Download Reports
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="rounded-xl border-slate-200 font-bold text-slate-600 h-10 px-5 gap-2">
+                  <Download className="w-4 h-4" />
+                  Download Reports
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem 
+                  onClick={() => exportToCSV(recentOrders.map(order => ({
+                    'Order ID': order.id,
+                    'Customer': order.customer,
+                    'Date': order.date,
+                    'Status': order.status,
+                    'Total': `$${order.total.toFixed(2)}`,
+                    'Items': order.items,
+                    'Zone': order.zone || 'N/A'
+                  })), 'orders-report')}
+                  className="gap-2"
+                >
+                  <FileText className="w-4 h-4" />
+                  Export Orders to CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => exportOrdersToPDF(recentOrders)}
+                  className="gap-2"
+                >
+                  <FileText className="w-4 h-4" />
+                  Export Orders to PDF
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button size="sm" className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-10 px-5 border-none shadow-lg shadow-emerald-900/10 transition-all hover:scale-105">
                 Add New Order
             </Button>

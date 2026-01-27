@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { DollarSign, Package, TrendingUp, Users, SlidersHorizontal, Eye, EyeOff, Truck, Percent } from 'lucide-react';
 import { DraggableKPICard, KPIItem } from './DraggableKPICard';
 import { KPICardSkeleton } from './KPICardSkeleton';
@@ -15,62 +15,103 @@ import {
 import { Checkbox } from '../ui/checkbox';
 import { Label } from '../ui/label';
 
-// Mock values based on requested metrics
+// Helper function to calculate period-over-period change
+function calculateChange(current: number, previous: number): number {
+  if (previous === 0) return 0;
+  return ((current - previous) / previous) * 100;
+}
+
+// Helper function to format currency
+function formatCurrency(value: number): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
+// Mock values - current period
 const revenue = 45231.89;
 const margin = revenue * 0.30;
 const deliveryFees = 3250.00;
 const totalOrders = 124;
 
-const initialKPIs: KPIItem[] = [
+// Mock values - previous period (for comparison)
+const previousRevenue = 37650.00;
+const previousMargin = previousRevenue * 0.30;
+const previousDeliveryFees = 2800.00;
+const previousTotalOrders = 98;
+
+// Calculate period-over-period changes
+const revenueChange = calculateChange(revenue, previousRevenue);
+const ordersChange = calculateChange(totalOrders, previousTotalOrders);
+const feesChange = calculateChange(deliveryFees, previousDeliveryFees);
+const marginChange = calculateChange(margin, previousMargin);
+const avgOrderValue = revenue / totalOrders;
+const previousAvgOrderValue = previousRevenue / previousTotalOrders;
+const avgOrderValueChange = calculateChange(avgOrderValue, previousAvgOrderValue);
+
+const createInitialKPIs = (): KPIItem[] => [
   {
     id: 'kpi-1',
     title: 'Total Revenue',
     value: revenue,
     prefix: '$',
-    change: '+20.1% from last month',
+    change: `${revenueChange >= 0 ? '+' : ''}${revenueChange.toFixed(1)}% from last period`,
+    changePercent: revenueChange,
+    trend: revenueChange >= 0 ? 'up' : 'down',
     icon: DollarSign,
     visible: true,
-    trend: [35000, 37000, 36000, 40000, 42000, 45231],
+    trendData: [35000, 37000, 36000, 40000, 42000, 45231],
   },
   {
     id: 'kpi-2',
     title: 'Total Orders',
     value: totalOrders,
     prefix: '',
-    change: '+12 today',
+    change: `${ordersChange >= 0 ? '+' : ''}${ordersChange.toFixed(1)}% from last period`,
+    changePercent: ordersChange,
+    trend: ordersChange >= 0 ? 'up' : 'down',
     icon: Package,
     visible: true,
-    trend: [80, 90, 85, 100, 110, 124],
+    trendData: [80, 90, 85, 100, 110, 124],
   },
   {
     id: 'kpi-3',
     title: 'Delivery Fees',
     value: deliveryFees,
     prefix: '$',
-    change: 'Collected this month',
+    change: `${feesChange >= 0 ? '+' : ''}${feesChange.toFixed(1)}% from last period`,
+    changePercent: feesChange,
+    trend: feesChange >= 0 ? 'up' : 'down',
     icon: Truck,
     visible: true,
-    trend: [2500, 2600, 2800, 3000, 3100, 3250],
+    trendData: [2500, 2600, 2800, 3000, 3100, 3250],
   },
   {
     id: 'kpi-4',
     title: 'Net Margin (30%)',
     value: margin,
     prefix: '$',
-    change: 'VitaLogistics Share',
+    change: `${marginChange >= 0 ? '+' : ''}${marginChange.toFixed(1)}% from last period`,
+    changePercent: marginChange,
+    trend: marginChange >= 0 ? 'up' : 'down',
     icon: Percent,
     visible: true,
-    trend: [10000, 11000, 10500, 12000, 12500, 13569],
+    trendData: [10000, 11000, 10500, 12000, 12500, 13569],
   },
   {
     id: 'kpi-5',
     title: 'Avg. Order Value',
-    value: revenue / totalOrders,
+    value: avgOrderValue,
     prefix: '$',
-    change: '+5% from last month',
+    change: `${avgOrderValueChange >= 0 ? '+' : ''}${avgOrderValueChange.toFixed(1)}% from last period`,
+    changePercent: avgOrderValueChange,
+    trend: avgOrderValueChange >= 0 ? 'up' : 'down',
     icon: DollarSign,
     visible: false, // Hidden by default
-    trend: [350, 355, 360, 362, 364, 365],
+    trendData: [350, 355, 360, 362, 364, 365],
   },
   {
     id: 'kpi-6',
@@ -80,7 +121,7 @@ const initialKPIs: KPIItem[] = [
     change: '+2 from yesterday',
     icon: Users,
     visible: false, // Hidden by default
-    trend: [5, 7, 6, 8, 10, 12],
+    trendData: [5, 7, 6, 8, 10, 12],
   }
 ];
 
@@ -89,8 +130,29 @@ interface DashboardKPIsProps {
 }
 
 export function DashboardKPIs({ loading = false }: DashboardKPIsProps) {
-  const [items, setItems] = useState<KPIItem[]>(initialKPIs);
+  // Load layout from localStorage or use default
+  const getSavedLayout = (): string[] => {
+    const saved = localStorage.getItem('dashboard-layout');
+    return saved ? JSON.parse(saved) : ['kpi-1', 'kpi-2', 'kpi-3', 'kpi-4'];
+  };
+
+  // Initialize KPIs with visibility based on saved layout
+  const [items, setItems] = useState<KPIItem[]>(() => {
+    const layout = getSavedLayout();
+    const initialKPIs = createInitialKPIs();
+    return initialKPIs.map(kpi => ({
+      ...kpi,
+      visible: layout.includes(kpi.id)
+    }));
+  });
+
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
+
+  // Save layout to localStorage when it changes
+  useEffect(() => {
+    const visibleIds = items.filter(i => i.visible).map(i => i.id);
+    localStorage.setItem('dashboard-layout', JSON.stringify(visibleIds));
+  }, [items]);
 
   const moveCard = useCallback((dragIndex: number, hoverIndex: number) => {
     setItems((prevCards) => {

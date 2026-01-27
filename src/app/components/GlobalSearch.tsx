@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Command as CommandPrimitive } from 'cmdk';
 import { Search } from 'lucide-react';
 import { useNavigate } from 'react-router';
@@ -16,6 +16,24 @@ import {
 export function GlobalSearch() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Keyboard shortcut: Cmd/Ctrl + K to open search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setOpen(true);
+        // Focus the input after a short delay to ensure it's rendered
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 0);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const handleSelect = (productId: string) => {
     setOpen(false);
@@ -44,8 +62,9 @@ export function GlobalSearch() {
         >
           <Search className="w-5 h-5 text-emerald-500 shrink-0 mr-3" />
           <CommandPrimitive.Input
+            ref={inputRef}
             className="flex h-12 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-slate-400 text-slate-700 font-medium"
-            placeholder="Search products by Name, SKU, or Brand..."
+            placeholder="Search products by Name, SKU, or Brand... (⌘K)"
             onFocus={() => setOpen(true)}
             onBlur={() => {
                 setTimeout(() => setOpen(false), 200);
