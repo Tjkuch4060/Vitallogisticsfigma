@@ -1,10 +1,10 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { LucideIcon, TrendingUp, TrendingDown } from 'lucide-react';
 import { cn } from '../ui/utils';
 import { Area, AreaChart, ResponsiveContainer } from 'recharts';
-import { motion, useSpring, useTransform } from 'motion/react';
+import { AnimatedNumber } from '../ui/AnimatedNumber';
 
 export interface KPIItem {
   id: string;
@@ -27,26 +27,6 @@ interface DraggableKPICardProps {
 }
 
 const ItemType = 'KPI_CARD';
-
-function AnimatedNumber({ value, prefix = "" }: { value: number; prefix?: string }) {
-  const spring = useSpring(0, { bounce: 0, duration: 2000 });
-  
-  // Format the number based on whether it has decimals
-  const display = useTransform(spring, (current) => {
-    // Check if original value had decimals
-    const hasDecimals = value % 1 !== 0;
-    return prefix + current.toLocaleString('en-US', { 
-        minimumFractionDigits: hasDecimals ? 2 : 0, 
-        maximumFractionDigits: 2 
-    });
-  });
-
-  useEffect(() => {
-    spring.set(value);
-  }, [value, spring]);
-
-  return <motion.span>{display}</motion.span>;
-}
 
 export const DraggableKPICard = ({ id, index, item, moveCard }: DraggableKPICardProps) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -116,7 +96,11 @@ export const DraggableKPICard = ({ id, index, item, moveCard }: DraggableKPICard
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-extrabold text-slate-900 tracking-tight">
-                <AnimatedNumber value={item.value} prefix={item.prefix} />
+                <AnimatedNumber 
+                  value={item.value} 
+                  prefix={item.prefix || ''} 
+                  decimals={item.value % 1 !== 0 ? 2 : 0}
+                />
             </div>
             
             <div className="flex items-center justify-between mt-2">

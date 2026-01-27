@@ -8,6 +8,7 @@ import { Product } from '@/app/data/mockData';
 import { useCartStore } from '@/app/store/cartStore';
 import { useCompareStore } from '@/app/store/compareStore';
 import { toast } from 'sonner';
+import { triggerAddToCartAnimation } from '@/app/utils/cartAnimations';
 
 interface ProductCardProps {
   product: Product;
@@ -26,10 +27,11 @@ export const ProductCard = forwardRef<HTMLDivElement, ProductCardProps>(
     const isFavorite = favorites.includes(product.id);
     const isInCompare = compareList.some(p => p.id === product.id);
 
-    const handleAddToCart = (e: React.MouseEvent) => {
+    const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
       addItem(product);
       setIsAdded(true);
+      triggerAddToCartAnimation(e);
       setTimeout(() => setIsAdded(false), 2000);
     };
 
