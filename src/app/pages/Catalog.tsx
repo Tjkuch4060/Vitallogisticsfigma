@@ -3,22 +3,32 @@ import { products, Product } from '../data/mockData';
 import { Card, CardContent, CardFooter, CardHeader } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
-import { Star, ShoppingCart, Filter, SlidersHorizontal, Eye, FileText, ShieldCheck, LayoutGrid, List } from 'lucide-react';
+import { Input } from '../components/ui/input';
+import { Star, ShoppingCart, Filter, SlidersHorizontal, Eye, FileText, ShieldCheck, LayoutGrid, List, Search, X } from 'lucide-react';
 import { AppBreadcrumb } from '../components/AppBreadcrumb';
 import { ProductFilters, FilterState } from '../components/catalog/ProductFilters';
 import { ProductQuickView } from '../components/catalog/ProductQuickView';
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '../components/ui/sheet';
 import { ToggleGroup, ToggleGroupItem } from '../components/ui/toggle-group';
-import { useCart } from '../context/CartContext';
+import { useCartStore } from '../store/cartStore';
 import { Skeleton } from '../components/ui/skeleton';
 import { ProductCard } from '../components/catalog/ProductCard';
 import { motion, AnimatePresence } from 'motion/react';
+import { useProductSearch } from '../hooks/useProductSearch';
+import { useDebounce } from '../hooks/useDebounce';
 
 export function Catalog() {
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [loading, setLoading] = useState(true);
-  const { addItem } = useCart();
+  const [searchInput, setSearchInput] = useState('');
+  const addItem = useCartStore((state) => state.addItem);
+  
+  // Debounce search input
+  const debouncedSearch = useDebounce(searchInput, 300);
+  
+  // Search products using Fuse.js
+  const searchedProducts = useProductSearch(products, debouncedSearch);
 
   // Simulate initial loading
   useEffect(() => {
@@ -51,9 +61,9 @@ export function Catalog() {
     inStockOnly: false
   });
 
-  // Filter products
+  // Filter products (apply filters on searched products)
   const filteredProducts = useMemo(() => {
-    return products.filter(product => {
+    return searchedProducts.filter(product => {
         // Category filter
         if (filters.categories.length > 0 && !filters.categories.includes(product.category)) {
             return false;
@@ -82,7 +92,7 @@ export function Catalog() {
 
         return true;
     });
-  }, [filters]);
+  }, [filters, searchedProducts]);
 
   const getStockBadge = (stock: number) => {
     if (stock <= 0) {
@@ -205,8 +215,31 @@ export function Catalog() {
 
         {/* Product Grid */}
         <div className="col-span-1 md:col-span-3">
+            {/* Search Input */}
+            <div className="mb-6">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <Input
+                  type="text"
+                  placeholder="Search products by name, brand, category, or description..."
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  className="pl-10 pr-10 h-12 rounded-xl border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
+                />
+                {searchInput && (
+                  <button
+                    onClick={() => setSearchInput('')}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                    aria-label="Clear search"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+            
             <div className="mb-4 text-sm text-slate-500">
-                {loading ? <Skeleton className="h-4 w-32" /> : `Showing ${filteredProducts.length} results`}
+                {loading ? <Skeleton className="h-4 w-32" /> : `Showing ${filteredProducts.length} result${filteredProducts.length !== 1 ? 's' : ''}${searchInput ? ` for "${searchInput}"` : ''}`}
             </div>
 
             {loading ? (
@@ -217,20 +250,38 @@ export function Catalog() {
                         <Filter size={48} className="text-emerald-600 hover:rotate-6 transition-transform" />
                     </div>
                     <h3 className="text-lg font-medium text-slate-900">No products found</h3>
-                    <p className="text-slate-500">Try adjusting your filters to see more results.</p>
-                    <Button 
+                    <p className="text-slate-500">
+                      {searchInput 
+                        ? `No products match "${searchInput}". Try adjusting your search or filters.`
+                        : 'Try adjusting your filters to see more results.'}
+                    </p>
+                    <div className="flex gap-2 justify-center mt-4">
+                      {searchInput && (
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setSearchInput('')}
+                          className="text-emerald-600 border-emerald-200 hover:bg-emerald-50"
+                        >
+                          Clear search
+                        </Button>
+                      )}
+                      <Button 
                         variant="link" 
-                        onClick={() => setFilters({
+                        onClick={() => {
+                          setFilters({
                             categories: [],
                             brands: [],
                             priceRange: priceBounds,
                             thcRange: thcBounds,
                             inStockOnly: false
-                        })}
-                        className="mt-2 text-emerald-600"
-                    >
+                          });
+                          setSearchInput('');
+                        }}
+                        className="text-emerald-600"
+                      >
                         Clear all filters
-                    </Button>
+                      </Button>
+                    </div>
                 </div>
             ) : (
                 <motion.div 

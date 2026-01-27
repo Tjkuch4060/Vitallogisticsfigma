@@ -24,12 +24,12 @@ import {
 import { recentOrders, products } from '../data/mockData';
 import { OrderTimeline } from '../components/order/OrderTimeline';
 import { OrderStatusBadge } from '../components/order/OrderStatusBadge';
-import { useCart } from '../context/CartContext';
+import { useCartStore } from '../store/cartStore';
 import { toast } from 'sonner';
 
 export function OrderDetail() {
   const { orderId } = useParams();
-  const { addItems } = useCart();
+  const addItems = useCartStore((state) => state.addItems);
   
   // Mock data lookup
   const order = recentOrders.find(o => o.id === orderId) || recentOrders[0];

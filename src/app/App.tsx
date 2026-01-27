@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
@@ -12,21 +12,38 @@ import { Catalog } from './pages/Catalog';
 import { Dashboard } from './pages/Dashboard';
 import { Orders } from './pages/Orders';
 import { OrderDetail } from './pages/OrderDetail';
-import { CartProvider } from './context/CartContext';
+import { useCartStore } from './store/cartStore';
 import { CartSheet } from './components/cart/CartSheet';
 import { Checkout } from './pages/Checkout';
 import { DeliveryZones } from './pages/DeliveryZones';
+import { CompareProducts } from './pages/CompareProducts';
 import { UserProvider, useUser } from './context/UserContext';
 import { LicenseAlert } from './components/LicenseAlert';
 import { SuspensionScreen } from './pages/SuspensionScreen';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
-function Layout({ children }: { children: React.ReactNode }) {
+function LayoutContent({ children }: { children: React.ReactNode }) {
   const [showBanner, setShowBanner] = useState(true);
   const location = useLocation();
   const { status } = useUser();
+  const setIsCartOpen = useCartStore((state) => state.setIsOpen);
 
   // Hide footer on dashboard to feel more like an app
   const showFooter = location.pathname === '/';
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Escape to close modals
+      if (e.key === 'Escape') {
+        setIsCartOpen(false);
+        // Note: ProductQuickView close is handled within its component
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [setIsCartOpen]);
 
   // Suspension Guard
   // Block critical ordering paths: Checkout
@@ -37,9 +54,15 @@ function Layout({ children }: { children: React.ReactNode }) {
   if (status === 'Suspended' && isBlockedPath) {
       return (
         <div className="min-h-screen font-sans text-slate-700 selection:bg-emerald-100 selection:text-emerald-900">
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-emerald-600 text-white px-4 py-2 rounded-md z-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+            >
+              Skip to main content
+            </a>
             <Navbar />
             <LicenseAlert />
-            <main className="min-h-[calc(100vh-200px)]">
+            <main id="main-content" role="main" aria-label="Main content" className="min-h-[calc(100vh-200px)]">
                 <SuspensionScreen />
             </main>
             <Toaster />
@@ -50,9 +73,15 @@ function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen font-sans text-slate-700 selection:bg-emerald-100 selection:text-emerald-900">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-emerald-600 text-white px-4 py-2 rounded-md z-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+      >
+        Skip to main content
+      </a>
       <Navbar />
       <LicenseAlert />
-      <main className="min-h-[calc(100vh-200px)]">
+      <main id="main-content" role="main" aria-label="Main content" className="min-h-[calc(100vh-200px)]">
         {children}
       </main>
       <QuickActions />
@@ -74,8 +103,9 @@ function Layout({ children }: { children: React.ReactNode }) {
            <button 
              onClick={() => setShowBanner(false)}
              className="text-orange-800/60 hover:text-orange-900 transition-colors"
+             aria-label="Close preview mode banner"
            >
-             <X className="w-4 h-4" />
+             <X className="w-4 h-4" aria-hidden="true" />
            </button>
         </div>
       )}
@@ -87,25 +117,24 @@ export default function App() {
   return (
     <DndProvider backend={HTML5Backend}>
       <UserProvider>
-        <CartProvider>
-            <Router>
-            <Layout>
-                <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/catalog" element={<Catalog />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/orders" element={<Orders />} />
-                <Route path="/orders/:orderId" element={<OrderDetail />} />
-                <Route path="/checkout" element={<Checkout />} />
-                <Route path="/delivery-zones" element={<DeliveryZones />} />
-                {/* Fallback routes for demo purposes */}
-                <Route path="/retailers" element={<Dashboard />} />
-                <Route path="/brands" element={<Dashboard />} />
-                <Route path="/payouts" element={<Dashboard />} />
-                </Routes>
-            </Layout>
-            </Router>
-        </CartProvider>
+        <Router>
+          <LayoutContent>
+            <Routes>
+              <Route path="/" element={<ErrorBoundary><LandingPage /></ErrorBoundary>} />
+              <Route path="/catalog" element={<ErrorBoundary><Catalog /></ErrorBoundary>} />
+              <Route path="/dashboard" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
+              <Route path="/orders" element={<ErrorBoundary><Orders /></ErrorBoundary>} />
+              <Route path="/orders/:orderId" element={<ErrorBoundary><OrderDetail /></ErrorBoundary>} />
+              <Route path="/checkout" element={<ErrorBoundary><Checkout /></ErrorBoundary>} />
+              <Route path="/delivery-zones" element={<ErrorBoundary><DeliveryZones /></ErrorBoundary>} />
+              <Route path="/compare" element={<ErrorBoundary><CompareProducts /></ErrorBoundary>} />
+              {/* Fallback routes for demo purposes */}
+              <Route path="/retailers" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
+              <Route path="/brands" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
+              <Route path="/payouts" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
+            </Routes>
+          </LayoutContent>
+        </Router>
       </UserProvider>
     </DndProvider>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Product } from '../../data/mockData';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog';
 import { Button } from '../ui/button';
@@ -25,6 +25,32 @@ export function ProductQuickView({ product, isOpen, onClose }: ProductQuickViewP
 
   // Delivery Estimates (Simulated based on Zone 1 default)
   const deliveryDate = addDays(new Date(), 2); // Zone 1 = +2 days roughly
+
+  // Focus management: When dialog opens, focus first interactive element
+  useEffect(() => {
+    if (isOpen) {
+      // Small delay to ensure the dialog is fully rendered
+      setTimeout(() => {
+        const dialog = document.querySelector('[role="dialog"]');
+        const firstButton = dialog?.querySelector('button') as HTMLButtonElement;
+        firstButton?.focus();
+      }, 100);
+    }
+  }, [isOpen]);
+
+  // Handle Escape key to close
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
   
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
