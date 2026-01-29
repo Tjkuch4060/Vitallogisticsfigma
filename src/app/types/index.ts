@@ -65,7 +65,7 @@ export type ProductCategory =
   | 'Beverages';
 
 // ============================================================================
-// CART TYPES
+// CART TYPES (compatible with Zustand store)
 // ============================================================================
 
 export interface CartItem {
@@ -86,7 +86,6 @@ export interface CartContextValue {
   itemCount: number;
   hasItem: (productId: string) => boolean;
 }
-
 // ============================================================================
 // ORDER TYPES
 // ============================================================================
@@ -199,7 +198,6 @@ export interface UserContextValue {
   setExpirationDate: (date: Date) => void;
   setStatus: (status: LicenseStatus) => void;
 }
-
 // ============================================================================
 // FILTER TYPES
 // ============================================================================
