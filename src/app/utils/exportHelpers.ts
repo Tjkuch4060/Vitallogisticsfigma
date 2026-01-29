@@ -21,7 +21,7 @@ export function exportOrdersToPDF(orders: Order[]) {
   doc.setTextColor(100);
 
   let y = 40;
-  orders.forEach((order, index) => {
+  orders.forEach((order) => {
     if (y > 270) {
       doc.addPage();
       y = 20;

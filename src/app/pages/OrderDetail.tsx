@@ -32,7 +32,18 @@ export function OrderDetail() {
   const addItems = useCartStore((state) => state.addItems);
   
   // Mock data lookup
-  const order = recentOrders.find(o => o.id === orderId) || recentOrders[0];
+  const order = recentOrders.find(o => o.id === orderId);
+
+  if (!order) {
+    return (
+      <div className="container mx-auto px-4 md:px-8 py-12 text-center">
+        <h1 className="text-2xl font-bold">Order not found</h1>
+        <Link to="/orders" className="text-emerald-600 hover:underline mt-4 inline-block">
+            Go back to Orders
+        </Link>
+      </div>
+    );
+  }
   
   // Mock order items (deterministic based on order ID for demo consistency, or fallback to fixed list)
   const orderItems = [
@@ -46,13 +57,13 @@ export function OrderDetail() {
   const isPickup = order.zone === 1;
 
   // Calculate financials dynamically
-  const subtotal = orderItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+  const subtotal = orderItems.reduce((sum, item) => sum + ((item.product?.price || 0) * item.quantity), 0);
   const shippingFee = isPickup ? 0 : (subtotal > 1500 ? 0 : 45.00);
   const tax = subtotal * 0.08875; // 8.875% Tax
   const total = subtotal + shippingFee + tax;
 
   const handleReorder = () => {
-    addItems(orderItems);
+    addItems(orderItems.filter(item => item.product));
   };
 
   const handleDownloadInvoice = () => {
@@ -132,6 +143,7 @@ export function OrderDetail() {
                 <CardContent className="p-0">
                     <div className="divide-y divide-slate-100">
                         {orderItems.map((item, index) => (
+                            item.product && (
                             <div key={index} className="p-6 flex flex-col sm:flex-row items-start gap-4 hover:bg-slate-50/30 transition-colors">
                                 <div className="w-20 h-20 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 border border-slate-200">
                                     <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover" />
@@ -157,6 +169,7 @@ export function OrderDetail() {
                                     </div>
                                 </div>
                             </div>
+                            )
                         ))}
                     </div>
                 </CardContent>

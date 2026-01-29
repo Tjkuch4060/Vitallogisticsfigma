@@ -77,24 +77,21 @@ export const useCartStore = create<CartStore>()(
           let currentItems = [...state.items];
 
           newItems.forEach(({ product, quantity }) => {
-            // Skip if requested quantity is 0
             if (quantity <= 0) return;
 
-            // Check availability
             if (product.stock === 0) {
               outOfStockCount++;
               return;
             }
 
-            const existingIndex = currentItems.findIndex((item) => item.product.id === product.id);
+            const existingItem = currentItems.find((item) => item.product.id === product.id);
             
-            if (existingIndex >= 0) {
-              // Update existing
-              const currentQty = currentItems[existingIndex].quantity;
+            if (existingItem) {
+              const currentQty = existingItem.quantity;
               const availableStock = product.stock - currentQty;
               
               if (availableStock <= 0) {
-                outOfStockCount++; // Already at max in cart
+                outOfStockCount++;
                 return;
               }
 
@@ -105,10 +102,7 @@ export const useCartStore = create<CartStore>()(
                 addedCount++;
               }
 
-              currentItems[existingIndex] = {
-                ...currentItems[existingIndex],
-                quantity: currentQty + quantityToAdd
-              };
+              existingItem.quantity += quantityToAdd;
             } else {
               // Add new
               const quantityToAdd = Math.min(quantity, product.stock);
