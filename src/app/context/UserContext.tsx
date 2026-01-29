@@ -28,8 +28,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         if (daysRemaining <= 0) {
-            setStatus('Expired');
-        } else if (status === 'Expired' && daysRemaining > 0) {
+            setStatus('Suspended');
+        } else if (status === 'Suspended' && daysRemaining > 0) {
             setStatus('Active');
         }
     }, [daysRemaining, status]);
@@ -49,9 +49,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <UserContext.Provider value={{ 
-            licenseExpirationDate: expirationDate, 
-            status: daysRemaining <= 0 ? 'Suspended' : status, // Auto-suspend if expired
+        <UserContext.Provider value={{
+            licenseExpirationDate: expirationDate,
+            status,
             daysRemaining,
             renewLicense,
             simulateExpiration
