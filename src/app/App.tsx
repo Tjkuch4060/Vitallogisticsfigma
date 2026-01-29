@@ -1,27 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router';
+import { X, Monitor } from 'lucide-react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+
+// Eager-loaded components (needed immediately)
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { QuickActions } from './components/QuickActions';
 import { Toaster } from './components/ui/sonner';
-import { X, Monitor } from 'lucide-react';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import { LandingPage } from './pages/LandingPage';
-import { Catalog } from './pages/Catalog';
-import { Dashboard } from './pages/Dashboard';
-import { Orders } from './pages/Orders';
-import { OrderDetail } from './pages/OrderDetail';
 import { useCartStore } from './store/cartStore';
 import { CartSheet } from './components/cart/CartSheet';
-import { Checkout } from './pages/Checkout';
-import { DeliveryZones } from './pages/DeliveryZones';
-import { CompareProducts } from './pages/CompareProducts';
 import { UserProvider, useUser } from './context/UserContext';
 import { LicenseAlert } from './components/LicenseAlert';
-import { SuspensionScreen } from './pages/SuspensionScreen';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { OnboardingTour } from './components/OnboardingTour';
+import { PageLoadingSpinner } from './components/ui/PageLoadingSpinner';
+
+// Lazy-loaded pages (loaded on demand)
+const LandingPage = lazy(() => import('./pages/LandingPage').then(m => ({ default: m.LandingPage })));
+const Catalog = lazy(() => import('./pages/Catalog').then(m => ({ default: m.Catalog })));
+const Dashboard = lazy(() => import('./pages/Dashboard').then(m => ({ default: m.Dashboard })));
+const Orders = lazy(() => import('./pages/Orders').then(m => ({ default: m.Orders })));
+const OrderDetail = lazy(() => import('./pages/OrderDetail').then(m => ({ default: m.OrderDetail })));
+const Checkout = lazy(() => import('./pages/Checkout').then(m => ({ default: m.Checkout })));
+const DeliveryZones = lazy(() => import('./pages/DeliveryZones').then(m => ({ default: m.DeliveryZones })));
+const CompareProducts = lazy(() => import('./pages/CompareProducts').then(m => ({ default: m.CompareProducts })));
+const SuspensionScreen = lazy(() => import('./pages/SuspensionScreen').then(m => ({ default: m.SuspensionScreen })));
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const [showBanner, setShowBanner] = useState(true);
@@ -64,7 +69,9 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
             <Navbar />
             <LicenseAlert />
             <main id="main-content" role="main" aria-label="Main content" className="min-h-[calc(100vh-200px)]">
-                <SuspensionScreen />
+                <Suspense fallback={<PageLoadingSpinner />}>
+                  <SuspensionScreen />
+                </Suspense>
             </main>
             <Toaster />
             {showFooter && <Footer />}
@@ -121,20 +128,22 @@ export default function App() {
       <UserProvider>
         <Router>
           <LayoutContent>
-            <Routes>
-              <Route path="/" element={<ErrorBoundary><LandingPage /></ErrorBoundary>} />
-              <Route path="/catalog" element={<ErrorBoundary><Catalog /></ErrorBoundary>} />
-              <Route path="/dashboard" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
-              <Route path="/orders" element={<ErrorBoundary><Orders /></ErrorBoundary>} />
-              <Route path="/orders/:orderId" element={<ErrorBoundary><OrderDetail /></ErrorBoundary>} />
-              <Route path="/checkout" element={<ErrorBoundary><Checkout /></ErrorBoundary>} />
-              <Route path="/delivery-zones" element={<ErrorBoundary><DeliveryZones /></ErrorBoundary>} />
-              <Route path="/compare" element={<ErrorBoundary><CompareProducts /></ErrorBoundary>} />
-              {/* Fallback routes for demo purposes */}
-              <Route path="/retailers" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
-              <Route path="/brands" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
-              <Route path="/payouts" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
-            </Routes>
+            <Suspense fallback={<PageLoadingSpinner />}>
+              <Routes>
+                <Route path="/" element={<ErrorBoundary><LandingPage /></ErrorBoundary>} />
+                <Route path="/catalog" element={<ErrorBoundary><Catalog /></ErrorBoundary>} />
+                <Route path="/dashboard" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
+                <Route path="/orders" element={<ErrorBoundary><Orders /></ErrorBoundary>} />
+                <Route path="/orders/:orderId" element={<ErrorBoundary><OrderDetail /></ErrorBoundary>} />
+                <Route path="/checkout" element={<ErrorBoundary><Checkout /></ErrorBoundary>} />
+                <Route path="/delivery-zones" element={<ErrorBoundary><DeliveryZones /></ErrorBoundary>} />
+                <Route path="/compare" element={<ErrorBoundary><CompareProducts /></ErrorBoundary>} />
+                {/* Fallback routes for demo purposes */}
+                <Route path="/retailers" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
+                <Route path="/brands" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
+                <Route path="/payouts" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
+              </Routes>
+            </Suspense>
           </LayoutContent>
         </Router>
       </UserProvider>
