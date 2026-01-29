@@ -1,11 +1,9 @@
-import React from 'react';
 import { 
   Plus, 
   ShoppingCart, 
   Headphones, 
   FileText, 
-  PackagePlus,
-  MessageCircle
+  PackagePlus
 } from 'lucide-react';
 import { Button } from './ui/button';
 import {
@@ -16,7 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 export function QuickActions() {

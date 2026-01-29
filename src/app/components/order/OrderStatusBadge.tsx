@@ -1,4 +1,3 @@
-import React from 'react';
 import { Badge } from '../ui/badge';
 import { Check, Box, Package, Truck, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 

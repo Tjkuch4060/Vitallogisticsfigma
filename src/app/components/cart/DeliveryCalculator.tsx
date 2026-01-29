@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Input } from '../ui/input';
-import { Label } from '../ui/label';
 import { Truck, MapPin } from 'lucide-react';
 import { Badge } from '../ui/badge';
 

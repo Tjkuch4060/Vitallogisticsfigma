@@ -1,4 +1,3 @@
-import React from 'react';
 import { Order } from '../../data/mockData';
 import { ClipboardList, CreditCard, PackageSearch, Box, Truck, CheckCircle, Clock } from 'lucide-react';
 import { motion } from 'motion/react';
@@ -47,6 +46,9 @@ const getStepTimestamp = (orderDate: string, stepIndex: number, currentStatusInd
   ];
 
   const conf = timestamps[stepIndex];
+  if (!conf) {
+    return null;
+  }
   const newDate = new Date(date);
   newDate.setDate(date.getDate() + conf.add);
   

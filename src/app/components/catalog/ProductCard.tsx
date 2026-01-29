@@ -21,7 +21,7 @@ export const ProductCard = forwardRef<HTMLDivElement, ProductCardProps>(
     const addItem = useCartStore((state) => state.addItem);
     const favorites = useCartStore((state) => state.favorites);
     const toggleFavorite = useCartStore((state) => state.toggleFavorite);
-    const { compareList, addToCompare, removeFromCompare } = useCompareStore();
+    const { compareList, addToCompare } = useCompareStore();
     const [isAdded, setIsAdded] = useState(false);
     
     const isFavorite = favorites.includes(product.id);

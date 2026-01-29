@@ -22,8 +22,8 @@ export function OnboardingTour() {
         popover: {
           title: 'Product Catalog',
           description: 'Browse all available products here. You can search, filter, and add items to your cart.',
-          side: 'bottom',
-          align: 'start',
+          side: 'bottom' as const,
+          align: 'start' as const,
         },
       });
     }
@@ -35,8 +35,8 @@ export function OnboardingTour() {
         popover: {
           title: 'Shopping Cart',
           description: 'View your cart, manage quantities, and proceed to checkout. Your cart persists across sessions.',
-          side: 'bottom',
-          align: 'end',
+          side: 'bottom' as const,
+          align: 'end' as const,
         },
       });
     }
@@ -49,8 +49,8 @@ export function OnboardingTour() {
         popover: {
           title: 'Product Comparison',
           description: 'Compare up to 4 products side-by-side to make informed purchasing decisions. This button appears when you add products to compare.',
-          side: 'bottom',
-          align: 'end',
+          side: 'bottom' as const,
+          align: 'end' as const,
         },
       });
     }
@@ -62,8 +62,8 @@ export function OnboardingTour() {
         popover: {
           title: 'Dashboard',
           description: 'View your revenue metrics, orders, and business insights. Customize which metrics to display.',
-          side: 'bottom',
-          align: 'start',
+          side: 'bottom' as const,
+          align: 'start' as const,
         },
       });
     }

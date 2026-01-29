@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { DollarSign, Package, TrendingUp, Users, SlidersHorizontal, Eye, EyeOff, Truck, Percent } from 'lucide-react';
+import { useState, useCallback, useEffect } from 'react';
+import { DollarSign, Package, Users, SlidersHorizontal, Eye, EyeOff, Truck, Percent } from 'lucide-react';
 import { DraggableKPICard, KPIItem } from './DraggableKPICard';
 import { KPICardSkeleton } from './KPICardSkeleton';
 import { Button } from '../ui/button';
@@ -19,16 +19,6 @@ import { Label } from '../ui/label';
 function calculateChange(current: number, previous: number): number {
   if (previous === 0) return 0;
   return ((current - previous) / previous) * 100;
-}
-
-// Helper function to format currency
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
 }
 
 // Mock values - current period
@@ -161,7 +151,9 @@ export function DashboardKPIs({ loading = false }: DashboardKPIsProps) {
       
       const newVisibleItems = [...visibleItems];
       const [movedItem] = newVisibleItems.splice(dragIndex, 1);
-      newVisibleItems.splice(hoverIndex, 0, movedItem);
+      if (movedItem) {
+        newVisibleItems.splice(hoverIndex, 0, movedItem);
+      }
       
       return [...newVisibleItems, ...hiddenItems];
     });

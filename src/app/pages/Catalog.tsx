@@ -1,16 +1,14 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { products, Product } from '../data/mockData';
 import { Card, CardContent, CardFooter, CardHeader } from '../components/ui/card';
 import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
-import { Star, ShoppingCart, Filter, SlidersHorizontal, Eye, FileText, ShieldCheck, LayoutGrid, List, Search, X } from 'lucide-react';
+import { ShoppingCart, Filter, SlidersHorizontal, LayoutGrid, List, Search, X } from 'lucide-react';
 import { AppBreadcrumb } from '../components/AppBreadcrumb';
 import { ProductFilters, FilterState } from '../components/catalog/ProductFilters';
 import { ProductQuickView } from '../components/catalog/ProductQuickView';
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '../components/ui/sheet';
 import { ToggleGroup, ToggleGroupItem } from '../components/ui/toggle-group';
-import { useCartStore } from '../store/cartStore';
 import { Skeleton } from '../components/ui/skeleton';
 import { ProductCard } from '../components/catalog/ProductCard';
 import { motion, AnimatePresence } from 'motion/react';
@@ -22,7 +20,6 @@ export function Catalog() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [loading, setLoading] = useState(true);
   const [searchInput, setSearchInput] = useState('');
-  const addItem = useCartStore((state) => state.addItem);
   
   // Debounce search input
   const debouncedSearch = useDebounce(searchInput, 300);
@@ -93,28 +90,6 @@ export function Catalog() {
         return true;
     });
   }, [filters, searchedProducts]);
-
-  const getStockBadge = (stock: number) => {
-    if (stock <= 0) {
-      return (
-        <Badge variant="destructive" className="shadow-sm">
-          Out of Stock
-        </Badge>
-      );
-    }
-    if (stock < 20) {
-      return (
-        <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 border-amber-200 shadow-sm">
-          Low Stock ({stock})
-        </Badge>
-      );
-    }
-    return (
-      <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 border-emerald-200 shadow-sm">
-        In Stock ({stock})
-      </Badge>
-    );
-  };
 
   const ProductGridSkeleton = () => (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

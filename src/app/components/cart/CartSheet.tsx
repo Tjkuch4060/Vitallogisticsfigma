@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef, startTransition } from 'react';
+import { useState, useEffect, useRef, startTransition } from 'react';
 import { useCartStore } from '../../store/cartStore';
 import { useOrderTemplatesStore } from '../../store/orderTemplatesStore';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '../ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../ui/sheet';
 import { Button } from '../ui/button';
 import { ScrollArea } from '../ui/scroll-area';
 import { Input } from '../ui/input';

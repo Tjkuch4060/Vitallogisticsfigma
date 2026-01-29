@@ -1,4 +1,3 @@
-import React from 'react';
 import { Slider } from '../ui/slider';
 import { Checkbox } from '../ui/checkbox';
 import { Label } from '../ui/label';
@@ -9,7 +8,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '../ui/accordion';
-import { Badge } from '../ui/badge';
 
 export interface FilterState {
   categories: string[];
@@ -52,11 +50,15 @@ export function ProductFilters({
   };
 
   const handlePriceChange = (value: number[]) => {
-    onFilterChange({ ...filters, priceRange: [value[0], value[1]] });
+    if (value[0] !== undefined && value[1] !== undefined) {
+      onFilterChange({ ...filters, priceRange: [value[0], value[1]] });
+    }
   };
 
   const handleThcChange = (value: number[]) => {
-    onFilterChange({ ...filters, thcRange: [value[0], value[1]] });
+    if (value[0] !== undefined && value[1] !== undefined) {
+      onFilterChange({ ...filters, thcRange: [value[0], value[1]] });
+    }
   };
 
   const clearFilters = () => {

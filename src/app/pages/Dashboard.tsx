@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { recentOrders } from '../data/mockData';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { DashboardKPIs } from '../components/dashboard/DashboardKPIs';
@@ -12,7 +11,7 @@ import { toast } from 'sonner';
 import { subDays, format, eachDayOfInterval } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { Button } from '../components/ui/button';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { ArrowRight, Download, FileText } from 'lucide-react';
 import { Skeleton } from '../components/ui/skeleton';
 import { AppBreadcrumb } from '../components/AppBreadcrumb';

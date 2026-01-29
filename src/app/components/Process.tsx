@@ -1,4 +1,3 @@
-import React from 'react';
 import { ClipboardCheck, ShoppingCart, Truck } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { motion, useSpring, useTransform, useInView } from 'motion/react';
-import { ArrowRight, Leaf, Box, Users, Clock, Building2, Package } from 'lucide-react';
+import { ArrowRight, Leaf, Users, Clock, Building2, Package } from 'lucide-react';
 import { Button } from './ui/button';
 import { Link } from 'react-router';
 

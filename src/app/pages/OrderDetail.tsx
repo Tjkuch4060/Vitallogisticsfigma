@@ -1,13 +1,11 @@
-import React from 'react';
-import { useParams, Link } from 'react-router';
+import { useParams, Link } from 'react-router-dom';
 import { AppBreadcrumb } from '../components/AppBreadcrumb';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '../components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Separator } from '../components/ui/separator';
 import { 
     ArrowLeft, 
-    Printer, 
     Truck, 
     RotateCcw, 
     Download, 
@@ -26,6 +24,7 @@ import { OrderTimeline } from '../components/order/OrderTimeline';
 import { OrderStatusBadge } from '../components/order/OrderStatusBadge';
 import { useCartStore } from '../store/cartStore';
 import { toast } from 'sonner';
+import { Product } from '../types';
 
 export function OrderDetail() {
   const { orderId } = useParams();
@@ -63,7 +62,9 @@ export function OrderDetail() {
   const total = subtotal + shippingFee + tax;
 
   const handleReorder = () => {
-    addItems(orderItems.filter(item => item.product));
+    addItems(
+      orderItems.filter((item): item is { product: Product; quantity: number } => !!item.product)
+    );
   };
 
   const handleDownloadInvoice = () => {

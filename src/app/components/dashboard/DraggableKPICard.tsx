@@ -1,5 +1,6 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
+import type { Identifier } from 'dnd-core';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { LucideIcon, TrendingUp, TrendingDown } from 'lucide-react';
 import { cn } from '../ui/utils';
@@ -26,23 +27,33 @@ interface DraggableKPICardProps {
   moveCard: (dragIndex: number, hoverIndex: number) => void;
 }
 
+interface DragItem {
+  id: string;
+  index: number;
+  type: string;
+}
+
 const ItemType = 'KPI_CARD';
 
 export const DraggableKPICard = ({ id, index, item, moveCard }: DraggableKPICardProps) => {
   const ref = useRef<HTMLDivElement>(null);
   
-  const [{ handlerId }, drop] = useDrop({
+  const [{ handlerId }, drop] = useDrop<
+    DragItem,
+    void,
+    { handlerId: Identifier | null }
+  >({
     accept: ItemType,
     collect(monitor) {
       return {
         handlerId: monitor.getHandlerId(),
       };
     },
-    hover(item: { index: number; id: string; type: string }, monitor) {
+    hover(draggedItem: DragItem, monitor) {
       if (!ref.current) {
         return;
       }
-      const dragIndex = item.index;
+      const dragIndex = draggedItem.index;
       const hoverIndex = index;
 
       if (dragIndex === hoverIndex) {
@@ -52,7 +63,12 @@ export const DraggableKPICard = ({ id, index, item, moveCard }: DraggableKPICard
       const hoverBoundingRect = ref.current?.getBoundingClientRect();
       const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
       const clientOffset = monitor.getClientOffset();
-      const hoverClientY = (clientOffset as any).y - hoverBoundingRect.top;
+      
+      if (!clientOffset) {
+        return;
+      }
+      
+      const hoverClientY = clientOffset.y - hoverBoundingRect.top;
 
       if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
          return;
@@ -63,14 +79,14 @@ export const DraggableKPICard = ({ id, index, item, moveCard }: DraggableKPICard
       }
 
       moveCard(dragIndex, hoverIndex);
-      item.index = hoverIndex;
+      draggedItem.index = hoverIndex;
     },
   });
 
   const [{ isDragging }, drag] = useDrag({
     type: ItemType,
-    item: () => {
-      return { id, index };
+    item: (): DragItem => {
+      return { id, index, type: ItemType };
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),

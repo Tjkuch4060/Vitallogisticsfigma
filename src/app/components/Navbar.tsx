@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Menu, X, User, ChevronDown, Phone, Leaf, ShoppingCart, Scale } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Menu, X, ChevronDown, Phone, Leaf, ShoppingCart, Scale } from 'lucide-react';
 import { Button } from './ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import { Badge } from './ui/badge';
-import { Link, useLocation } from 'react-router';
+import { Link, useLocation } from 'react-router-dom';
 import { GlobalSearch } from './GlobalSearch';
 import { LicenseStatus } from './LicenseStatus';
 import { useCartStore } from '../store/cartStore';

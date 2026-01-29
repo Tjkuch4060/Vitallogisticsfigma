@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCartStore } from '../store/cartStore';
@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Separator } from '../components/ui/separator';
 import { RadioGroup, RadioGroupItem } from '../components/ui/radio-group';
 import { Check, Truck, CreditCard, ShieldCheck, ArrowLeft, ArrowRight, MapPin, Package, Store, FileText } from 'lucide-react';
-import { Link, useNavigate } from 'react-router';
+import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { deliveryZones } from '../data/mockData';
 import { toast } from 'sonner';
@@ -44,20 +44,22 @@ const calculateZone = (zip: string, subtotal: number) => {
     zoneId = 2;
   }
 
-  const zone = deliveryZones.find(z => z.zoneId === zoneId) || deliveryZones[2];
+  const zone = deliveryZones.find(z => z.zoneId === zoneId);
+
+  if (!zone) {
+    return {
+      name: 'Service Unavailable',
+      fee: 999.00,
+      date: 'N/A',
+      isFree: false,
+      threshold: 999999
+    };
+  }
   
   // Calculate specific date
   const processingTime = 1; // 1 day processing
   const deliveryDate = getNextDeliveryDate(processingTime, zone.days);
   
-  // Format: January 10, 2026 (Tuesday)
-  const formattedDate = deliveryDate.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric', 
-      weekday: 'long' 
-  }).replace(/(\w+), (\w+ \d+, \d+)/, '$2 ($1)'); // Swap to "Date (Weekday)" format or just use standard then append weekday parens? 
-  // Standard: "Tuesday, January 10, 2026" -> User wants "January 10, 2026 (Tuesday)"
   const datePart = deliveryDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
   const dayPart = deliveryDate.toLocaleDateString('en-US', { weekday: 'long' });
   const finalDateString = `${datePart} (${dayPart})`;
@@ -101,7 +103,6 @@ export function Checkout() {
     state.items.reduce((sum, item) => sum + (item.lockedPrice * item.quantity), 0)
   );
   const clearCart = useCartStore((state) => state.clearCart);
-  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [completed, setCompleted] = useState(false);

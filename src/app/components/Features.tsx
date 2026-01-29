@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, ShieldCheck, CreditCard, Truck, CheckCircle2 } from 'lucide-react';
 
 export function Features() {
