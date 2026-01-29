@@ -90,9 +90,12 @@ export const useCartStore = create<CartStore>()(
             
             if (existingIndex >= 0) {
               // Update existing
-              const currentQty = currentItems[existingIndex].quantity;
+              const existingItem = currentItems[existingIndex];
+              if (!existingItem) return;
+
+              const currentQty = existingItem.quantity;
               const availableStock = product.stock - currentQty;
-              
+
               if (availableStock <= 0) {
                 outOfStockCount++; // Already at max in cart
                 return;
@@ -106,7 +109,7 @@ export const useCartStore = create<CartStore>()(
               }
 
               currentItems[existingIndex] = {
-                ...currentItems[existingIndex],
+                ...existingItem,
                 quantity: currentQty + quantityToAdd
               };
             } else {

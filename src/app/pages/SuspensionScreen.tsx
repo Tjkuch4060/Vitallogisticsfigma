@@ -1,7 +1,6 @@
-import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '../components/ui/card';
 import { Button } from '../components/ui/button';
-import { AlertTriangle, FileText, ArrowLeft, RefreshCw } from 'lucide-react';
+import { AlertTriangle, FileText, RefreshCw } from 'lucide-react';
 import { useUser } from '../context/UserContext';
 import { Link } from 'react-router';
 

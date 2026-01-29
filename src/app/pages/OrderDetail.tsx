@@ -144,7 +144,7 @@ export function OrderDetail() {
                                     <p className="text-sm text-slate-500 mb-2">{item.product.brand}</p>
                                     <div className="flex items-center gap-4 text-sm">
                                         <Badge variant="secondary" className="rounded-md font-normal bg-slate-100 text-slate-600 border-slate-200">
-                                            SKU: {item.product.sku}
+                                            SKU: {item.product?.sku}
                                         </Badge>
                                         <div className="text-slate-600">
                                             <span className="text-slate-400 mr-2">Qty:</span>
@@ -152,7 +152,7 @@ export function OrderDetail() {
                                         </div>
                                         <div className="text-slate-600">
                                             <span className="text-slate-400 mr-2">Price:</span>
-                                            <span className="font-medium">${item.product.price.toFixed(2)}</span>
+                                            <span className="font-medium">${item.product?.price.toFixed(2)}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -192,8 +192,8 @@ export function OrderDetail() {
                     <CardTitle className="text-base text-slate-800">Customer Details</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm">
-                    <div className="font-semibold text-slate-900 text-lg mb-1">{order.customer}</div>
-                    <div className="text-slate-500 mb-4">Customer ID: {order.id.split('-')[1]}992</div>
+                    <div className="font-semibold text-slate-900 text-lg mb-1">{order?.customer}</div>
+                    <div className="text-slate-500 mb-4">Customer ID: {order?.id.split('-')[1]}992</div>
                     
                     <div className="space-y-3">
                         <div className="flex items-start gap-3">

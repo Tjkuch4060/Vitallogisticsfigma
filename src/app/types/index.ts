@@ -95,7 +95,7 @@ export interface OrderItem {
   priceAtPurchase: number;
 }
 
-export interface OrderDetail extends Order {
+export interface OrderDetail extends Omit<Order, 'items'> {
   items: OrderItem[];
   shippingAddress: Address;
   billingAddress?: Address;
