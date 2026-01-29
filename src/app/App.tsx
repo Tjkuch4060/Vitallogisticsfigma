@@ -8,6 +8,7 @@ import { X, Monitor } from 'lucide-react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { LandingPage } from './pages/LandingPage';
+import { Login } from './pages/Login';
 import { Catalog } from './pages/Catalog';
 import { Dashboard } from './pages/Dashboard';
 import { Orders } from './pages/Orders';
@@ -123,6 +124,7 @@ export default function App() {
           <LayoutContent>
             <Routes>
               <Route path="/" element={<ErrorBoundary><LandingPage /></ErrorBoundary>} />
+              <Route path="/login" element={<ErrorBoundary><Login /></ErrorBoundary>} />
               <Route path="/catalog" element={<ErrorBoundary><Catalog /></ErrorBoundary>} />
               <Route path="/dashboard" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
               <Route path="/orders" element={<ErrorBoundary><Orders /></ErrorBoundary>} />
