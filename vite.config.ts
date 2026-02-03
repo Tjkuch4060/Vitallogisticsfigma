@@ -24,23 +24,14 @@ export default defineConfig({
         manualChunks: (id) => {
           // Vendor chunk for node_modules
           if (id.includes('node_modules')) {
-            // Separate chunk for large libraries
+            // Only split non-React libs to avoid "undefined (forwardRef/createContext)" errors.
+            // React, react-dom, react-dnd, @radix-ui, react-router must stay in vendor together.
             if (id.includes('recharts')) {
-              return 'recharts'; // Chart library separate chunk
-            }
-            if (id.includes('react-router')) {
-              return 'router'; // Router in separate chunk
-            }
-            if (id.includes('@radix-ui')) {
-              return 'radix'; // UI primitives together
-            }
-            if (id.includes('react-dnd')) {
-              return 'dnd'; // Drag and drop separate
+              return 'recharts';
             }
             if (id.includes('date-fns')) {
-              return 'date-utils'; // Date utilities
+              return 'date-utils';
             }
-            // Everything else in vendor chunk
             return 'vendor';
           }
 
