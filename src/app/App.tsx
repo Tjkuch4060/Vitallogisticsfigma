@@ -1,5 +1,5 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Outlet } from 'react-router-dom';
 import { X, Monitor } from 'lucide-react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -13,12 +13,16 @@ import { useCartStore } from './store/cartStore';
 import { LicenseStatus } from './types';
 import { CartSheet } from './components/cart/CartSheet';
 import { UserProvider, useUser } from './context/UserContext';
+import { AuthProvider } from './context/AuthContext';
 import { LicenseAlert } from './components/LicenseAlert';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { OnboardingTour } from './components/OnboardingTour';
 import { PageLoadingSpinner } from './components/ui/PageLoadingSpinner';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { UserRole } from './types';
 
 // Lazy-loaded pages (loaded on demand)
+const Login = lazy(() => import('./pages/Login').then(m => ({ default: m.Login })));
 const LandingPage = lazy(() => import('./pages/LandingPage').then(m => ({ default: m.LandingPage })));
 const Catalog = lazy(() => import('./pages/Catalog').then(m => ({ default: m.Catalog })));
 const Dashboard = lazy(() => import('./pages/Dashboard').then(m => ({ default: m.Dashboard })));
@@ -29,7 +33,7 @@ const DeliveryZones = lazy(() => import('./pages/DeliveryZones').then(m => ({ de
 const CompareProducts = lazy(() => import('./pages/CompareProducts').then(m => ({ default: m.CompareProducts })));
 const SuspensionScreen = lazy(() => import('./pages/SuspensionScreen').then(m => ({ default: m.SuspensionScreen })));
 
-function LayoutContent({ children }: { children: React.ReactNode }) {
+function LayoutContent() {
   const [showBanner, setShowBanner] = useState(true);
   const location = useLocation();
   const { status } = useUser();
@@ -70,9 +74,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
             <Navbar />
             <LicenseAlert />
             <main id="main-content" role="main" aria-label="Main content" className="min-h-[calc(100vh-200px)]">
-                <Suspense fallback={<PageLoadingSpinner />}>
-                  <SuspensionScreen />
-                </Suspense>
+                <SuspensionScreen />
             </main>
             <Toaster />
             {showFooter && <Footer />}
@@ -91,7 +93,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
       <Navbar />
       <LicenseAlert />
       <main id="main-content" role="main" aria-label="Main content" className="min-h-[calc(100vh-200px)]">
-        {children}
+        <Outlet />
       </main>
       <QuickActions />
       <CartSheet />
@@ -123,31 +125,36 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   );
 }
 
+const sharedRoles = [UserRole.Admin, UserRole.Customer];
+const adminOnlyRoles = [UserRole.Admin];
+
 export default function App() {
   return (
     <DndProvider backend={HTML5Backend}>
-      <UserProvider>
-        <Router>
-          <LayoutContent>
+      <AuthProvider>
+        <UserProvider>
+          <Router>
             <Suspense fallback={<PageLoadingSpinner />}>
               <Routes>
-                <Route path="/" element={<ErrorBoundary><LandingPage /></ErrorBoundary>} />
-                <Route path="/catalog" element={<ErrorBoundary><Catalog /></ErrorBoundary>} />
-                <Route path="/dashboard" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
-                <Route path="/orders" element={<ErrorBoundary><Orders /></ErrorBoundary>} />
-                <Route path="/orders/:orderId" element={<ErrorBoundary><OrderDetail /></ErrorBoundary>} />
-                <Route path="/checkout" element={<ErrorBoundary><Checkout /></ErrorBoundary>} />
-                <Route path="/delivery-zones" element={<ErrorBoundary><DeliveryZones /></ErrorBoundary>} />
-                <Route path="/compare" element={<ErrorBoundary><CompareProducts /></ErrorBoundary>} />
-                {/* Fallback routes for demo purposes */}
-                <Route path="/retailers" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
-                <Route path="/brands" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
-                <Route path="/payouts" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/" element={<LayoutContent />}>
+                  <Route index element={<ErrorBoundary><LandingPage /></ErrorBoundary>} />
+                  <Route path="catalog" element={<ErrorBoundary><ProtectedRoute allowedRoles={sharedRoles}><Catalog /></ProtectedRoute></ErrorBoundary>} />
+                  <Route path="dashboard" element={<ErrorBoundary><ProtectedRoute allowedRoles={sharedRoles}><Dashboard /></ProtectedRoute></ErrorBoundary>} />
+                  <Route path="orders" element={<ErrorBoundary><ProtectedRoute allowedRoles={sharedRoles}><Orders /></ProtectedRoute></ErrorBoundary>} />
+                  <Route path="orders/:orderId" element={<ErrorBoundary><ProtectedRoute allowedRoles={sharedRoles}><OrderDetail /></ProtectedRoute></ErrorBoundary>} />
+                  <Route path="checkout" element={<ErrorBoundary><ProtectedRoute allowedRoles={sharedRoles}><Checkout /></ProtectedRoute></ErrorBoundary>} />
+                  <Route path="delivery-zones" element={<ErrorBoundary><ProtectedRoute allowedRoles={sharedRoles}><DeliveryZones /></ProtectedRoute></ErrorBoundary>} />
+                  <Route path="compare" element={<ErrorBoundary><ProtectedRoute allowedRoles={sharedRoles}><CompareProducts /></ProtectedRoute></ErrorBoundary>} />
+                  <Route path="retailers" element={<ErrorBoundary><ProtectedRoute allowedRoles={adminOnlyRoles}><Dashboard /></ProtectedRoute></ErrorBoundary>} />
+                  <Route path="brands" element={<ErrorBoundary><ProtectedRoute allowedRoles={adminOnlyRoles}><Dashboard /></ProtectedRoute></ErrorBoundary>} />
+                  <Route path="payouts" element={<ErrorBoundary><ProtectedRoute allowedRoles={adminOnlyRoles}><Dashboard /></ProtectedRoute></ErrorBoundary>} />
+                </Route>
               </Routes>
             </Suspense>
-          </LayoutContent>
-        </Router>
-      </UserProvider>
+          </Router>
+        </UserProvider>
+      </AuthProvider>
     </DndProvider>
   );
 }

@@ -12,9 +12,11 @@ import { Link, useLocation } from 'react-router-dom';
 import { GlobalSearch } from './GlobalSearch';
 import { LicenseStatus as LicenseStatusWidget } from './LicenseStatus';
 import { useCartStore } from '../store/cartStore';
-import { LicenseStatus } from '../types';
+import { LicenseStatus, UserRole } from '../types';
 import { useCompareStore } from '../store/compareStore';
 import { useUser } from '../context/UserContext';
+import { useAuth } from '../context/AuthContext';
+import { ROUTES } from '../utils/constants';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,6 +26,8 @@ export function Navbar() {
   const items = useCartStore((state) => state.items);
   const compareList = useCompareStore((state) => state.compareList);
   const { daysRemaining, status } = useUser();
+  const { isAuthenticated, user, logout, role } = useAuth();
+  const isAdmin = role === UserRole.Admin;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -80,17 +84,21 @@ export function Navbar() {
                 <DropdownMenuItem asChild>
                   <Link to="/delivery-zones" className={`w-full ${isActive('/delivery-zones')}`}>Zones</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/retailers" className={`w-full ${isActive('/retailers')}`}>Retailers</Link>
-                </DropdownMenuItem>
+                {isAdmin && (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link to="/retailers" className={`w-full ${isActive('/retailers')}`}>Retailers</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/brands" className={`w-full ${isActive('/brands')}`}>Brands</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/payouts" className={`w-full ${isActive('/payouts')}`}>Payouts</Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
                 <DropdownMenuItem asChild>
                   <Link to="/catalog" id="catalog-link" className={`w-full ${isActive('/catalog')}`}>Products</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/brands" className={`w-full ${isActive('/brands')}`}>Brands</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/payouts" className={`w-full ${isActive('/payouts')}`}>Payouts</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -143,18 +151,32 @@ export function Navbar() {
           </Button>
 
           <div className="hidden sm:block">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full group">
-                  <ChevronDown size={16} className="text-slate-500 group-hover:rotate-6 transition-transform" />
+            {isAuthenticated && user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="rounded-full group">
+                    <ChevronDown size={16} className="text-slate-500 group-hover:rotate-6 transition-transform" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <div className="px-2 py-2 border-b border-slate-100">
+                    <p className="font-semibold text-slate-800 text-sm truncate max-w-[180px]">{user.name}</p>
+                    <p className="text-xs text-slate-500 truncate max-w-[180px]">{user.email}</p>
+                  </div>
+                  <DropdownMenuItem>Profile</DropdownMenuItem>
+                  <DropdownMenuItem>Settings</DropdownMenuItem>
+                  <DropdownMenuItem className="text-red-600 cursor-pointer" onClick={() => logout()}>
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link to={ROUTES.LOGIN}>
+                <Button variant="outline" size="sm" className="border-emerald-600 text-emerald-700 hover:bg-emerald-50">
+                  Log in
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>Profile</DropdownMenuItem>
-                <DropdownMenuItem>Settings</DropdownMenuItem>
-                <DropdownMenuItem className="text-red-600">Logout</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              </Link>
+            )}
           </div>
         </div>
 
@@ -176,27 +198,44 @@ export function Navbar() {
             <Link to="/dashboard" className="text-slate-600 hover:text-emerald-700">Dashboard</Link>
             <Link to="/orders" className="text-slate-600 hover:text-emerald-700">Orders</Link>
             <Link to="/delivery-zones" className="text-slate-600 hover:text-emerald-700">Zones</Link>
-            <Link to="/retailers" className="text-slate-600 hover:text-emerald-700">Retailers</Link>
+            {isAdmin && (
+              <>
+                <Link to="/retailers" className="text-slate-600 hover:text-emerald-700">Retailers</Link>
+                <Link to="/brands" className="text-slate-600 hover:text-emerald-700">Brands</Link>
+                <Link to="/payouts" className="text-slate-600 hover:text-emerald-700">Payouts</Link>
+              </>
+            )}
             <Link to="/catalog" className="text-slate-600 hover:text-emerald-700">Products</Link>
-            <Link to="/brands" className="text-slate-600 hover:text-emerald-700">Brands</Link>
-            <Link to="/payouts" className="text-slate-600 hover:text-emerald-700">Payouts</Link>
            </nav>
           <div className="border-t border-slate-100 pt-4 flex flex-col gap-2">
              <Button variant="outline" className="w-full justify-start gap-2" onClick={() => { setIsCartOpen(true); setIsOpen(false); }}>
                  <ShoppingCart className="w-4 h-4" />
                  View Cart ({items.length})
              </Button>
-             <div className="flex items-center justify-between">
-                <div>
-                    <span className="font-semibold text-slate-800 block">Test Hemp Dispensary</span>
-                    <span className={`text-xs font-medium ${isExpired ? 'text-red-600' : daysRemaining < 30 ? 'text-amber-600' : 'text-emerald-600'}`}>
-                        {isExpired ? 'License Expired' : `Expires in ${daysRemaining} days`}
-                    </span>
-                </div>
-                <Badge className={`${isExpired ? 'bg-red-600 animate-pulse' : 'bg-emerald-600'} text-white border-transparent shadow-md rounded-full px-4 py-1.5 font-bold text-[11px] uppercase tracking-wider`}>
-                    {isExpired ? 'Suspended' : 'Approved ✓'}
-                </Badge>
-             </div>
+             {isAuthenticated && user ? (
+               <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <div>
+                        <span className="font-semibold text-slate-800 block">{user.name}</span>
+                        <span className={`text-xs font-medium ${isExpired ? 'text-red-600' : daysRemaining < 30 ? 'text-amber-600' : 'text-emerald-600'}`}>
+                            {isExpired ? 'License Expired' : `Expires in ${daysRemaining} days`}
+                        </span>
+                    </div>
+                    <Badge className={`${isExpired ? 'bg-red-600 animate-pulse' : 'bg-emerald-600'} text-white border-transparent shadow-md rounded-full px-4 py-1.5 font-bold text-[11px] uppercase tracking-wider`}>
+                        {isExpired ? 'Suspended' : 'Approved ✓'}
+                    </Badge>
+                  </div>
+                  <Button variant="ghost" size="sm" className="text-red-600 w-full justify-start" onClick={() => { logout(); setIsOpen(false); }}>
+                    Logout
+                  </Button>
+               </div>
+             ) : (
+               <Link to={ROUTES.LOGIN} onClick={() => setIsOpen(false)}>
+                 <Button variant="outline" className="w-full border-emerald-600 text-emerald-700 hover:bg-emerald-50">
+                   Log in
+                 </Button>
+               </Link>
+             )}
           </div>
         </div>
       )}

@@ -1,4 +1,6 @@
+import { Link } from 'react-router-dom';
 import { Button } from './ui/button';
+import { ROUTES } from '../utils/constants';
 
 export function CTA() {
   return (
@@ -18,16 +20,27 @@ export function CTA() {
         </p>
         
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+          <Link to={ROUTES.CATALOG}>
+            <Button 
+              size="lg" 
+              className="bg-white text-emerald-900 hover:bg-emerald-50 rounded-xl px-10 py-4 h-auto text-base font-bold shadow-xl hover:scale-105 transition-all duration-300 w-full sm:w-auto border-none"
+            >
+              View Products
+            </Button>
+          </Link>
+          <Link to={ROUTES.LOGIN}>
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="border-2 border-white text-white bg-transparent hover:bg-white hover:text-emerald-900 rounded-xl px-10 py-4 h-auto text-base font-bold transition-all duration-300 w-full sm:w-auto"
+            >
+              Retailer Login
+            </Button>
+          </Link>
           <Button 
+            variant="ghost" 
             size="lg" 
-            className="bg-white text-emerald-900 hover:bg-emerald-50 rounded-xl px-10 py-4 h-auto text-base font-bold shadow-xl hover:scale-105 transition-all duration-300 w-full sm:w-auto border-none"
-          >
-            View Products
-          </Button>
-          <Button 
-            variant="outline" 
-            size="lg" 
-            className="border-2 border-white text-white bg-transparent hover:bg-white hover:text-emerald-900 rounded-xl px-10 py-4 h-auto text-base font-bold transition-all duration-300 w-full sm:w-auto"
+            className="border-2 border-white/50 text-white/90 hover:bg-white/10 hover:text-white rounded-xl px-10 py-4 h-auto text-base font-bold transition-all duration-300 w-full sm:w-auto"
           >
             Apply for Access
           </Button>

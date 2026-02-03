@@ -87,6 +87,7 @@ export const TIMING = {
 
 export const ROUTES = {
   HOME: '/',
+  LOGIN: '/login',
   CATALOG: '/catalog',
   DASHBOARD: '/dashboard',
   ORDERS: '/orders',
@@ -103,6 +104,7 @@ export const ROUTES = {
 // ============================================================================
 
 export const STORAGE_KEYS = {
+  AUTH: 'vital-auth',
   CART: 'vital-cart',
   USER_PREFERENCES: 'vital-user-prefs',
   DASHBOARD_LAYOUT: 'vital-dashboard-layout',
@@ -181,6 +183,9 @@ export const ERROR_MESSAGES = {
   // License
   LICENSE_SUSPENDED: 'Your license is suspended. Please contact support.',
   LICENSE_EXPIRED: 'Your license has expired. Please renew to continue.',
+
+  // Auth
+  INVALID_CREDENTIALS: 'Invalid email or password. Please try again.',
 } as const;
 
 // ============================================================================

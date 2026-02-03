@@ -1,4 +1,6 @@
 import { Leaf } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ROUTES } from '../utils/constants';
 
 export function Footer() {
   return (
@@ -30,7 +32,7 @@ export function Footer() {
             <ul className="space-y-4 text-sm">
               <li><a href="#" className="hover:text-emerald-400 transition-colors">Products & Catalog</a></li>
               <li><a href="#" className="hover:text-emerald-400 transition-colors">Apply for Access</a></li>
-              <li><a href="#" className="hover:text-emerald-400 transition-colors">Vendor Login</a></li>
+              <li><Link to={ROUTES.LOGIN} className="hover:text-emerald-400 transition-colors">Retailer Login</Link></li>
             </ul>
           </div>
 
