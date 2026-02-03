@@ -3,7 +3,6 @@ import { motion, useSpring, useTransform, useInView } from 'motion/react';
 import { ArrowRight, Leaf, Users, Clock, Building2, Package } from 'lucide-react';
 import { Button } from './ui/button';
 import { Link } from 'react-router-dom';
-import { ROUTES } from '../utils/constants';
 
 function Counter({ value, suffix = '' }: { value: number; suffix?: string }) {
     const ref = React.useRef(null);
@@ -86,15 +85,6 @@ export function Hero() {
                   className="w-full border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 rounded-xl px-8 py-5 h-auto text-base transition-all duration-200"
                 >
                   My Dashboard
-                </Button>
-              </Link>
-              <Link to={ROUTES.LOGIN} className="w-full sm:w-auto">
-                <Button 
-                  variant="ghost" 
-                  size="lg" 
-                  className="w-full text-slate-600 hover:text-emerald-700 hover:bg-emerald-50/50 rounded-xl px-8 py-5 h-auto text-base transition-all duration-200"
-                >
-                  Retailer Login
                 </Button>
               </Link>
             </div>

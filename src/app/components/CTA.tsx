@@ -28,15 +28,6 @@ export function CTA() {
               View Products
             </Button>
           </Link>
-          <Link to={ROUTES.LOGIN}>
-            <Button 
-              variant="outline" 
-              size="lg" 
-              className="border-2 border-white text-white bg-transparent hover:bg-white hover:text-emerald-900 rounded-xl px-10 py-4 h-auto text-base font-bold transition-all duration-300 w-full sm:w-auto"
-            >
-              Retailer Login
-            </Button>
-          </Link>
           <Button 
             variant="ghost" 
             size="lg" 
