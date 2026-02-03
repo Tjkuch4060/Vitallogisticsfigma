@@ -5,7 +5,7 @@ import { useEffect } from 'react';
  * Improves perceived performance by loading routes before navigation
  */
 
-type RouteModule = () => Promise<any>;
+type RouteModule = () => Promise<unknown>;
 
 const routeModules: Record<string, RouteModule> = {
   '/catalog': () => import('../pages/Catalog'),

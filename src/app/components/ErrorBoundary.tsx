@@ -1,4 +1,4 @@
-import { Component, ReactNode } from 'react';
+import { Component, type ErrorInfo as ReactErrorInfo, ReactNode } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { Button } from './ui/button';
 
@@ -22,7 +22,7 @@ export class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
-  override componentDidCatch(error: Error, errorInfo: any) {
+  override componentDidCatch(error: Error, errorInfo: ReactErrorInfo) {
     // Log to error reporting service (Sentry, etc)
     console.error('Error caught by boundary:', error, errorInfo);
   }

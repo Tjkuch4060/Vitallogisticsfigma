@@ -74,7 +74,7 @@ export const useCartStore = create<CartStore>()(
         let partialStockCount = 0;
 
         set((state) => {
-          let currentItems = [...state.items];
+          const currentItems = [...state.items];
 
           newItems.forEach(({ product, quantity }) => {
             if (quantity <= 0) return;

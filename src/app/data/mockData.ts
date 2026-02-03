@@ -1,41 +1,10 @@
 // Mock Data for VitalLogistics Portal
+// Types are defined in ../types and re-exported here for convenience.
 
-export type Product = {
-  id: string;
-  sku: string;
-  name: string;
-  brand: string;
-  price: number;
-  category: string;
-  image: string;
-  stock: number;
-  rating: number;
-  thc: number; // in mg
-  description?: string;
-  batchNumber?: string;
-  coaLink?: string;
-};
+import type { DeliveryZone, Order, Product } from '../types';
+import { OrderStatus } from '../types';
 
-export type Order = {
-  id: string;
-  customer: string;
-  date: string;
-  status: 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Paid' | 'Picking' | 'Packed';
-  total: number;
-  items: number;
-  zone?: number;
-};
-
-export interface DeliveryZone {
-    id: string;
-    name: string;
-    zoneId: number; // For mapping to Order.zone
-    color: string;
-    baseFee: number;
-    freeThreshold: number;
-    days: string[]; // ['Mon', 'Tue', etc.]
-    description: string;
-}
+export type { DeliveryZone, Order, Product };
 
 export const deliveryZones: DeliveryZone[] = [
     {
@@ -194,19 +163,19 @@ export const products: Product[] = [
 ];
 
 export const recentOrders: Order[] = [
-  { id: 'ORD-7829', customer: 'Wellness Corner', date: '2023-10-25', status: 'Delivered', total: 1250.00, items: 45, zone: 1 },
-  { id: 'ORD-7830', customer: 'Green Haven Dispensary', date: '2023-10-26', status: 'Processing', total: 840.50, items: 28, zone: 2 },
-  { id: 'ORD-7831', customer: 'Natural Vibes', date: '2023-10-26', status: 'Pending', total: 2100.00, items: 112, zone: 3 },
-  { id: 'ORD-7832', customer: 'Hemp City', date: '2023-10-27', status: 'Shipped', total: 560.00, items: 15, zone: 1 },
-  { id: 'ORD-7833', customer: 'Urban Leaf', date: '2023-10-27', status: 'Pending', total: 920.00, items: 32, zone: 2 },
+  { id: 'ORD-7829', customer: 'Wellness Corner', date: '2023-10-25', status: OrderStatus.Delivered, total: 1250.00, items: 45, zone: 1 },
+  { id: 'ORD-7830', customer: 'Green Haven Dispensary', date: '2023-10-26', status: OrderStatus.Processing, total: 840.50, items: 28, zone: 2 },
+  { id: 'ORD-7831', customer: 'Natural Vibes', date: '2023-10-26', status: OrderStatus.Pending, total: 2100.00, items: 112, zone: 3 },
+  { id: 'ORD-7832', customer: 'Hemp City', date: '2023-10-27', status: OrderStatus.Shipped, total: 560.00, items: 15, zone: 1 },
+  { id: 'ORD-7833', customer: 'Urban Leaf', date: '2023-10-27', status: OrderStatus.Pending, total: 920.00, items: 32, zone: 2 },
 ];
 
 export const pendingFulfillmentOrders: Order[] = [
-    { id: 'ORD-7834', customer: 'CannaLife', date: '2023-10-28', status: 'Paid', total: 1500.00, items: 60, zone: 1 },
-    { id: 'ORD-7835', customer: 'Herbal Essence', date: '2023-10-28', status: 'Picking', total: 2300.00, items: 85, zone: 3 },
-    { id: 'ORD-7836', customer: 'Green Giant', date: '2023-10-28', status: 'Packed', total: 800.00, items: 25, zone: 2 },
-    { id: 'ORD-7837', customer: 'Nature\'s Best', date: '2023-10-29', status: 'Paid', total: 3200.00, items: 150, zone: 1 },
-    { id: 'ORD-7838', customer: 'Hemp Works', date: '2023-10-29', status: 'Picking', total: 1100.00, items: 40, zone: 2 },
+    { id: 'ORD-7834', customer: 'CannaLife', date: '2023-10-28', status: OrderStatus.Paid, total: 1500.00, items: 60, zone: 1 },
+    { id: 'ORD-7835', customer: 'Herbal Essence', date: '2023-10-28', status: OrderStatus.Picking, total: 2300.00, items: 85, zone: 3 },
+    { id: 'ORD-7836', customer: 'Green Giant', date: '2023-10-28', status: OrderStatus.Packed, total: 800.00, items: 25, zone: 2 },
+    { id: 'ORD-7837', customer: 'Nature\'s Best', date: '2023-10-29', status: OrderStatus.Paid, total: 3200.00, items: 150, zone: 1 },
+    { id: 'ORD-7838', customer: 'Hemp Works', date: '2023-10-29', status: OrderStatus.Picking, total: 1100.00, items: 40, zone: 2 },
 ];
 
 export const salesData = [

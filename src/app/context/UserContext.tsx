@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-
-type LicenseStatus = 'Active' | 'Suspended' | 'Expired';
+import { LicenseStatus } from '../types';
 
 interface UserContextType {
     licenseExpirationDate: Date;
@@ -16,7 +15,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     // Default to a date > 30 days in the future for "Happy Path"
     // Mock: January 7, 2026 -> Set to April 1, 2026 (~84 days)
     const [expirationDate, setExpirationDate] = useState<Date>(new Date('2026-04-01'));
-    const [status, setStatus] = useState<LicenseStatus>('Active');
+    const [status, setStatus] = useState<LicenseStatus>(LicenseStatus.Active);
 
     const calculateDays = (date: Date) => {
         const today = new Date();
@@ -28,9 +27,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         if (daysRemaining <= 0) {
-            setStatus('Suspended');
-        } else if (status === 'Suspended' && daysRemaining > 0) {
-            setStatus('Active');
+            setStatus(LicenseStatus.Suspended);
+        } else if (status === LicenseStatus.Suspended && daysRemaining > 0) {
+            setStatus(LicenseStatus.Active);
         }
     }, [daysRemaining, status]);
 
@@ -38,7 +37,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         const newDate = new Date();
         newDate.setFullYear(newDate.getFullYear() + 1);
         setExpirationDate(newDate);
-        setStatus('Active');
+        setStatus(LicenseStatus.Active);
     };
 
     const simulateExpiration = () => {

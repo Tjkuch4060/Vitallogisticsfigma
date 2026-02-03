@@ -11,6 +11,7 @@ import {
 } from './ui/dialog';
 import { CheckCircle, AlertTriangle, ExternalLink, Calendar, RefreshCw } from 'lucide-react';
 import { useUser } from '../context/UserContext';
+import { LicenseStatus as LicenseStatusEnum } from '../types';
 
 export function LicenseStatus() {
   const { daysRemaining, licenseExpirationDate, status, simulateExpiration, renewLicense } = useUser();
@@ -21,7 +22,7 @@ export function LicenseStatus() {
     type: "Retail Hemp & Cannabinoid License",
   };
 
-  const isExpired = status === 'Expired' || status === 'Suspended';
+  const isExpired = status === LicenseStatusEnum.Expired || status === LicenseStatusEnum.Suspended;
 
   return (
     <Dialog>

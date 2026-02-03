@@ -8,7 +8,7 @@ import { Input } from '../ui/input';
 import { Lock, Trash2, Plus, Minus, ShoppingCart, ArrowRight, PackageOpen, Save, FileText, X } from 'lucide-react';
 import { Separator } from '../ui/separator';
 import { DeliveryCalculator } from './DeliveryCalculator';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
   Dialog,

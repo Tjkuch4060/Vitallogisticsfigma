@@ -2,7 +2,7 @@ import Papa from 'papaparse';
 import jsPDF from 'jspdf';
 import { Order } from '../data/mockData';
 
-export function exportToCSV(data: any[], filename: string) {
+export function exportToCSV<T extends Record<string, unknown>>(data: T[], filename: string) {
   const csv = Papa.unparse(data);
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');

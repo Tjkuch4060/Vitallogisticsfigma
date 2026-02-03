@@ -62,6 +62,7 @@ export function DeliveryCalculator({ onCalculate }: DeliveryCalculatorProps) {
       setInfo(null);
       onCalculate(null);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- onCalculate from parent; only recalc when zipCode changes
   }, [zipCode]);
 
   return (

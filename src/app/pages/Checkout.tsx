@@ -169,11 +169,9 @@ export function Checkout() {
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
-  const onSubmit = async (data: CheckoutFormData) => {
+  const onSubmit = async (_data: CheckoutFormData) => {
     try {
       setLoading(true);
-      // Form is validated!
-      console.log('Valid data:', data);
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
       setLoading(false);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { X, Monitor } from 'lucide-react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -10,6 +10,7 @@ import { Footer } from './components/Footer';
 import { QuickActions } from './components/QuickActions';
 import { Toaster } from './components/ui/sonner';
 import { useCartStore } from './store/cartStore';
+import { LicenseStatus } from './types';
 import { CartSheet } from './components/cart/CartSheet';
 import { UserProvider, useUser } from './context/UserContext';
 import { LicenseAlert } from './components/LicenseAlert';
@@ -57,7 +58,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   // Let's block Checkout explicitly.
   const isBlockedPath = location.pathname === '/checkout';
 
-  if (status === 'Suspended' && isBlockedPath) {
+  if (status === LicenseStatus.Suspended && isBlockedPath) {
       return (
         <div className="min-h-screen font-sans text-slate-700 selection:bg-emerald-100 selection:text-emerald-900">
             <a

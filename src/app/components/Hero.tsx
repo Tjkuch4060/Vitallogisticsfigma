@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { motion, useSpring, useTransform, useInView } from 'motion/react';
 import { ArrowRight, Leaf, Users, Clock, Building2, Package } from 'lucide-react';
 import { Button } from './ui/button';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 
 function Counter({ value, suffix = '' }: { value: number; suffix?: string }) {
     const ref = React.useRef(null);

@@ -1,5 +1,6 @@
 import { AlertTriangle, ArrowRight } from 'lucide-react';
 import { useUser } from '../context/UserContext';
+import { LicenseStatus } from '../types';
 import { Button } from './ui/button';
 import { Link } from 'react-router-dom';
 
@@ -10,7 +11,7 @@ export function LicenseAlert() {
     // Actually, prompt says "Prominent alert... < 30 days".
     // If suspended, we might want a different banner if they are browsing "allowed" pages.
 
-    if (status === 'Suspended') {
+    if (status === LicenseStatus.Suspended) {
         return (
             <div className="bg-red-600 text-white px-4 py-3 shadow-md relative z-40">
                 <div className="container mx-auto flex items-center justify-between">

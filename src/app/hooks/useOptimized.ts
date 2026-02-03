@@ -8,7 +8,7 @@ import { useCallback, useMemo, useRef, useEffect, useState } from 'react';
  * Stable callback that doesn't change between renders
  * Use this for event handlers passed to child components
  */
-export function useStableCallback<T extends (...args: any[]) => any>(
+export function useStableCallback<T extends (...args: unknown[]) => unknown>(
   callback: T
 ): T {
   const callbackRef = useRef(callback);

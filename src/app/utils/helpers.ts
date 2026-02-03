@@ -196,8 +196,8 @@ export function slugify(text: string): string {
     .toLowerCase()
     .trim()
     .replace(/\s+/g, '-')
-    .replace(/[^\w\-]+/g, '')
-    .replace(/\-\-+/g, '-')
+    .replace(/[^\w-]+/g, '')
+    .replace(/-+/g, '-')
     .replace(/^-+/, '')
     .replace(/-+$/, '');
 }
@@ -337,7 +337,7 @@ export function cn(...classes: (string | boolean | undefined | null)[]): string 
 /**
  * Debounce function
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {

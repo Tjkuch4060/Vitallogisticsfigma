@@ -10,8 +10,9 @@ import {
 import { Badge } from './ui/badge';
 import { Link, useLocation } from 'react-router-dom';
 import { GlobalSearch } from './GlobalSearch';
-import { LicenseStatus } from './LicenseStatus';
+import { LicenseStatus as LicenseStatusWidget } from './LicenseStatus';
 import { useCartStore } from '../store/cartStore';
+import { LicenseStatus } from '../types';
 import { useCompareStore } from '../store/compareStore';
 import { useUser } from '../context/UserContext';
 
@@ -34,7 +35,7 @@ export function Navbar() {
 
   const isActive = (path: string) => location.pathname === path ? 'text-emerald-700 font-semibold' : 'text-slate-600 hover:text-emerald-700';
 
-  const isExpired = status === 'Expired' || status === 'Suspended';
+  const isExpired = status === LicenseStatus.Expired || status === LicenseStatus.Suspended;
 
   return (
     <nav 
@@ -102,7 +103,7 @@ export function Navbar() {
 
         <div className="flex items-center gap-2 sm:gap-4 pl-4 h-full">
           <div className="hidden sm:block">
-            <LicenseStatus />
+            <LicenseStatusWidget />
           </div>
           
           {compareList.length > 0 && (

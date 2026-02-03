@@ -34,10 +34,9 @@ export function GlobalSearch() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const handleSelect = (productId: string) => {
+  const handleSelect = (_productId: string) => {
     setOpen(false);
     navigate('/catalog');
-    console.log(`Selected product: ${productId}`);
   };
 
   const getStockStatus = (stock: number) => {
