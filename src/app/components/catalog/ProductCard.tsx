@@ -282,11 +282,16 @@ export const ProductCard = forwardRef<HTMLDivElement, ProductCardProps>(
                 <span className="text-[9px] uppercase font-black text-emerald-700 tracking-tighter">Lab Verified</span>
               </div>
               <button 
-                className="text-[10px] uppercase font-bold text-slate-400 hover:text-emerald-600 flex items-center gap-1 transition-colors"
+                className="text-[10px] uppercase font-bold text-slate-400 hover:text-emerald-600 flex items-center gap-1 transition-colors disabled:opacity-50"
                 onClick={(e) => {
                   e.stopPropagation();
-                  window.open(product.coaLink || '#', '_blank');
+                  if (product.coaLink) {
+                    toast.info('Certificate of Analysis link copied');
+                  } else {
+                    toast.error('No CoA available for this product');
+                  }
                 }}
+                disabled={!product.coaLink}
               >
                 <FileText size={14} />
                 CoA
