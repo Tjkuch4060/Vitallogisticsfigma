@@ -71,6 +71,7 @@ export default defineConfig({
     port: 3000,
     strictPort: false,
     open: false,
+    middlewareMode: false,
   },
   // Dependency pre-bundling optimization
   optimizeDeps: {
