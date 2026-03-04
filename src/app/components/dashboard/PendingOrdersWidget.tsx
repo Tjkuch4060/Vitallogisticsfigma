@@ -22,7 +22,7 @@ export function PendingOrdersWidget() {
   };
 
   return (
-    <Card className="h-full">
+    <Card>
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
             <CardTitle className="text-xl font-bold text-slate-800 flex items-center gap-2">

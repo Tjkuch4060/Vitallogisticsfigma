@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { motion, useSpring, useTransform, useInView } from 'motion/react';
-import { ArrowRight, Leaf, Box, Users, Clock, Building2, Package } from 'lucide-react';
+import { ArrowRight, Gauge, Box, Users, Clock, Building2, Package } from 'lucide-react';
 import { Button } from './ui/button';
 import { Link } from 'react-router';
+import { ProductCarousel3D } from './ProductCarousel3D';
 
 function Counter({ value, suffix = '' }: { value: number; suffix?: string }) {
     const ref = React.useRef(null);
@@ -46,8 +47,8 @@ export function Hero() {
             {/* Headline Gradient Background */}
             <div className="absolute -inset-x-8 -inset-y-4 bg-gradient-to-r from-emerald-50/50 to-transparent -z-10 rounded-3xl" />
             
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-600 sm:bg-gradient-to-r sm:from-emerald-600 sm:to-teal-600 text-white text-sm font-bold mb-12 shadow-lg ring-2 ring-emerald-500 ring-offset-2 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-              <Leaf size={18} className="text-emerald-100" />
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-900 sm:bg-emerald-900 text-white text-sm font-bold mb-12 shadow-lg ring-2 ring-emerald-800 ring-offset-2 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+              <Gauge size={18} className="text-emerald-100" />
               <span className="tracking-wide text-xs sm:text-sm">Licensed LPHE-R Wholesale Portal</span>
             </div>
             
@@ -62,7 +63,7 @@ export function Hero() {
             </p>
             
             <p className="text-base md:text-lg text-slate-600 mb-12 leading-[1.8] max-w-lg">
-              VitalLogistics connects licensed retailers with premium hemp brands. 
+              Low Dose Logistics connects licensed retailers with premium hemp brands. 
               Browse products, place orders, and manage your wholesale business all in one place.
             </p>
             
@@ -102,23 +103,7 @@ export function Hero() {
                 {/* Visual gradient for the border-t-4 effect */}
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 via-emerald-500 to-emerald-600" />
                 
-                <div className="bg-gradient-to-br from-emerald-50 to-white rounded-b-2xl p-10 md:p-14 border border-stone-200 border-t-0">
-                    <div className="grid grid-cols-2 gap-y-16 gap-x-12">
-                        {stats.map((stat, i) => (
-                            <div key={i} className="flex flex-col items-start group">
-                                <div className="mb-6 rounded-full bg-emerald-100 p-4 group-hover:bg-emerald-200 transition-colors">
-                                    <stat.icon size={48} strokeWidth={1.5} className="text-emerald-600 group-hover:text-emerald-700 group-hover:rotate-6 transition-all" />
-                                </div>
-                                <dt className="text-[56px] font-bold text-emerald-700 mb-1 tabular-nums leading-none tracking-tight">
-                                    <Counter value={stat.value} suffix={stat.suffix} />
-                                </dt>
-                                <dd className="text-slate-500 font-bold text-[10px] uppercase tracking-[0.15em]">
-                                    {stat.label}
-                                </dd>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                <ProductCarousel3D />
             </div>
           </motion.div>
 

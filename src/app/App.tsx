@@ -16,9 +16,13 @@ import { CartProvider } from './context/CartContext';
 import { CartSheet } from './components/cart/CartSheet';
 import { Checkout } from './pages/Checkout';
 import { DeliveryZones } from './pages/DeliveryZones';
+import { Retailers } from './pages/Retailers';
+import { Brands } from './pages/Brands';
+import { Payouts } from './pages/Payouts';
 import { UserProvider, useUser } from './context/UserContext';
 import { LicenseAlert } from './components/LicenseAlert';
 import { SuspensionScreen } from './pages/SuspensionScreen';
+import { ProtectedRoute } from './components/ProtectedRoute';
 
 function Layout({ children }: { children: React.ReactNode }) {
   const [showBanner, setShowBanner] = useState(true);
@@ -49,7 +53,7 @@ function Layout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen font-sans text-slate-700 selection:bg-emerald-100 selection:text-emerald-900 dark:bg-slate-950 dark:text-slate-100">
+    <div className="min-h-screen font-sans text-slate-700 selection:bg-emerald-100 selection:text-emerald-900">
       <Navbar />
       <LicenseAlert />
       <main className="min-h-[calc(100vh-200px)]">
@@ -83,34 +87,35 @@ function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-import { ThemeProvider } from './components/theme-provider';
-
 export default function App() {
   return (
     <DndProvider backend={HTML5Backend}>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <UserProvider>
-          <CartProvider>
-              <Router>
-              <Layout>
-                  <Routes>
-                  <Route path="/" element={<LandingPage />} />
-                  <Route path="/catalog" element={<Catalog />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/orders" element={<Orders />} />
-                  <Route path="/orders/:orderId" element={<OrderDetail />} />
-                  <Route path="/checkout" element={<Checkout />} />
-                  <Route path="/delivery-zones" element={<DeliveryZones />} />
-                  {/* Fallback routes for demo purposes */}
-                  <Route path="/retailers" element={<Dashboard />} />
-                  <Route path="/brands" element={<Dashboard />} />
-                  <Route path="/payouts" element={<Dashboard />} />
-                  </Routes>
-              </Layout>
-              </Router>
-          </CartProvider>
-        </UserProvider>
-      </ThemeProvider>
+      <UserProvider>
+        <CartProvider>
+            <Router>
+            <Layout>
+                <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/catalog" element={<Catalog />} />
+                
+                {/* Admin-only routes */}
+                <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['Admin']}><Dashboard /></ProtectedRoute>} />
+                <Route path="/delivery-zones" element={<ProtectedRoute allowedRoles={['Admin']}><DeliveryZones /></ProtectedRoute>} />
+                <Route path="/retailers" element={<ProtectedRoute allowedRoles={['Admin']}><Retailers /></ProtectedRoute>} />
+                <Route path="/brands" element={<ProtectedRoute allowedRoles={['Admin']}><Brands /></ProtectedRoute>} />
+                <Route path="/payouts" element={<ProtectedRoute allowedRoles={['Admin']}><Payouts /></ProtectedRoute>} />
+                
+                {/* Shared routes */}
+                <Route path="/orders" element={<Orders />} />
+                <Route path="/orders/:orderId" element={<OrderDetail />} />
+                
+                {/* Retailer-only routes */}
+                <Route path="/checkout" element={<ProtectedRoute allowedRoles={['Retailer']}><Checkout /></ProtectedRoute>} />
+                </Routes>
+            </Layout>
+            </Router>
+        </CartProvider>
+      </UserProvider>
     </DndProvider>
   );
 }

@@ -1,12 +1,12 @@
 import React from 'react';
-import { Leaf } from 'lucide-react';
+import { Gauge } from 'lucide-react';
 
 export function Footer() {
   return (
-    <footer className="bg-slate-900 text-slate-300 relative overflow-hidden">
+    <footer className="bg-emerald-950 text-slate-300 relative overflow-hidden">
       {/* Subtle Grid Pattern Background */}
-      <div className="absolute inset-0 opacity-[0.05] pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:24px_24px]" />
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(#3d5a45_1px,transparent_1px)] [background-size:24px_24px]" />
       </div>
 
       <div className="container mx-auto max-w-7xl px-4 md:px-8 relative z-10 pt-16 pb-12">
@@ -15,10 +15,10 @@ export function Footer() {
           {/* Brand */}
           <div className="col-span-1 md:col-span-1">
             <div className="flex items-center gap-3 mb-6 group cursor-pointer">
-              <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center text-white group-hover:bg-emerald-500 transition-colors shadow-lg shadow-emerald-900/20">
-                 <Leaf size={24} className="group-hover:rotate-6 transition-transform" />
+              <div className="w-10 h-10 bg-emerald-700 rounded-lg flex items-center justify-center text-white group-hover:bg-emerald-600 transition-all shadow-lg shadow-black/20">
+                 <Gauge size={22} className="group-hover:scale-110 transition-transform" />
               </div>
-              <span className="font-bold text-2xl text-white tracking-tight">VitalLogistics</span>
+              <span className="font-semibold text-lg text-white tracking-[0.2em] uppercase">Low Dose</span>
             </div>
             <p className="text-slate-400 text-sm leading-[1.7] max-w-xs">
               Minnesota's premier B2B hemp wholesale platform for licensed retailers. Delivering quality, compliance, and transparency.
@@ -29,9 +29,9 @@ export function Footer() {
           <div>
             <h4 className="font-semibold text-white mb-6 tracking-tight">Quick Links</h4>
             <ul className="space-y-4 text-sm">
-              <li><a href="#" className="hover:text-emerald-400 transition-colors">Products & Catalog</a></li>
-              <li><a href="#" className="hover:text-emerald-400 transition-colors">Apply for Access</a></li>
-              <li><a href="#" className="hover:text-emerald-400 transition-colors">Vendor Login</a></li>
+              <li><a href="#" className="hover:text-emerald-300 transition-colors">Products & Catalog</a></li>
+              <li><a href="#" className="hover:text-emerald-300 transition-colors">Apply for Access</a></li>
+              <li><a href="#" className="hover:text-emerald-300 transition-colors">Vendor Login</a></li>
             </ul>
           </div>
 
@@ -39,9 +39,9 @@ export function Footer() {
           <div>
             <h4 className="font-semibold text-white mb-6 tracking-tight">Support</h4>
             <ul className="space-y-4 text-sm">
-              <li><a href="#" className="hover:text-emerald-400 transition-colors">Help Center</a></li>
-              <li><a href="#" className="hover:text-emerald-400 transition-colors">Contact Support</a></li>
-              <li><a href="#" className="hover:text-emerald-400 transition-colors">Delivery FAQ</a></li>
+              <li><a href="#" className="hover:text-emerald-300 transition-colors">Help Center</a></li>
+              <li><a href="#" className="hover:text-emerald-300 transition-colors">Contact Support</a></li>
+              <li><a href="#" className="hover:text-emerald-300 transition-colors">Delivery FAQ</a></li>
             </ul>
           </div>
 
@@ -49,25 +49,25 @@ export function Footer() {
           <div>
             <h4 className="font-semibold text-white mb-6 tracking-tight">Legal</h4>
             <ul className="space-y-4 text-sm">
-              <li><a href="#" className="hover:text-emerald-400 transition-colors">Terms of Service</a></li>
-              <li><a href="#" className="hover:text-emerald-400 transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-emerald-400 transition-colors">Compliance Docs</a></li>
+              <li><a href="#" className="hover:text-emerald-300 transition-colors">Terms of Service</a></li>
+              <li><a href="#" className="hover:text-emerald-300 transition-colors">Privacy Policy</a></li>
+              <li><a href="#" className="hover:text-emerald-300 transition-colors">Compliance Docs</a></li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="border-t border-emerald-900/50 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-center md:text-left">
-                <p className="text-slate-500 text-sm mb-1">© 2026 VitalLogistics. All rights reserved.</p>
+                <p className="text-slate-500 text-sm mb-1">© 2026 Low Dose Logistics. All rights reserved.</p>
                 <p className="text-slate-600 text-xs">Licensed LPHE-R wholesale platform • Serving Minnesota Retailers</p>
             </div>
             
             <div className="flex gap-6">
-                <a href="#" className="text-slate-500 hover:text-emerald-400 transition-colors">
+                <a href="#" className="text-slate-500 hover:text-emerald-300 transition-colors">
                     <span className="sr-only">Twitter</span>
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
                 </a>
-                <a href="#" className="text-slate-500 hover:text-emerald-400 transition-colors">
+                <a href="#" className="text-slate-500 hover:text-emerald-300 transition-colors">
                     <span className="sr-only">LinkedIn</span>
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
                 </a>

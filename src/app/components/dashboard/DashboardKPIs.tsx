@@ -57,7 +57,7 @@ const initialKPIs: KPIItem[] = [
     title: 'Net Margin (30%)',
     value: margin,
     prefix: '$',
-    change: 'VitaLogistics Share',
+    change: 'Low Dose Share',
     icon: Percent,
     visible: true,
     trend: [10000, 11000, 10500, 12000, 12500, 13569],

@@ -251,7 +251,7 @@ export function OrderDetail() {
                                     <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-md border border-slate-100">
                                         <MapPin className="w-4 h-4 text-slate-400 mt-0.5" />
                                         <div className="text-sm text-slate-600">
-                                            <span className="font-semibold text-slate-800 block mb-0.5">VitalLogistics Main Warehouse</span>
+                                            <span className="font-semibold text-slate-800 block mb-0.5">Low Dose Logistics Main Warehouse</span>
                                             4500 Industrial Way, Door 4<br/>
                                             Portland, OR 97210
                                         </div>
