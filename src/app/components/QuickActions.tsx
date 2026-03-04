@@ -5,7 +5,9 @@ import {
   Headphones, 
   FileText, 
   PackagePlus,
-  MessageCircle
+  MessageCircle,
+  User,
+  ShieldCheck
 } from 'lucide-react';
 import { Button } from './ui/button';
 import {
@@ -18,8 +20,11 @@ import {
 } from './ui/dropdown-menu';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
+import { useUser } from '../context/UserContext';
 
 export function QuickActions() {
+  const { role, switchRole } = useUser();
+
   const handleDownloadInvoice = () => {
     toast.success("Invoice downloading...", {
       description: "Your latest invoice has been queued for download."
@@ -31,6 +36,13 @@ export function QuickActions() {
      toast.info("Support Request", {
         description: "Connecting you to a support agent..."
      });
+  };
+
+  const handleRoleSwitch = (newRole: 'Admin' | 'Retailer') => {
+    switchRole(newRole);
+    toast.success(`Switched to ${newRole} view`, {
+      description: `You are now viewing the portal as a ${newRole}.`
+    });
   };
 
   return (
@@ -71,6 +83,27 @@ export function QuickActions() {
           <DropdownMenuItem onClick={handleDownloadInvoice} className="cursor-pointer flex items-center gap-2 group">
             <FileText size={16} className="text-emerald-600 group-hover:text-emerald-700 group-hover:rotate-6 transition-all" />
             <span>Download Invoice</span>
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel className="text-xs text-slate-500">Demo Options</DropdownMenuLabel>
+          
+          <DropdownMenuItem 
+            onClick={() => handleRoleSwitch('Admin')} 
+            className="cursor-pointer flex items-center gap-2 group"
+            disabled={role === 'Admin'}
+          >
+            <ShieldCheck size={16} className={`${role === 'Admin' ? 'text-slate-400' : 'text-emerald-600 group-hover:text-emerald-700'}`} />
+            <span className={role === 'Admin' ? 'font-bold' : ''}>Switch to Admin</span>
+          </DropdownMenuItem>
+          
+          <DropdownMenuItem 
+            onClick={() => handleRoleSwitch('Retailer')} 
+            className="cursor-pointer flex items-center gap-2 group"
+            disabled={role === 'Retailer'}
+          >
+            <User size={16} className={`${role === 'Retailer' ? 'text-slate-400' : 'text-emerald-600 group-hover:text-emerald-700'}`} />
+            <span className={role === 'Retailer' ? 'font-bold' : ''}>Switch to Retailer</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

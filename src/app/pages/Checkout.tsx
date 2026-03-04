@@ -79,7 +79,7 @@ const getPickupInfo = () => {
     const dayPart = tomorrow.toLocaleDateString('en-US', { weekday: 'long' });
     
     return {
-        name: 'VitalLogistics Warehouse (Minneapolis, MN)',
+        name: 'Low Dose Logistics Warehouse (Minneapolis, MN)',
         fee: 0.00, // Usually pickup is free or small handling
         date: `Ready ${datePart} (${dayPart})`
     }
@@ -531,7 +531,7 @@ export function Checkout() {
                    </CardContent>
                    <CardFooter className="bg-slate-100/50 p-4 border-t border-slate-200 rounded-b-lg">
                       <p className="text-xs text-slate-500 text-center w-full">
-                         By placing this order, you agree to VitalLogistics Terms of Service and Wholesale Agreement.
+                         By placing this order, you agree to Low Dose Logistics Terms of Service and Wholesale Agreement.
                       </p>
                    </CardFooter>
                 </Card>

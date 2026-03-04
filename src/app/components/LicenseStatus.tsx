@@ -27,38 +27,7 @@ export function LicenseStatus() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div className="flex items-center gap-3 cursor-pointer group p-1.5 -mr-2 rounded-lg hover:bg-slate-50 transition-all border border-transparent hover:border-slate-100">
-            <div className="text-right hidden lg:block leading-tight">
-                <div className="font-semibold text-slate-800 text-sm group-hover:text-emerald-800 transition-colors">Test Hemp Dispensary</div>
-                <div className={`text-xs font-medium transition-colors ${daysRemaining < 30 ? 'text-amber-600' : 'text-slate-500'} ${isExpired ? 'text-red-600' : ''}`}>
-                    {isExpired ? 'License Expired' : `Expires in ${daysRemaining} days`}
-                </div>
-            </div>
-            
-            <Badge className={`
-                text-white border-transparent shadow-md rounded-full px-4 py-2 flex items-center gap-1.5 transition-all group-hover:shadow-lg group-hover:scale-105 relative overflow-hidden
-                ${isExpired 
-                    ? 'bg-red-600 hover:bg-red-700 animate-pulse' 
-                    : daysRemaining < 30 
-                        ? 'bg-amber-500 hover:bg-amber-600 animate-pulse' 
-                        : 'bg-emerald-600 hover:bg-emerald-700 ring-2 ring-emerald-500/20'
-                }
-            `}>
-                {!isExpired && daysRemaining >= 30 && (
-                    <motion.span 
-                        className="absolute inset-0 bg-white/10"
-                        animate={{ x: ['-100%', '100%'] }}
-                        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                    />
-                )}
-                <span className="font-bold relative z-10 uppercase tracking-wider text-[11px]">{isExpired ? 'Suspended' : 'Approved'}</span>
-                {isExpired ? (
-                    <AlertTriangle className="w-3.5 h-3.5 fill-white text-red-600 relative z-10" />
-                ) : (
-                    <CheckCircle className="w-3.5 h-3.5 fill-white text-emerald-600 relative z-10" />
-                )}
-            </Badge>
-        </div>
+        
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -117,15 +86,15 @@ export function LicenseStatus() {
                 </div>
             </div>
 
-            <div className="bg-blue-50/50 p-4 rounded-lg border border-blue-100">
-                <h4 className="font-semibold text-blue-900 flex items-center gap-2 mb-2 text-sm">
-                    <AlertTriangle className="w-4 h-4 text-blue-600" /> Renewal Instructions
+            <div className="bg-emerald-50/50 p-4 rounded-lg border border-emerald-200">
+                <h4 className="font-semibold text-emerald-900 flex items-center gap-2 mb-2 text-sm">
+                    <AlertTriangle className="w-4 h-4 text-emerald-700" /> Renewal Instructions
                 </h4>
-                <p className="text-xs text-blue-700 leading-relaxed mb-3">
+                <p className="text-xs text-emerald-800 leading-relaxed mb-3">
                     Per Section 1.1.1, license renewal must be initiated at least 60 days prior to expiration to maintain uninterrupted wholesale access.
                 </p>
                 <div className="flex gap-2">
-                    <Button size="sm" variant="outline" className="flex-1 border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800 bg-white gap-2 h-8 text-xs">
+                    <Button size="sm" variant="outline" className="flex-1 border-emerald-300 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 bg-white gap-2 h-8 text-xs">
                         State Portal <ExternalLink className="w-3 h-3" />
                     </Button>
                 </div>

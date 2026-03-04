@@ -1,4 +1,4 @@
-// Mock Data for VitalLogistics Portal
+// Mock Data for Low Dose Logistics Portal
 
 export type Product = {
   id: string;
@@ -78,7 +78,7 @@ export const products: Product[] = [
     brand: 'GreenLeaf Organics',
     price: 45.00,
     category: 'Tinctures',
-    image: '/products/1.jpg',
+    image: 'https://images.unsplash.com/photo-1600753230816-94fc22e82859?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjYmQlMjBvaWwlMjB0aW5jdHVyZSUyMGRyb3BwZXIlMjBib3R0bGV8ZW58MXx8fHwxNzcwOTk4OTEwfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
     stock: 120,
     rating: 4.8,
     thc: 2.5,
@@ -93,7 +93,7 @@ export const products: Product[] = [
     brand: 'SweetRelief',
     price: 35.00,
     category: 'Edibles',
-    image: '/products/2.jpg',
+    image: 'https://images.unsplash.com/photo-1558429773-0d5084b445aa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoZW1wJTIwZ3VtbWllcyUyMGphciUyMHBhY2thZ2UlMjBlZGlibGVzfGVufDF8fHx8MTc3MDk5ODkxMXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
     stock: 85,
     rating: 4.9,
     thc: 5.0,
@@ -108,7 +108,7 @@ export const products: Product[] = [
     brand: 'PureHemp',
     price: 28.50,
     category: 'Topicals',
-    image: '/products/3.jpg',
+    image: 'https://images.unsplash.com/photo-1615174111664-cbe2de69ed9d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjYmQlMjBtdXNjbGUlMjBiYWxtJTIwamFyJTIwdG9waWNhbHxlbnwxfHx8fDE3NzA5OTg5MTF8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
     stock: 45,
     rating: 4.7,
     thc: 0,
@@ -123,7 +123,7 @@ export const products: Product[] = [
     brand: 'Cloud9 Vapes',
     price: 32.00,
     category: 'Vapes',
-    image: '/products/4.jpg',
+    image: 'https://images.unsplash.com/photo-1605117913123-1f455435b384?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx2YXBlJTIwY2FydHJpZGdlJTIwY2FubmFiaXMlMjBwZW58ZW58MXx8fHwxNzcwOTk4OTExfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
     stock: 200,
     rating: 4.6,
     thc: 850,
@@ -138,7 +138,7 @@ export const products: Product[] = [
     brand: 'GreenLeaf Organics',
     price: 55.00,
     category: 'Capsules',
-    image: '/products/5.jpg',
+    image: 'https://images.unsplash.com/photo-1734607404671-f2b878caf3ec?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjYmQlMjBzb2Z0Z2VsJTIwY2Fwc3VsZXMlMjBib3R0bGUlMjBzdXBwbGVtZW50fGVufDF8fHx8MTc3MDk5ODkxMnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
     stock: 60,
     rating: 4.9,
     thc: 1.5,
@@ -153,7 +153,7 @@ export const products: Product[] = [
     brand: 'Buds & Blooms',
     price: 25.00,
     category: 'Flower',
-    image: '/products/6.jpg',
+    image: 'https://images.unsplash.com/photo-1677275856575-0565afb3b9b1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoZW1wJTIwZmxvd2VyJTIwY2FubmFiaXMlMjBidWQlMjBqYXJ8ZW58MXx8fHwxNzcwOTk4NzI5fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
     stock: 150,
     rating: 4.5,
     thc: 18.5,
@@ -168,7 +168,7 @@ export const products: Product[] = [
     brand: 'ZenSips',
     price: 18.00,
     category: 'Beverages',
-    image: '/products/7.jpg',
+    image: 'https://images.unsplash.com/photo-1739131642718-526c879017c3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzcGFya2xpbmclMjBoZW1wJTIwYmV2ZXJhZ2UlMjBjYW4lMjBkcmlua3xlbnwxfHx8fDE3NzA5OTg5MTN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
     stock: 24,
     rating: 4.2,
     thc: 2.0,
@@ -183,7 +183,7 @@ export const products: Product[] = [
     brand: 'PureHemp',
     price: 42.00,
     category: 'Capsules',
-    image: '/products/8.jpg',
+    image: 'https://images.unsplash.com/photo-1763668331599-487470fb85b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx2aXRhbWluJTIwY2Fwc3VsZXMlMjBib3R0bGUlMjB3ZWxsbmVzc3xlbnwxfHx8fDE3NzA5OTg5MjB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
     stock: 0, // Out of stock
     rating: 4.6,
     thc: 1.0,

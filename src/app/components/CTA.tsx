@@ -15,7 +15,7 @@ export function CTA() {
           Join Minnesota's Premier Hemp Wholesale Network
         </h2>
         <p className="text-emerald-100 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed opacity-90">
-          Connect with top brands, streamline your ordering process, and grow your retail business with VitalLogistics.
+          Connect with top brands, streamline your ordering process, and grow your retail business with Low Dose Logistics.
         </p>
         
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6">

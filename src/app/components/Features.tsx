@@ -6,7 +6,7 @@ export function Features() {
     {
       icon: Box,
       title: "Consignment Model",
-      description: "We handle inventory and fulfillment. You focus on selling. 70% goes to brands, 30% to VitalLogistics."
+      description: "We handle inventory and fulfillment. You focus on selling. 70% goes to brands, 30% to Low Dose Logistics."
     },
     {
       icon: ShieldCheck,
@@ -42,7 +42,7 @@ export function Features() {
           
           {/* Features List */}
           <div>
-            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-12 md:mb-16 tracking-tight">Why Choose VitalLogistics?</h2>
+            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-12 md:mb-16 tracking-tight">Why Choose Low Dose Logistics?</h2>
             
             <div className="space-y-6">
               {features.map((feature, index) => (
@@ -81,7 +81,7 @@ export function Features() {
 
             <div className="p-6 bg-emerald-100/30 rounded-xl border border-emerald-100 text-center">
                 <p className="text-sm text-slate-700 mb-0 leading-[1.7]">
-                    Join hundreds of retailers growing their business with VitalLogistics.
+                    Join hundreds of retailers growing their business with Low Dose Logistics.
                 </p>
             </div>
           </div>

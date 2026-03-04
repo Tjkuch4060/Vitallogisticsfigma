@@ -149,11 +149,11 @@ export function ProductQuickView({ product, isOpen, onClose }: ProductQuickViewP
              <Separator />
 
              {/* Delivery Estimate */}
-             <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-100 flex items-start gap-3">
-                 <Truck className="w-5 h-5 text-blue-600 mt-0.5" />
+             <div className="bg-emerald-50/50 p-3 rounded-lg border border-emerald-200 flex items-start gap-3">
+                 <Truck className="w-5 h-5 text-emerald-700 mt-0.5" />
                  <div>
-                     <div className="text-sm font-medium text-blue-900">Estimated Delivery: {format(deliveryDate, 'MMM dd, yyyy')}</div>
-                     <div className="text-xs text-blue-700 mt-0.5">
+                     <div className="text-sm font-medium text-emerald-900">Estimated Delivery: {format(deliveryDate, 'MMM dd, yyyy')}</div>
+                     <div className="text-xs text-emerald-800 mt-0.5">
                          Based on Zone 1 delivery schedule (1-2 business days).
                      </div>
                  </div>

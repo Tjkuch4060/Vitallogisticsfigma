@@ -54,7 +54,7 @@ export function LicenseApprovalQueue() {
 
     if (applications.length === 0) {
         return (
-            <Card className="h-full">
+            <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                         <span>License Approvals</span>
@@ -71,7 +71,7 @@ export function LicenseApprovalQueue() {
     }
 
     return (
-        <Card className="h-full">
+        <Card>
             <CardHeader className="pb-3">
                 <CardTitle className="flex items-center justify-between text-lg font-bold text-slate-800">
                     <span>License Approvals</span>
@@ -125,10 +125,10 @@ export function LicenseApprovalQueue() {
                                             <Check className="w-4 h-4 mr-2 text-emerald-600" /> Approve Application
                                         </DropdownMenuItem>
                                         <DropdownMenuItem onClick={() => handleRequestInfo(app.businessName)} className="rounded-lg cursor-pointer">
-                                            <AlertCircle className="w-4 h-4 mr-2 text-amber-600" /> Request More Info
+                                            <AlertCircle className="w-4 h-4 mr-2 text-warning-600" /> Request More Info
                                         </DropdownMenuItem>
                                         <DropdownMenuItem className="rounded-lg cursor-pointer">
-                                            <FileText className="w-4 h-4 mr-2 text-blue-600" /> View Documents
+                                            <FileText className="w-4 h-4 mr-2 text-emerald-600" /> View Documents
                                         </DropdownMenuItem>
                                         <DropdownMenuSeparator className="bg-slate-100" />
                                         <DropdownMenuItem onClick={() => handleReject(app.id, app.businessName)} className="text-red-600 focus:text-red-600 rounded-lg cursor-pointer">
@@ -141,7 +141,7 @@ export function LicenseApprovalQueue() {
                     ))}
                 </div>
             </CardContent>
-            <div className="px-8 py-4 border-t border-slate-100 bg-slate-50/30 mt-auto">
+            <div className="px-8 py-4 border-t border-slate-100 bg-slate-50/30">
                 <Button variant="outline" size="sm" className="w-full text-xs h-9 text-slate-600 font-bold border-slate-200 hover:bg-white rounded-xl">
                     View All Applications
                 </Button>
