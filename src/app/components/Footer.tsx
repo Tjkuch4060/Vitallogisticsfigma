@@ -10,10 +10,10 @@ export function Footer() {
       </div>
 
       <div className="container mx-auto max-w-7xl px-4 md:px-8 relative z-10 pt-16 pb-12">
-        <div className="grid md:grid-cols-4 gap-12 mb-16">
+        <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-16">
           
           {/* Brand */}
-          <div className="col-span-1 md:col-span-1">
+          <div className="col-span-1 sm:col-span-2 md:col-span-1">
             <div className="flex items-center gap-3 mb-6 group cursor-pointer">
               <div className="w-10 h-10 bg-emerald-700 rounded-lg flex items-center justify-center text-white group-hover:bg-emerald-600 transition-all shadow-lg shadow-black/20">
                  <Gauge size={22} className="group-hover:scale-110 transition-transform" />
@@ -56,8 +56,8 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-emerald-900/50 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="text-center md:text-left">
+        <div className="border-t border-emerald-900/50 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+            <div>
                 <p className="text-slate-500 text-sm mb-1">© 2026 Low Dose Logistics. All rights reserved.</p>
                 <p className="text-slate-600 text-xs">Licensed LPHE-R wholesale platform • Serving Minnesota Retailers</p>
             </div>

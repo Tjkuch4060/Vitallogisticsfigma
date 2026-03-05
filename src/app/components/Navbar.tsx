@@ -58,13 +58,17 @@ export function Navbar() {
       scrolled ? 'bg-white/80 backdrop-blur-lg shadow-sm' : 'bg-white'
     }`}>
       {/* Top Bar */}
-      <div className="bg-emerald-950 text-emerald-50 text-xs py-1.5 px-4 md:px-8 flex justify-between items-center h-8">
-        <span className="font-medium tracking-wide">
+      <div className="bg-emerald-950 text-emerald-50 text-[10px] sm:text-xs py-1.5 px-4 md:px-8 flex justify-between items-center min-h-[32px]">
+        <span className="font-medium tracking-wide hidden sm:inline">
           {role === 'Admin' ? 'ADMIN PORTAL – LOW DOSE LOGISTICS MANAGEMENT' : 'B2B WHOLESALE PORTAL – LOW DOSE LOGISTICS'}
         </span>
+        <span className="font-medium tracking-wide sm:hidden">
+          {role === 'Admin' ? 'ADMIN PORTAL' : 'B2B WHOLESALE PORTAL'}
+        </span>
         <div className="flex items-center gap-2">
-          <Phone size={14} className="text-emerald-400" />
-          <span>Support: (651) 363-1358</span>
+          <Phone size={12} className="text-emerald-400" />
+          <span className="hidden sm:inline">Support: (651) 363-1358</span>
+          <span className="sm:hidden">(651) 363-1358</span>
         </div>
       </div>
 
@@ -151,10 +155,14 @@ export function Navbar() {
 
       {/* Mobile Nav */}
       {isOpen && (
-        <div className="xl:hidden border-t border-slate-100 bg-white px-4 py-4 flex flex-col gap-4 shadow-lg absolute w-full left-0 top-[104px]">
+        <div className="xl:hidden border-t border-slate-100 bg-white px-4 py-4 flex flex-col gap-4 shadow-lg absolute w-full left-0 top-full">
+           {/* Mobile Search */}
+           <div className="md:hidden">
+             <GlobalSearch />
+           </div>
            <nav className="flex flex-col gap-4 text-sm font-medium">
             {navLinks.map(link => (
-              <Link key={link.path} to={link.path} className="text-slate-600 hover:text-emerald-700">
+              <Link key={link.path} to={link.path} className="text-slate-600 hover:text-emerald-700" onClick={() => setIsOpen(false)}>
                 {link.label}
               </Link>
             ))}

@@ -42,13 +42,13 @@ export function Features() {
           
           {/* Features List */}
           <div>
-            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-12 md:mb-16 tracking-tight">Why Choose Low Dose Logistics?</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-slate-900 mb-8 md:mb-16 tracking-tight">Why Choose Low Dose Logistics?</h2>
             
             <div className="space-y-6">
               {features.map((feature, index) => (
                 <div 
                   key={index} 
-                  className="flex gap-8 group p-8 bg-white border-l-4 border-emerald-500 rounded-r-2xl transition-all duration-300 hover:bg-emerald-50 hover:shadow-md"
+                  className="flex gap-4 md:gap-8 group p-5 md:p-8 bg-white border-l-4 border-emerald-500 rounded-r-2xl transition-all duration-300 hover:bg-emerald-50 hover:shadow-md"
                 >
                   <div className="flex-shrink-0 w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 group-hover:bg-emerald-200 transition-colors">
                     <feature.icon size={40} className="group-hover:text-emerald-700 group-hover:rotate-6 transition-all" />
@@ -65,7 +65,7 @@ export function Features() {
           </div>
 
           {/* Right Card - Ready to Get Started */}
-          <div className="bg-white rounded-[32px] p-10 md:p-14 shadow-xl shadow-emerald-900/5 border border-slate-100 sticky top-32">
+          <div className="bg-white rounded-[32px] p-6 md:p-14 shadow-xl shadow-emerald-900/5 border border-slate-100 lg:sticky lg:top-24">
             <h3 className="text-3xl font-bold text-slate-900 mb-8 tracking-tight">Ready to Get Started?</h3>
             
             <div className="space-y-8 mb-12">

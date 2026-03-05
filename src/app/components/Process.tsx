@@ -43,7 +43,7 @@ export function Process() {
                 </span>
                 Simplified Onboarding
             </div>
-            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">How It Works</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">How It Works</h2>
             <p className="text-slate-600 text-lg leading-relaxed">
                 We've streamlined the verification and ordering process to get your store stocked with premium hemp products in record time.
             </p>
@@ -53,16 +53,16 @@ export function Process() {
           {/* Connecting Line (Desktop) */}
           <div className="hidden md:block absolute top-10 left-[15%] right-[15%] h-0.5 border-t-2 border-dashed border-emerald-300 z-0" />
 
-          <div className="grid md:grid-cols-3 gap-12 relative z-10">
+          <div className="grid md:grid-cols-3 gap-6 md:gap-12 relative z-10">
             {steps.map((step, index) => (
               <div key={index} className="flex flex-col items-center text-center group">
                 {/* Numbered Circle */}
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 text-white flex items-center justify-center text-3xl font-black shadow-xl mb-12 transform group-hover:scale-110 transition-transform duration-500 ring-8 ring-slate-50 relative z-10">
+                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 text-white flex items-center justify-center text-2xl md:text-3xl font-black shadow-xl mb-8 md:mb-12 transform group-hover:scale-110 transition-transform duration-500 ring-4 md:ring-8 ring-slate-50 relative z-10">
                   {index + 1}
                 </div>
 
                 <Card className="border-none shadow-sm bg-white rounded-[32px] overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 w-full">
-                  <CardContent className="p-10 flex flex-col items-center">
+                  <CardContent className="p-6 md:p-10 flex flex-col items-center">
                     <div className="w-20 h-20 rounded-full bg-emerald-50 flex items-center justify-center mb-8 group-hover:bg-emerald-100 transition-colors">
                       <step.icon size={48} className="text-emerald-600 group-hover:rotate-6 transition-all" />
                     </div>

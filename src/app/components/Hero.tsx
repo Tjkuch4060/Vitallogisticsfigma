@@ -31,8 +31,8 @@ export function Hero() {
   return (
     <section className="relative overflow-hidden bg-white py-16 md:py-32">
         {/* Background blobs */}
-        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[800px] h-[800px] bg-emerald-50 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-[600px] h-[600px] bg-emerald-50/50 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] md:w-[800px] md:h-[800px] bg-emerald-50 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-[200px] h-[200px] sm:w-[400px] sm:h-[400px] md:w-[600px] md:h-[600px] bg-emerald-50/50 rounded-full blur-3xl pointer-events-none" />
 
       <div className="container mx-auto max-w-7xl px-6 md:px-8 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 items-center">
@@ -53,12 +53,12 @@ export function Hero() {
             </div>
             
             <h1 className="flex flex-col mb-6 tracking-tight text-slate-900 leading-[1.05]">
-              <span className="text-[42px] md:text-[72px] font-extrabold">Premium Hemp.</span>
-              <span className="text-[42px] md:text-[72px] font-semibold text-slate-800">Wholesale Pricing.</span>
-              <span className="text-[42px] md:text-[72px] font-bold text-emerald-700">Zero Hassle.</span>
+              <span className="text-[32px] sm:text-[42px] md:text-[72px] font-extrabold">Premium Hemp.</span>
+              <span className="text-[32px] sm:text-[42px] md:text-[72px] font-semibold text-slate-800">Wholesale Pricing.</span>
+              <span className="text-[32px] sm:text-[42px] md:text-[72px] font-bold text-emerald-700">Zero Hassle.</span>
             </h1>
-            
-            <p className="text-lg md:text-xl font-semibold text-emerald-900 mb-6 italic tracking-tight">
+
+            <p className="text-base sm:text-lg md:text-xl font-semibold text-emerald-900 mb-6 italic tracking-tight">
               "No Bad Trips, Just Good Ships"
             </p>
             

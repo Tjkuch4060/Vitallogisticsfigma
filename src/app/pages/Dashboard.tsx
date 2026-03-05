@@ -83,22 +83,22 @@ export function Dashboard() {
         <DashboardKPIs loading={loading} />
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-7 mb-12">
+      <div className="grid gap-8 lg:grid-cols-7 mb-12">
         {/* Chart */}
-        <Card className="col-span-4 h-full">
+        <Card className="lg:col-span-4 h-full">
           <CardHeader className="flex flex-row items-center justify-between pb-6">
             <CardTitle className="text-xl font-bold text-slate-900">Revenue Trends</CardTitle>
             {loading ? <Skeleton className="h-8 w-[240px]" /> : <DateRangeFilter onRangeChange={handleRangeChange} />}
           </CardHeader>
           <CardContent className="pl-4 pb-4">
             {loading ? (
-                <div className="h-[350px] w-full flex items-end justify-between p-4 gap-2">
+                <div className="h-[220px] sm:h-[280px] md:h-[350px] w-full flex items-end justify-between p-4 gap-2">
                     {[1,2,3,4,5,6,7].map(i => (
                         <Skeleton key={i} className={`w-full rounded-t-lg`} style={{ height: `${Math.random() * 80 + 20}%` }} />
                     ))}
                 </div>
             ) : (
-                <ResponsiveContainer width="100%" height={350}>
+                <ResponsiveContainer width="100%" height={280} className="sm:!h-[350px]">
                 <BarChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                     <XAxis 
@@ -130,7 +130,7 @@ export function Dashboard() {
         </Card>
 
         {/* Right Column Widgets */}
-        <div className="col-span-3 space-y-8">
+        <div className="lg:col-span-3 space-y-8">
              {loading ? (
                  <>
                     <Skeleton className="h-[240px] w-full rounded-2xl" />
@@ -173,21 +173,21 @@ export function Dashboard() {
                     <Table>
                         <TableHeader className="bg-slate-50/50">
                             <TableRow className="hover:bg-transparent border-slate-100">
-                                <TableHead className="px-8 py-4 font-bold text-slate-500 uppercase text-[10px] tracking-widest">Order ID</TableHead>
-                                <TableHead className="px-4 py-4 font-bold text-slate-500 uppercase text-[10px] tracking-widest">Customer</TableHead>
-                                <TableHead className="px-4 py-4 font-bold text-slate-500 uppercase text-[10px] tracking-widest">Status</TableHead>
-                                <TableHead className="text-right px-8 py-4 font-bold text-slate-500 uppercase text-[10px] tracking-widest">Amount</TableHead>
+                                <TableHead className="px-4 md:px-8 py-3 md:py-4 font-bold text-slate-500 uppercase text-[10px] tracking-widest">Order ID</TableHead>
+                                <TableHead className="px-3 md:px-4 py-3 md:py-4 font-bold text-slate-500 uppercase text-[10px] tracking-widest">Customer</TableHead>
+                                <TableHead className="px-3 md:px-4 py-3 md:py-4 font-bold text-slate-500 uppercase text-[10px] tracking-widest">Status</TableHead>
+                                <TableHead className="text-right px-4 md:px-8 py-3 md:py-4 font-bold text-slate-500 uppercase text-[10px] tracking-widest">Amount</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {recentOrders.map((order) => (
                                 <TableRow key={order.id} className="hover:bg-slate-50/50 border-slate-50 transition-colors">
-                                    <TableCell className="px-8 py-5 font-bold text-slate-900">{order.id}</TableCell>
-                                    <TableCell className="px-4 py-5 font-medium text-slate-600">{order.customer}</TableCell>
-                                    <TableCell className="px-4 py-5">
+                                    <TableCell className="px-4 md:px-8 py-3 md:py-5 font-bold text-slate-900 text-sm">{order.id}</TableCell>
+                                    <TableCell className="px-3 md:px-4 py-3 md:py-5 font-medium text-slate-600 text-sm">{order.customer}</TableCell>
+                                    <TableCell className="px-3 md:px-4 py-3 md:py-5">
                                         <OrderStatusBadge status={order.status} />
                                     </TableCell>
-                                    <TableCell className="px-8 py-5 text-right font-extrabold text-emerald-700 text-lg">${order.total.toFixed(2)}</TableCell>
+                                    <TableCell className="px-4 md:px-8 py-3 md:py-5 text-right font-extrabold text-emerald-700 text-base md:text-lg">${order.total.toFixed(2)}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
