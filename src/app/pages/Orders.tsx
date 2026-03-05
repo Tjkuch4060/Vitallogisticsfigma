@@ -147,7 +147,7 @@ export function Orders() {
                 {/* Filters Group */}
                 <div className="flex flex-wrap gap-4">
                     {/* Retailer Filter */}
-                    <div className="w-[200px]">
+                    <div className="w-full sm:w-[200px]">
                         <Select value={retailerFilter} onValueChange={setRetailerFilter}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Retailer" />
@@ -162,7 +162,7 @@ export function Orders() {
                     </div>
 
                     {/* Status Filter */}
-                    <div className="w-[180px]">
+                    <div className="w-full sm:w-[180px]">
                         <Select value={statusFilter} onValueChange={setStatusFilter}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Status" />
@@ -180,20 +180,20 @@ export function Orders() {
                     </div>
 
                     {/* Date Range */}
-                    <div className="flex gap-2 items-center">
-                        <Input 
-                            type="date" 
-                            value={dateStart} 
+                    <div className="flex flex-wrap gap-2 items-center">
+                        <Input
+                            type="date"
+                            value={dateStart}
                             onChange={(e) => setDateStart(e.target.value)}
-                            className="w-[140px]"
+                            className="w-full sm:w-[140px]"
                             placeholder="Start"
                         />
-                        <span className="text-slate-400">-</span>
-                        <Input 
-                            type="date" 
-                            value={dateEnd} 
+                        <span className="text-slate-400 hidden sm:inline">-</span>
+                        <Input
+                            type="date"
+                            value={dateEnd}
                             onChange={(e) => setDateEnd(e.target.value)}
-                            className="w-[140px]"
+                            className="w-full sm:w-[140px]"
                             placeholder="End"
                         />
                     </div>
@@ -236,6 +236,7 @@ export function Orders() {
                     ))}
                 </div>
             ) : filteredOrders.length > 0 ? (
+                <div className="overflow-x-auto">
                 <Table>
                 <TableHeader>
                     <TableRow>
@@ -281,6 +282,7 @@ export function Orders() {
                     ))}
                 </TableBody>
                 </Table>
+                </div>
             ) : (
                 <div className="flex flex-col items-center justify-center py-16 text-center">
                     <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mb-6">

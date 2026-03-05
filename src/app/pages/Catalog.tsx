@@ -143,12 +143,12 @@ export function Catalog() {
             <Filter className="w-3.5 h-3.5" />
             Wholesale Network
           </div>
-          <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight">Product Catalog</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight">Product Catalog</h1>
           <p className="text-slate-600 mt-3 text-lg max-w-xl">Browse premium hemp products available for licensed retailers with real-time stock status.</p>
         </div>
         
         <div className="flex items-center gap-3 w-full md:w-auto">
-            <div className="hidden md:flex bg-slate-100 p-1.5 rounded-xl border border-slate-200 mr-2">
+            <div className="flex bg-slate-100 p-1.5 rounded-xl border border-slate-200">
                 <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as 'grid' | 'list')}>
                     <ToggleGroupItem value="grid" aria-label="Grid View" className="h-9 w-10 p-0 data-[state=on]:bg-white data-[state=on]:shadow-md data-[state=on]:text-emerald-700 rounded-lg">
                         <LayoutGrid size={20} className="hover:rotate-6 transition-transform" />
@@ -191,7 +191,7 @@ export function Catalog() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
         {/* Desktop Sidebar */}
         <div className="hidden md:block col-span-1">
-            <div className="sticky top-24">
+            <div className="sticky top-20">
                 <ProductFilters 
                     filters={filters} 
                     onFilterChange={setFilters}

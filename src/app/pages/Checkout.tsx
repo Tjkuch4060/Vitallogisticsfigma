@@ -249,7 +249,7 @@ export function Checkout() {
                     >
                        {isCompleted ? <Check className="w-5 h-5" /> : <step.icon className="w-5 h-5" />}
                     </div>
-                    <span className={`text-xs font-semibold ${isActive ? 'text-emerald-700' : 'text-slate-500'}`}>
+                    <span className={`text-[10px] sm:text-xs font-semibold text-center max-w-[64px] sm:max-w-none leading-tight ${isActive ? 'text-emerald-700' : 'text-slate-500'}`}>
                       {step.name}
                     </span>
                  </div>
@@ -275,7 +275,7 @@ export function Checkout() {
                     <CardDescription>Enter the destination for your wholesale order.</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                        <div className="space-y-2">
                           <Label htmlFor="firstName">First Name</Label>
                           <Input id="firstName" placeholder="Jane" value={address.firstName} onChange={e => setAddress({...address, firstName: e.target.value})} />
@@ -296,8 +296,8 @@ export function Checkout() {
                         <Input id="street" placeholder="123 Hemp Way" value={address.street} onChange={e => setAddress({...address, street: e.target.value})} />
                     </div>
 
-                    <div className="grid grid-cols-6 gap-4">
-                       <div className="col-span-3 space-y-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-6 gap-4">
+                       <div className="col-span-2 sm:col-span-3 space-y-2">
                           <Label htmlFor="city">City</Label>
                           <Input id="city" placeholder="Minneapolis" value={address.city} onChange={e => setAddress({...address, city: e.target.value})} />
                        </div>
@@ -305,13 +305,13 @@ export function Checkout() {
                           <Label htmlFor="state">State</Label>
                           <Input id="state" value="MN" disabled />
                        </div>
-                       <div className="col-span-2 space-y-2">
+                       <div className="col-span-1 sm:col-span-2 space-y-2">
                           <Label htmlFor="zip">Zip Code</Label>
-                          <Input 
-                            id="zip" 
-                            placeholder="55401" 
-                            value={address.zip} 
-                            onChange={e => setAddress({...address, zip: e.target.value.replace(/\D/g, '').slice(0, 5)})} 
+                          <Input
+                            id="zip"
+                            placeholder="55401"
+                            value={address.zip}
+                            onChange={e => setAddress({...address, zip: e.target.value.replace(/\D/g, '').slice(0, 5)})}
                           />
                           <p className="text-[10px] text-slate-400">Try 55401 (Zone 1) or 55305 (Zone 2)</p>
                        </div>
@@ -472,7 +472,7 @@ export function Checkout() {
                                <Input className="pl-9" placeholder="0000 0000 0000 0000" />
                             </div>
                          </div>
-                         <div className="grid grid-cols-2 gap-4">
+                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                <Label>Expiration</Label>
                                <Input placeholder="MM/YY" />
@@ -503,7 +503,7 @@ export function Checkout() {
 
           {/* Sidebar Summary */}
           <div className="lg:col-span-4">
-             <div className="sticky top-24">
+             <div className="lg:sticky lg:top-20">
                 <Card className="bg-slate-50 border-slate-200">
                    <CardHeader>
                       <CardTitle className="text-lg">Order Summary</CardTitle>

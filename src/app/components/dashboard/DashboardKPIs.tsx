@@ -153,7 +153,7 @@ export function DashboardKPIs({ loading = false }: DashboardKPIsProps) {
         </Dialog>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {loading ? (
             // Show Skeletons
             [1, 2, 3, 4].map((i) => <KPICardSkeleton key={i} />)

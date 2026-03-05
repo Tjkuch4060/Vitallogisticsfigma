@@ -11,7 +11,7 @@ export function CTA() {
         </div>
 
       <div className="container mx-auto max-w-7xl px-4 md:px-8 text-center relative z-10">
-        <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 tracking-tight">
+        <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-white mb-6 tracking-tight">
           Join Minnesota's Premier Hemp Wholesale Network
         </h2>
         <p className="text-emerald-100 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed opacity-90">
