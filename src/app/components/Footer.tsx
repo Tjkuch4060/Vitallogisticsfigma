@@ -9,8 +9,8 @@ export function Footer() {
         <div className="absolute inset-0 bg-[radial-gradient(#3d5a45_1px,transparent_1px)] [background-size:24px_24px]" />
       </div>
 
-      <div className="container mx-auto max-w-7xl px-4 md:px-8 relative z-10 pt-16 pb-12">
-        <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-16">
+      <div className="container mx-auto max-w-7xl px-4 md:px-8 relative z-10 pt-10 md:pt-16 pb-6 md:pb-12">
+        <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-8 md:mb-16">
           
           {/* Brand */}
           <div className="col-span-1 sm:col-span-2 md:col-span-1">

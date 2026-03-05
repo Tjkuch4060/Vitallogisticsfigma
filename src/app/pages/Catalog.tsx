@@ -135,16 +135,16 @@ export function Catalog() {
   );
 
   return (
-    <div className="container mx-auto max-w-7xl px-4 md:px-8 py-12 md:py-20">
+    <div className="container mx-auto max-w-7xl px-4 md:px-8 py-6 md:py-20">
       <AppBreadcrumb />
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6 mt-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 md:mb-12 gap-4 mt-4 md:mt-6">
         <div>
           <div className="flex items-center gap-2 text-emerald-600 font-bold text-xs uppercase tracking-widest mb-3">
             <Filter className="w-3.5 h-3.5" />
             Wholesale Network
           </div>
           <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight">Product Catalog</h1>
-          <p className="text-slate-600 mt-3 text-lg max-w-xl">Browse premium hemp products available for licensed retailers with real-time stock status.</p>
+          <p className="text-slate-600 mt-2 text-sm md:text-lg max-w-xl">Browse premium hemp products available for licensed retailers with real-time stock status.</p>
         </div>
         
         <div className="flex items-center gap-3 w-full md:w-auto">
@@ -188,7 +188,7 @@ export function Catalog() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-12">
         {/* Desktop Sidebar */}
         <div className="hidden md:block col-span-1">
             <div className="sticky top-20">

@@ -29,7 +29,7 @@ export function Hero() {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-white py-16 md:py-32">
+    <section className="relative overflow-hidden bg-white py-8 md:py-32">
         {/* Background blobs */}
         <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] md:w-[800px] md:h-[800px] bg-emerald-50 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-[200px] h-[200px] sm:w-[400px] sm:h-[400px] md:w-[600px] md:h-[600px] bg-emerald-50/50 rounded-full blur-3xl pointer-events-none" />
@@ -47,7 +47,7 @@ export function Hero() {
             {/* Headline Gradient Background */}
             <div className="absolute -inset-x-8 -inset-y-4 bg-gradient-to-r from-emerald-50/50 to-transparent -z-10 rounded-3xl" />
             
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-900 sm:bg-emerald-900 text-white text-sm font-bold mb-12 shadow-lg ring-2 ring-emerald-800 ring-offset-2 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-900 sm:bg-emerald-900 text-white text-sm font-bold mb-5 md:mb-12 shadow-lg ring-2 ring-emerald-800 ring-offset-2 animate-in fade-in slide-in-from-bottom-4 duration-1000">
               <Gauge size={18} className="text-emerald-100" />
               <span className="tracking-wide text-xs sm:text-sm">Licensed LPHE-R Wholesale Portal</span>
             </div>
@@ -62,7 +62,7 @@ export function Hero() {
               "No Bad Trips, Just Good Ships"
             </p>
             
-            <p className="text-base md:text-lg text-slate-600 mb-12 leading-[1.8] max-w-lg">
+            <p className="text-base md:text-lg text-slate-600 mb-7 md:mb-12 leading-[1.8] max-w-lg">
               Low Dose Logistics connects licensed retailers with premium hemp brands. 
               Browse products, place orders, and manage your wholesale business all in one place.
             </p>

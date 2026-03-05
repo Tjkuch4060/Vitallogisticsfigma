@@ -28,14 +28,14 @@ export function Process() {
   ];
 
   return (
-    <section className="py-16 md:py-32 bg-slate-50 relative overflow-hidden">
+    <section className="py-10 md:py-32 bg-slate-50 relative overflow-hidden">
       {/* Decorative Background Element */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full opacity-[0.05] pointer-events-none">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#059669_2px,transparent_2px)] [background-size:40px_40px]" />
       </div>
 
       <div className="container mx-auto max-w-7xl px-6 md:px-8 relative z-10">
-        <div className="text-center max-w-3xl mx-auto mb-16 md:mb-24">
+        <div className="text-center max-w-3xl mx-auto mb-8 md:mb-24">
             <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-emerald-600 sm:bg-gradient-to-r sm:from-emerald-600 sm:to-teal-600 text-white text-[11px] font-bold uppercase tracking-[0.2em] mb-6 shadow-md ring-2 ring-emerald-500/30">
                 <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75"></span>
@@ -57,24 +57,24 @@ export function Process() {
             {steps.map((step, index) => (
               <div key={index} className="flex flex-col items-center text-center group">
                 {/* Numbered Circle */}
-                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 text-white flex items-center justify-center text-2xl md:text-3xl font-black shadow-xl mb-8 md:mb-12 transform group-hover:scale-110 transition-transform duration-500 ring-4 md:ring-8 ring-slate-50 relative z-10">
+                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 text-white flex items-center justify-center text-2xl md:text-3xl font-black shadow-xl mb-4 md:mb-12 transform group-hover:scale-110 transition-transform duration-500 ring-4 md:ring-8 ring-slate-50 relative z-10">
                   {index + 1}
                 </div>
 
                 <Card className="border-none shadow-sm bg-white rounded-[32px] overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 w-full">
                   <CardContent className="p-6 md:p-10 flex flex-col items-center">
-                    <div className="w-20 h-20 rounded-full bg-emerald-50 flex items-center justify-center mb-8 group-hover:bg-emerald-100 transition-colors">
-                      <step.icon size={48} className="text-emerald-600 group-hover:rotate-6 transition-all" />
+                    <div className="w-14 h-14 md:w-20 md:h-20 rounded-full bg-emerald-50 flex items-center justify-center mb-4 md:mb-8 group-hover:bg-emerald-100 transition-colors">
+                      <step.icon size={32} className="text-emerald-600 group-hover:rotate-6 transition-all md:w-12 md:h-12" />
                     </div>
                     
-                    <h3 className="text-2xl font-bold text-slate-900 mb-4 tracking-tight">
+                    <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-2 md:mb-4 tracking-tight">
                         {step.title}
                     </h3>
                     <p className="text-slate-600 leading-relaxed text-base">
                       {step.description}
                     </p>
 
-                    <div className="mt-8 pt-8 border-t border-slate-50 w-full flex justify-center">
+                    <div className="mt-4 md:mt-8 pt-4 md:pt-8 border-t border-slate-50 w-full flex justify-center">
                         <div className="flex -space-x-2">
                             {[1, 2, 3].map((i) => (
                                 <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-slate-100 overflow-hidden">

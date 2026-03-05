@@ -3,7 +3,7 @@ import { Button } from './ui/button';
 
 export function CTA() {
   return (
-    <section className="bg-emerald-900 py-24 md:py-32 relative overflow-hidden">
+    <section className="bg-emerald-900 py-10 md:py-32 relative overflow-hidden">
         {/* Background effects */}
         <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
             <div className="absolute right-0 top-0 w-[500px] h-[500px] bg-white rounded-full blur-[128px] translate-x-1/2 -translate-y-1/2"></div>
@@ -14,7 +14,7 @@ export function CTA() {
         <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-white mb-6 tracking-tight">
           Join Minnesota's Premier Hemp Wholesale Network
         </h2>
-        <p className="text-emerald-100 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed opacity-90">
+        <p className="text-emerald-100 text-base md:text-xl max-w-2xl mx-auto mb-6 md:mb-12 leading-relaxed opacity-90">
           Connect with top brands, streamline your ordering process, and grow your retail business with Low Dose Logistics.
         </p>
         

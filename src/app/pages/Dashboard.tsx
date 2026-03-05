@@ -58,32 +58,32 @@ export function Dashboard() {
   };
 
   return (
-    <div className="container mx-auto max-w-7xl px-4 md:px-8 py-12 md:py-20">
+    <div className="container mx-auto max-w-7xl px-4 md:px-8 py-6 md:py-20">
       <AppBreadcrumb />
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 mt-6">
+      <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 md:mb-12 gap-3 mt-4 md:mt-6">
         <div>
-            <div className="flex items-center gap-2 text-emerald-600 font-bold text-xs uppercase tracking-widest mb-3">
+            <div className="flex items-center gap-2 text-emerald-600 font-bold text-xs uppercase tracking-widest mb-2">
                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 Live Network Status
             </div>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">Admin Dashboard</h1>
+            <h1 className="text-2xl md:text-4xl font-extrabold text-slate-900 tracking-tight">Admin Dashboard</h1>
         </div>
-        <div className="flex items-center gap-4">
-            <Button variant="outline" size="sm" className="rounded-xl border-slate-200 font-bold text-slate-600 h-10 px-5">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+            <Button variant="outline" size="sm" className="rounded-xl border-slate-200 font-bold text-slate-600 h-9 px-4 text-xs sm:text-sm sm:h-10 sm:px-5">
                 Download Reports
             </Button>
-            <Button size="sm" className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-10 px-5 border-none shadow-lg shadow-emerald-900/10 transition-all hover:scale-105">
+            <Button size="sm" className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-9 px-4 text-xs sm:text-sm sm:h-10 sm:px-5 border-none shadow-lg shadow-emerald-900/10 transition-all hover:scale-105">
                 Add New Order
             </Button>
         </div>
       </div>
 
       {/* KPI Cards (Revenue, Orders, Fees, Margin) */}
-      <div className="mb-12">
+      <div className="mb-6 md:mb-12">
         <DashboardKPIs loading={loading} />
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-7 mb-12">
+      <div className="grid gap-6 md:gap-8 lg:grid-cols-7 mb-6 md:mb-12">
         {/* Chart */}
         <Card className="lg:col-span-4 h-full">
           <CardHeader className="flex flex-row items-center justify-between pb-6">

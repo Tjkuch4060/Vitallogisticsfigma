@@ -112,10 +112,10 @@ export function Orders() {
   const hasActiveFilters = searchQuery || statusFilter !== 'All' || retailerFilter !== 'All' || dateStart || dateEnd;
 
   return (
-    <div className="container mx-auto px-4 md:px-8 py-12 animate-in fade-in duration-500">
+    <div className="container mx-auto px-4 md:px-8 py-6 md:py-12 animate-in fade-in duration-500">
       <AppBreadcrumb />
-      
-      <div className="flex justify-between items-center mb-8">
+
+      <div className="flex justify-between items-center mb-4 md:mb-8">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">Orders</h1>
           <p className="text-slate-500">Manage your wholesale orders and shipments.</p>
